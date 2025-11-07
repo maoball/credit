@@ -1,0 +1,83 @@
+definitions:
+  oauth.CallbackRequest:
+    properties:
+      code:
+        type: string
+      state:
+        type: string
+    type: object
+  utils.ResponseAny:
+    properties:
+      data: {}
+      error_msg:
+        example: ""
+        type: string
+    type: object
+info:
+  contact: {}
+  title: LINUX DO PAY
+  version: 0.1.0
+paths:
+  /api/v1/health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseAny'
+      tags:
+      - health
+  /api/v1/oauth/callback:
+    post:
+      parameters:
+      - description: request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/oauth.CallbackRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseAny'
+      tags:
+      - oauth
+  /api/v1/oauth/login:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseAny'
+      tags:
+      - oauth
+  /api/v1/oauth/logout:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseAny'
+      tags:
+      - oauth
+  /api/v1/oauth/user-info:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.ResponseAny'
+      tags:
+      - oauth
+swagger: "2.0"

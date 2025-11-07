@@ -1,0 +1,84 @@
+# LINUX DO PAY Config
+# Copy to config.yaml for runtime
+
+# App
+app:
+  app_name: "linux-do-pay"
+  env: "development" # development, testing, production
+  addr: ":8000"
+  session_cookie_name: "linux_do_pay_session_id" # change this in local dev env
+  session_secret: "<uniq string>" # you can't change this after first time start
+  session_domain: ".linux.do"
+  session_age: 86400
+  session_secure: false
+  session_http_only: false
+  api_prefix: "/api"
+
+# OAuth2
+oauth2:
+  client_id: "<OAUTH2_CLIENT_ID>"
+  client_secret: "<OAUTH2_CLIENT_SECRET>"
+  redirect_uri: "<OAUTH2_REDIRECT_URI>"
+  authorization_endpoint: "https://connect.linux.do/oauth2/authorize"
+  token_endpoint: "https://connect.linux.do/oauth2/token"
+  user_endpoint: "https://connect.linux.do/api/user"
+
+# DB
+database:
+  enabled: true
+  host: "127.0.0.1"
+  port: 5432
+  username: "postgres"
+  password: ""
+  database: "linux_do_pay"
+  max_idle_conn: 16
+  max_open_conn: 128
+  conn_max_lifetime: 1800
+  conn_max_idle_time: 600
+  log_level: "info"  # error, warn, info, debug, silent
+  ssl_mode: "disable"
+  time_zone: "Asia/Shanghai"
+  application_name: "pay-server"
+  search_path: "public"
+  prefer_simple_protocol: false
+  statement_cache_capacity: 256
+  default_query_exec_mode: "cache_statement"
+
+# Redis配置
+redis:
+  enabled: true
+  host: "127.0.0.1"
+  port: 6379
+  username: ""
+  password: ""
+  db: 0
+  pool_size: 100
+  min_idle_conn: 10
+  dial_timeout: 5
+  read_timeout: 3
+  write_timeout: 3
+
+# Log
+log:
+  level: "info"  # debug, info, warn, error, fatal, panic
+  format: "json"  # text, json
+  output: "stdout"  # stdout, file
+  file_path: "./logs/app.log"
+  max_size: 100
+  max_age: 30
+  max_backups: 10
+  compress: true
+
+# Schedule
+schedule:
+  user_badge_score_dispatch_interval_seconds: 1
+  update_user_badges_scores_task_cron: "0 2 * * *"
+  update_all_badges_task_cron: "0 1 * * *"
+
+# Worker
+worker:
+  concurrency: 50
+
+# linuxDo
+linuxDo:
+  api_key: "<LINUX_DO_API_KEY>"
