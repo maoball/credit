@@ -2,16 +2,17 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   BarChart3,
   Home,
-  Receipt,
   CreditCard,
   Settings,
   Wallet,
   FileText,
-  Package,
+  CircleDollarSign,
   LogOut,
+  Store,
 } from "lucide-react"
 import { AnimateIcon } from "@/components/animate-ui/icons/icon"
 import { ChevronLeft } from "@/components/animate-ui/icons/chevron-left"
@@ -52,21 +53,20 @@ const data = {
       title: "首页",
       url: "/home",
       icon: Home,
-      isActive: true,
     },
     {
       title: "交易",
       url: "/trade",
-      icon: Package,
+      icon: CircleDollarSign,
     },
     {
       title: "商户",
-      url: "#",
-      icon: Receipt,
+      url: "/merchant",
+      icon: Store,
     },
     {
       title: "余额",
-      url: "#",
+      url: "/balance",
       icon: Wallet,
     },
   ],
@@ -107,6 +107,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { toggleSidebar, state } = useSidebar()
   const { user, getTrustLevelLabel, logout } = useUser()
   const [showLogoutDialog, setShowLogoutDialog] = React.useState(false)
+  const pathname = usePathname()
   
   return (
     <>
@@ -132,8 +133,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <div className="flex items-center gap-2 px-1 h-12">
           <Avatar className="size-6 rounded group-data-[collapsible=icon]">
             <AvatarImage
-              src={user?.avatar_url || "/avatars/user.jpg"}
-              alt={user?.nickname || "User"}
+              src={user?.avatar_url}
+              alt={user?.nickname}
             />
             <AvatarFallback className="rounded bg-muted text-sm">
               {user?.nickname?.charAt(0)?.toUpperCase() || "L"}
@@ -155,9 +156,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenu className="gap-1">
               {data.navMain.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
+                  <SidebarMenuButton
                     tooltip={item.title}
-                    isActive={item.isActive}
+                    isActive={pathname === item.url}
                     asChild
                   >
                     <Link href={item.url}>

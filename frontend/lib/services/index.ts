@@ -21,6 +21,7 @@
  */
 
 import { AuthService } from './auth';
+import { BalanceService } from './balance';
 
 /**
  * 服务对象
@@ -32,6 +33,8 @@ import { AuthService } from './auth';
 const services = {
   /** 认证服务 */
   auth: AuthService,
+  /** 余额服务 */
+  balance: BalanceService,
 } as const;
 
 export default services;
@@ -74,4 +77,14 @@ export type {
   OAuthLoginUrlResponse,
   OAuthCallbackRequest,
 } from './auth';
+
+// 余额服务
+export { BalanceService } from './balance';
+export type {
+  Balance,
+  Transaction,
+  TransactionType,
+  TransactionStatus,
+  TransactionQueryParams,
+} from './balance';
 
