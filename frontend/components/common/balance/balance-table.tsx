@@ -36,15 +36,15 @@ const TAB_TRIGGER_STYLES = "data-[state=active]:bg-transparent data-[state=activ
 export function BalanceTable() {
   const [activeTab, setActiveTab] = useState<OrderType | 'all'>('all')
 
-  // 计算最近7天的时间范围
-  const getLast7DaysRange = () => {
+  // 计算最近一个月的时间范围
+  const getLastMonthRange = () => {
     const now = new Date()
     const endTime = now.toISOString()
-    const startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    const startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
     return { startTime, endTime }
   }
 
-  const { startTime, endTime } = getLast7DaysRange()
+  const { startTime, endTime } = getLastMonthRange()
 
   return (
     <div>
@@ -231,6 +231,7 @@ function TransactionTableRow({ order }: { order: Order }) {
     try {
       const date = new Date(timeStr)
       return date.toLocaleString('zh-CN', {
+        timeZone: 'Asia/Shanghai',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',

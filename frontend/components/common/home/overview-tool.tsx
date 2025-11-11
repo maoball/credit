@@ -34,10 +34,14 @@ export function OverviewTool({ onDateRangeChange }: OverviewToolProps) {
     onDateRangeChange?.(range)
   }
 
+
   const quickSelections = [
     { label: "今天", getValue: () => {
       const today = new Date()
-      return { from: today, to: today }
+      const tomorrow = new Date(today)
+      tomorrow.setDate(today.getDate() + 1)
+      tomorrow.setMilliseconds(-1) // 设置为当天的最后一毫秒
+      return { from: today, to: tomorrow }
     }},
     { label: "最近 7 天", getValue: () => getLastDays(7) },
     { label: "最近 4 周", getValue: () => getLastDays(28) },
@@ -81,11 +85,11 @@ export function OverviewTool({ onDateRangeChange }: OverviewToolProps) {
             </span>
             <ChevronDown className="h-3 w-3 text-muted-foreground/50" />
           </button>
-          
+
           {isCalendarOpen && (
             <>
-              <div 
-                className="fixed inset-0 z-40" 
+              <div
+                className="fixed inset-0 z-40"
                 onClick={() => setIsCalendarOpen(false)}
               />
               <div className="absolute top-full mt-2 left-0 z-50 bg-popover border rounded-lg shadow-lg flex">
@@ -111,8 +115,13 @@ export function OverviewTool({ onDateRangeChange }: OverviewToolProps) {
                     mode="range"
                     selected={{ from: dateRange.from, to: dateRange.to }}
                     onSelect={(range) => {
-                      if (range?.from && range?.to) {
-                        handleDateRangeChange({ from: range.from, to: range.to })
+                      if (range?.from) {
+                        let to = range.to || range.from
+                        if (!range.to || range.from.getTime() === to.getTime()) {
+                          to = new Date(range.from)
+                          to.setHours(23, 59, 59, 999)
+                        }
+                        handleDateRangeChange({ from: range.from, to })
                       }
                     }}
                     numberOfMonths={2}

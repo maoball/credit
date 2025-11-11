@@ -66,8 +66,9 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
   const [error, setError] = useState<Error | null>(null)
   const [lastParams, setLastParams] = useState<Partial<TransactionQueryParams>>(defaultParams)
 
-  // 使用 useRef 存储缓存，避免触发重新渲染和函数重建
+  // 使用 useRef 存储缓存
   const cacheRef = useRef<Record<string, { data: Order[], total: number, timestamp: number }>>({})
+  const latestRequestIdRef = useRef(0)
 
   /**
    * 获取交易列表
@@ -79,10 +80,15 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
       ...params,
     }
 
-    // 生成缓存key（包含时间范围以区分不同的查询）
+    // 生成唯一的请求 ID
+    const requestId = ++latestRequestIdRef.current
+
+    // 生成缓存key
+    const typeKey = queryParams.type || 'all'
+    const statusKey = queryParams.status || 'all'
     const startTimeKey = queryParams.startTime || 'no-start'
     const endTimeKey = queryParams.endTime || 'no-end'
-    const cacheKey = `${queryParams.type || 'all'}_${queryParams.page}_${queryParams.page_size}_${startTimeKey}_${endTimeKey}`
+    const cacheKey = `${typeKey}_${statusKey}_${queryParams.page}_${queryParams.page_size}_${startTimeKey}_${endTimeKey}`
 
     // 检查缓存（缓存5分钟）
     const cached = cacheRef.current[cacheKey]
@@ -90,6 +96,10 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
     const CACHE_DURATION = 5 * 60 * 1000 // 5分钟
 
     if (cached && (now - cached.timestamp) < CACHE_DURATION && queryParams.page === 1) {
+      if (requestId !== latestRequestIdRef.current) {
+        return
+      }
+      
       // 使用缓存数据，同步更新状态
       setTransactions(cached.data)
       setTotal(cached.total)
@@ -118,10 +128,13 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
         new Promise(resolve => setTimeout(resolve, 300))
       ])
 
+      if (requestId !== latestRequestIdRef.current) {
+        return
+      }
+
       // 如果是第一页，替换数据并更新缓存；否则追加数据
       if (queryParams.page === 1) {
         setTransactions(result.orders)
-        // 更新缓存 (使用 ref 不会触发重新渲染)
         cacheRef.current[cacheKey] = {
           data: result.orders,
           total: result.total,
@@ -140,10 +153,17 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
       if (err instanceof Error && err.message === '请求已被取消') {
         return
       }
+      
+      if (requestId !== latestRequestIdRef.current) {
+        return
+      }
+      
       setError(err instanceof Error ? err : new Error('获取交易记录失败'))
       console.error('获取交易记录失败:', err)
     } finally {
-      setLoading(false)
+      if (requestId === latestRequestIdRef.current) {
+        setLoading(false)
+      }
     }
   }, [pageSize])
 
@@ -164,10 +184,12 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
    * 刷新当前页（清除缓存）
    */
   const refresh = useCallback(async () => {
-    // 清除相关缓存（包含时间参数）
+    // 清除相关缓存（包含所有参数）
+    const typeKey = lastParams.type || 'all'
+    const statusKey = lastParams.status || 'all'
     const startTimeKey = lastParams.startTime || 'no-start'
     const endTimeKey = lastParams.endTime || 'no-end'
-    const cacheKey = `${lastParams.type || 'all'}_1_${pageSize}_${startTimeKey}_${endTimeKey}`
+    const cacheKey = `${typeKey}_${statusKey}_1_${pageSize}_${startTimeKey}_${endTimeKey}`
     delete cacheRef.current[cacheKey]
 
     await fetchTransactions({
