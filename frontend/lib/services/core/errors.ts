@@ -95,3 +95,12 @@ export class ValidationError extends ApiErrorBase {
   }
 }
 
+/**
+ * 检查错误是否为请求取消错误
+ * @param error - 错误对象
+ * @returns 是否为取消错误
+ */
+export function isCancelError(error: any): boolean {
+  return error && (error.__CANCEL__ === true || error.message === '请求已被取消');
+}
+

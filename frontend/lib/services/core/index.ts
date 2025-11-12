@@ -15,6 +15,7 @@ export {
   NotFoundError,
   ServerError,
   ValidationError,
+  isCancelError,
 } from './errors';
 export type {
   ApiResponse,

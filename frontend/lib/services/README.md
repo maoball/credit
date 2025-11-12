@@ -13,19 +13,27 @@
 
 ```
 lib/services/
-├── core/                 # 核心服务层
-│   ├── api-client.ts    # Axios 客户端实例
-│   ├── base.service.ts  # 服务基类
-│   ├── config.ts        # API 配置
-│   ├── errors.ts        # 错误类型定义
-│   ├── types.ts         # 核心类型定义
-│   └── index.ts         # 导出核心模块
-├── auth/                # 认证服务
-│   ├── types.ts         # 认证相关类型
-│   ├── auth.service.ts  # 认证服务实现
-│   └── index.ts         # 导出认证服务
-├── index.ts             # 服务层统一入口
-└── README.md            # 文档
+├── core/                    # 核心服务层
+│   ├── api-client.ts       # Axios 客户端实例
+│   ├── base.service.ts     # 服务基类
+│   ├── config.ts           # API 配置
+│   ├── errors.ts           # 错误类型定义
+│   ├── types.ts            # 核心类型定义
+│   └── index.ts            # 导出核心模块
+├── auth/                   # 认证服务
+│   ├── types.ts            # 认证相关类型
+│   ├── auth.service.ts     # 认证服务实现
+│   └── index.ts            # 导出认证服务
+├── transaction/            # 交易服务
+│   ├── types.ts            # 交易相关类型
+│   ├── transaction.service.ts  # 交易服务实现
+│   └── index.ts            # 导出交易服务
+├── merchant/               # 商户服务
+│   ├── types.ts            # 商户相关类型
+│   ├── merchant.service.ts # 商户服务实现
+│   └── index.ts            # 导出商户服务
+├── index.ts                # 服务层统一入口
+└── README.md               # 文档
 ```
 
 ## 核心模块
@@ -82,8 +90,23 @@ lib/services/
 import services from '@/lib/services';
 
 // 调用认证服务
-const user = await services.auth.getCurrentUser();
-const loginResult = await services.auth.login({ username, password });
+const user = await services.auth.getUserInfo();
+await services.auth.logout();
+
+// 调用交易服务
+const transactions = await services.transaction.getTransactions({
+  page: 1,
+  page_size: 20,
+  type: 'receive'
+});
+
+// 调用商户服务
+const apiKeys = await services.merchant.listAPIKeys();
+const newKey = await services.merchant.createAPIKey({
+  app_name: '我的应用',
+  app_homepage_url: 'https://example.com',
+  redirect_uri: 'https://example.com/callback'
+});
 ```
 
 ### 2. 按需导入：直接导入特定服务

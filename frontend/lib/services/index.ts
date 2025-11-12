@@ -61,6 +61,7 @@ export {
   NotFoundError,
   ServerError,
   ValidationError,
+  isCancelError,
 } from './core';
 
 export type {

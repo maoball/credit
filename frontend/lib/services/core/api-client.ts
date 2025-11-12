@@ -112,18 +112,17 @@ apiClient.interceptors.response.use(
       cancelTokens.delete(requestKey);
     }
 
-    // 请求被取消
+    // 请求被取消时静默处理
     if (axios.isCancel(error)) {
-      return Promise.reject(error);
+      // 创建一个特殊的取消错误对象，包含标识
+      const cancelError = new Error(error.message || '请求已被取消');
+      (cancelError as any).__CANCEL__ = true;
+      return Promise.reject(cancelError);
     }
 
     // 401 未授权错误
     if (error.response?.status === 401) {
-      const unauthorizedError = new UnauthorizedError(
-        error.response.data?.error_msg || '未授权，请先登录',
-      );
-      initiateLogin(window.location.pathname);
-      return Promise.reject(unauthorizedError);
+      return initiateLogin(window.location.pathname);
     }
 
     // 403 权限不足错误
