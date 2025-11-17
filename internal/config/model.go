@@ -38,17 +38,18 @@ type configModel struct {
 
 // appConfig 应用基本配置
 type appConfig struct {
-	AppName           string `mapstructure:"app_name"`
-	Env               string `mapstructure:"env"`
-	Addr              string `mapstructure:"addr"`
-	APIPrefix         string `mapstructure:"api_prefix"`
-	FrontendPayURL    string `mapstructure:"frontend_pay_url"`
-	SessionCookieName string `mapstructure:"session_cookie_name"`
-	SessionSecret     string `mapstructure:"session_secret"`
-	SessionDomain     string `mapstructure:"session_domain"`
-	SessionAge        int    `mapstructure:"session_age"`
-	SessionHttpOnly   bool   `mapstructure:"session_http_only"`
-	SessionSecure     bool   `mapstructure:"session_secure"`
+	AppName                 string `mapstructure:"app_name"`
+	Env                     string `mapstructure:"env"`
+	Addr                    string `mapstructure:"addr"`
+	APIPrefix               string `mapstructure:"api_prefix"`
+	GracefulShutdownTimeout int    `mapstructure:"graceful_shutdown_timeout"`
+	FrontendPayURL          string `mapstructure:"frontend_pay_url"`
+	SessionCookieName       string `mapstructure:"session_cookie_name"`
+	SessionSecret           string `mapstructure:"session_secret"`
+	SessionDomain           string `mapstructure:"session_domain"`
+	SessionAge              int    `mapstructure:"session_age"`
+	SessionHttpOnly         bool   `mapstructure:"session_http_only"`
+	SessionSecure           bool   `mapstructure:"session_secure"`
 }
 
 // OAuth2Config OAuth2认证配置

@@ -26,9 +26,15 @@ package router
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
+	"time"
 
 	"github.com/linux-do/pay/internal/apps/admin"
 
@@ -46,6 +52,7 @@ import (
 	"github.com/linux-do/pay/internal/apps/order"
 	"github.com/linux-do/pay/internal/apps/user"
 	"github.com/linux-do/pay/internal/config"
+	"github.com/linux-do/pay/internal/model"
 	"github.com/linux-do/pay/internal/otel_trace"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -53,8 +60,6 @@ import (
 )
 
 func Serve() {
-	defer otel_trace.Shutdown(context.Background())
-
 	// 运行模式
 	if config.Config.App.Env == "production" {
 		gin.SetMode(gin.ReleaseMode)
@@ -124,7 +129,7 @@ func Serve() {
 				orderRouter.POST("/transactions", order.ListTransactions)
 			}
 
-			// Merchant
+			// MerchantAPIKey
 			merchantRouter := apiV1Router.Group("/merchant")
 			{
 				merchantRouter.POST("/api-keys", oauth.LoginRequired(), merchant.CreateAPIKey)
@@ -138,7 +143,7 @@ func Serve() {
 					apiKeyRouter.DELETE("", merchant.DeleteAPIKey)
 				}
 
-				// Merchant Payment
+				// MerchantAPIKey Payment
 				MerchantPaymentRouter := merchantRouter.Group("/payment")
 				{
 					MerchantPaymentRouter.POST("/orders", payment.RequireMerchantAuth(), payment.CreateMerchantOrder)
@@ -176,8 +181,33 @@ func Serve() {
 		}
 	}
 
-	// Serve
-	if err := r.Run(config.Config.App.Addr); err != nil {
-		log.Fatalf("[API] serve api failed: %v\n", err)
+	srv := &http.Server{
+		Addr:    config.Config.App.Addr,
+		Handler: r,
 	}
+
+	go func() {
+		log.Printf("[API] server starting on %s\n", config.Config.App.Addr)
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("[API] server failed: %v\n", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("[API] server shutting down...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.App.GracefulShutdownTimeout)*time.Second)
+	defer cancel()
+
+	model.ExpirePendingOrders(ctx)
+	otel_trace.Shutdown(ctx)
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatalf("[API] server forced to shutdown: %v\n", err)
+	}
+
+	log.Println("[API] server exited")
 }

@@ -25,9 +25,12 @@
 package model
 
 import (
+	"context"
 	"fmt"
 	"time"
 
+	"github.com/linux-do/pay/internal/db"
+	"github.com/linux-do/pay/internal/logger"
 	"github.com/shopspring/decimal"
 
 	"gorm.io/gorm"
@@ -76,4 +79,17 @@ type Order struct {
 func (o *Order) AfterFind(*gorm.DB) error {
 	o.OrderNo = fmt.Sprintf("%018d", o.ID)
 	return nil
+}
+
+// ExpirePendingOrders 将所有 pending 状态的订单设置为 expired
+func ExpirePendingOrders(ctx context.Context) {
+	result := db.DB(ctx).Model(&Order{}).
+		Where("status = ?", OrderStatusPending).
+		Update("status", OrderStatusExpired)
+
+	if result.Error != nil {
+		logger.ErrorF(ctx, "过期 pending 订单失败: %v", result.Error)
+	} else {
+		logger.InfoF(ctx, "已将 %d 个 pending 订单设置为 expired", result.RowsAffected)
+	}
 }

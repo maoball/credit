@@ -6,6 +6,7 @@ app:
   app_name: "linux-do-pay"
   env: "development" # development, testing, production
   addr: ":8000"
+  graceful_shutdown_timeout: 30
   session_cookie_name: "linux_do_pay_session_id" # change this in local dev env
   session_secret: "<uniq string>" # you can't change this after first time start
   session_domain: ".linux.do"
