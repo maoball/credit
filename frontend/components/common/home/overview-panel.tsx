@@ -11,6 +11,7 @@ import type { DisputeWithOrder, Order } from "@/lib/services"
 import { RefundReviewDialog, CancelDisputeDialog } from "@/components/common/general/table-data"
 import { CountingNumber } from '@/components/animate-ui/primitives/texts/counting-number'
 import { useDisputeData } from "@/hooks/use-dispute"
+import { DisputeDialog } from "@/components/common/home/dispute-dialog"
 
 const chartData = [
   { date: "10-31", value: 0 },
@@ -266,7 +267,7 @@ function TopCustomersCard() {
  * 
  * @returns 待处理的争议卡片
  */
-function PendingDisputesCard() {
+function PendingDisputesCard({ onViewAll }: { onViewAll: () => void }) {
   const { disputes, loading, handleRefresh, refetchData } = useDisputeData({
     fetchFn: (params) => DisputeService.listMerchantDisputes(params)
   })
@@ -326,6 +327,7 @@ function PendingDisputesCard() {
             variant="link"
             className="px-0 h-4 text-xs text-blue-600"
             disabled={loading}
+            onClick={onViewAll}
           >
             查看全部
           </Button>
@@ -341,7 +343,7 @@ function PendingDisputesCard() {
  * 
  * @returns 我发起的争议卡片
  */
-function MyDisputesCard() {
+function MyDisputesCard({ onViewAll }: { onViewAll: () => void }) {
   const { disputes, loading, handleRefresh, refetchData } = useDisputeData({
     fetchFn: (params) => DisputeService.listDisputes(params)
   })
@@ -401,6 +403,7 @@ function MyDisputesCard() {
             variant="link"
             className="px-0 h-4 text-xs text-blue-600"
             disabled={loading}
+            onClick={onViewAll}
           >
             查看全部
           </Button>
@@ -417,16 +420,37 @@ function MyDisputesCard() {
  * @returns 概览面板组件
  */
 export function OverviewPanel() {
+  const [disputeDialogOpen, setDisputeDialogOpen] = React.useState(false)
+  const [disputeDialogMode, setDisputeDialogMode] = React.useState<'pending' | 'my-disputes'>('pending')
+
+  const handleViewAllPending = () => {
+    setDisputeDialogMode('pending')
+    setDisputeDialogOpen(true)
+  }
+
+  const handleViewAllMyDisputes = () => {
+    setDisputeDialogMode('my-disputes')
+    setDisputeDialogOpen(true)
+  }
+
   return (
-    <div className="bg-muted rounded-lg p-2 mt-2">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-        <PaymentCard />
-        <TotalCard />
-        <NetVolumeCard />
-        <TopCustomersCard />
-        <PendingDisputesCard />
-        <MyDisputesCard />
+    <>
+      <div className="bg-muted rounded-lg p-2 mt-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+          <PaymentCard />
+          <TotalCard />
+          <NetVolumeCard />
+          <TopCustomersCard />
+          <PendingDisputesCard onViewAll={handleViewAllPending} />
+          <MyDisputesCard onViewAll={handleViewAllMyDisputes} />
+        </div>
       </div>
-    </div>
+
+      <DisputeDialog
+        mode={disputeDialogMode}
+        open={disputeDialogOpen}
+        onOpenChange={setDisputeDialogOpen}
+      />
+    </>
   )
 }

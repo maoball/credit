@@ -62,7 +62,7 @@ export function TransactionDataTable({ transactions }: { transactions: Order[] }
             <TableBody className="animate-in fade-in duration-200">
               {transactions.map((order) => (
                 <TransactionTableRow
-                  key={order.order_no}
+                  key={order.id}
                   order={order}
                 />
               ))}
