@@ -132,11 +132,14 @@ export type {
   MerchantAPIKey,
   CreateAPIKeyRequest,
   UpdateAPIKeyRequest,
-  CreateMerchantOrderRequest,
-  CreateMerchantOrderResponse,
   PayMerchantOrderRequest,
   GetMerchantOrderRequest,
   GetMerchantOrderResponse,
+  PaymentLink,
+  QueryMerchantOrderRequest,
+  QueryMerchantOrderResponse,
+  RefundMerchantOrderRequest,
+  RefundMerchantOrderResponse,
 } from './merchant';
 
 // 管理员服务
@@ -152,6 +155,6 @@ export type {
 
 // 用户服务
 export { UserService } from './user';
-export type { UpdatePayKeyRequest, UserInfo, SearchUserRequest } from './user';
+export type { UpdatePayKeyRequest } from './user';
 
 

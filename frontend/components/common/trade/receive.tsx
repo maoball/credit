@@ -1,11 +1,12 @@
 import * as React from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 /**
  * 功能卡片组件
  */
-function FeatureCard({ title, description, linkText }: { title: string, description: string, linkText: string }) {
+function FeatureCard({ title, description, linkText, href }: { title: string, description: string, linkText: string, href?: string }) {
   return (
     <Card className="bg-background border border-border shadow-none transition-shadow">
       <CardHeader>
@@ -15,9 +16,17 @@ function FeatureCard({ title, description, linkText }: { title: string, descript
         <CardDescription className="text-xs text-muted-foreground leading-relaxed">
           {description}
         </CardDescription>
-        <Button variant="link" className="px-0 h-auto text-xs text-blue-600 font-normal hover:text-blue-700">
-          {linkText}
-        </Button>
+        {href ? (
+          <Link href={href}>
+            <Button variant="link" className="px-0 h-auto text-xs text-blue-600 font-normal hover:text-blue-700">
+              {linkText}
+            </Button>
+          </Link>
+        ) : (
+          <Button variant="link" className="px-0 h-auto text-xs text-muted-foreground font-normal cursor-not-allowed" disabled>
+            {linkText}
+          </Button>
+        )}
       </CardContent>
     </Card>
   )
@@ -45,19 +54,21 @@ export function Receive() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <FeatureCard
-          title="使用预制的支付表格"
-          description="直接在您的网站上嵌入进行转化优化的账户表单，或重定向到 Stripe 托管的页面。"
-          linkText="了解有关结账的更多信息"
+          title="接入官方订单支付接口"
+          description="使用官方 API 接口（兼容易支付），快速接入订单支付功能，支持异步通知和同步跳转。"
+          linkText="查看接口文档"
+          href="/docs/api"
         />
         <FeatureCard
-          title="创建自定义支付用户界面"
-          description="通过将我们的嵌入化组件构成，在您的网站和移动端应用程序上接受付款。"
-          linkText="进一步了解 账户"
+          title="创建自定义在线支付表单"
+          description="通过我们提供的支付链接，快速创建支付表单，无需编写代码即可开始收款。"
+          linkText="前往商户创建"
+          href="/merchant"
         />
         <FeatureCard
           title="面对面向客户收款"
-          description="通过与我们的读卡器集成，并将 Stripe 扩展到您的销售点，以处理线下付款。"
-          linkText="了解有关 Terminal 的更多信息"
+          description="通过 LINUX DO PAY 提供的线下收款功能，扩展您的收款渠道，处理面对面交易场景。"
+          linkText="功能开发中，敬请期待"
         />
       </div>
     </div>
