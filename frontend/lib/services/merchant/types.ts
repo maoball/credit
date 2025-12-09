@@ -61,28 +61,6 @@ export interface UpdateAPIKeyRequest {
 }
 
 /**
- * 创建商户订单请求参数
- */
-export interface CreateMerchantOrderRequest {
-  /** 订单名称（最大64字符） */
-  order_name: string;
-  /** 订单金额（必须大于0，最多2位小数） */
-  amount: number | string;
-  /** 备注（最大200字符，可选） */
-  remark?: string;
-}
-
-/**
- * 创建商户订单响应
- */
-export interface CreateMerchantOrderResponse {
-  /** 订单 ID */
-  order_id: number;
-  /** 支付 URL */
-  pay_url: string;
-}
-
-/**
  * 支付商户订单请求参数
  */
 export interface PayMerchantOrderRequest {
@@ -128,6 +106,10 @@ export interface GetMerchantOrderResponse {
     remark: string;
     /** 客户端ID */
     client_id: string;
+    /** 同步跳转URL */
+    return_url: string;
+    /** 异步通知URL */
+    notify_url: string;
     /** 交易时间 */
     trade_time: string | null;
     /** 创建时间 */
@@ -158,6 +140,92 @@ export interface GetMerchantOrderResponse {
   merchant: {
     /** 应用名称 */
     app_name: string;
+    /** 跳转URI */
+    redirect_uri: string;
   };
+}
+
+/**
+ * 支付链接信息
+ */
+export interface PaymentLink {
+  /** 链接 ID */
+  id: number;
+  /** 商户 API Key ID */
+  merchant_api_key_id: number;
+  /** 支付链接 Token */
+  token: string;
+  /** 创建时间 */
+  created_at: string;
+  /** 更新时间 */
+  updated_at: string;
+}
+
+/**
+ * 商户查询订单请求参数
+ */
+export interface QueryMerchantOrderRequest {
+  /** 商户订单号（可选） */
+  out_trade_no?: string;
+  /** 平台订单号 */
+  trade_no: number;
+  /** 客户端 ID */
+  pid: string;
+  /** 客户端密钥 */
+  key: string;
+}
+
+/**
+ * 商户查询订单响应
+ */
+export interface QueryMerchantOrderResponse {
+  /** 状态码（1表示成功，-1表示失败） */
+  code: number;
+  /** 响应消息 */
+  msg: string;
+  /** 平台订单号 */
+  trade_no: string;
+  /** 商户订单号 */
+  out_trade_no: string;
+  /** 支付类型 */
+  type: string;
+  /** 客户端 ID */
+  pid: string;
+  /** 订单创建时间 */
+  addtime: string;
+  /** 订单完成时间 */
+  endtime: string;
+  /** 订单名称 */
+  name: string;
+  /** 订单金额 */
+  money: string;
+  /** 订单状态（1表示已支付，0表示未支付） */
+  status: number;
+}
+
+/**
+ * 商户退款请求参数
+ */
+export interface RefundMerchantOrderRequest {
+  /** 客户端 ID */
+  pid: string;
+  /** 客户端密钥 */
+  key: string;
+  /** 商户订单号（可选） */
+  out_trade_no?: string;
+  /** 平台订单号 */
+  trade_no: number;
+  /** 退款金额 */
+  money: number | string;
+}
+
+/**
+ * 商户退款响应
+ */
+export interface RefundMerchantOrderResponse {
+  /** 状态码（1表示成功，-1表示失败） */
+  code: number;
+  /** 响应消息 */
+  msg: string;
 }
 

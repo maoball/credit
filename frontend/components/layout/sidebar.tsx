@@ -74,7 +74,7 @@ const data = {
     { title: "使用文档", url: "/docs/how-to-use-demo", icon: FileText },
   ],
   products: [
-    { title: "报表", url: "#", icon: BarChart3 },
+    { title: "我的报表", url: "#", icon: BarChart3 },
   ],
 }
 
@@ -121,6 +121,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <Button
                 variant="ghost"
                 className="flex h-12 hover:bg-accent group-data-[collapsible=icon]"
+                suppressHydrationWarning
               >
                 <Avatar className="size-6 rounded">
                   <AvatarImage

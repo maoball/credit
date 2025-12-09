@@ -1,14 +1,18 @@
 import { BaseService } from '../core/base.service';
+import apiClient from '../core/api-client';
 import type { InternalAxiosRequestConfig } from 'axios';
 import type {
   MerchantAPIKey,
   CreateAPIKeyRequest,
   UpdateAPIKeyRequest,
-  CreateMerchantOrderRequest,
-  CreateMerchantOrderResponse,
   PayMerchantOrderRequest,
   GetMerchantOrderRequest,
   GetMerchantOrderResponse,
+  PaymentLink,
+  QueryMerchantOrderRequest,
+  QueryMerchantOrderResponse,
+  RefundMerchantOrderRequest,
+  RefundMerchantOrderResponse,
 } from './types';
 
 /**
@@ -118,59 +122,63 @@ export class MerchantService extends BaseService {
     return this.delete<void>(`/api-keys/${id}`);
   }
 
-  // ==================== 商户支付订单 ====================
+  // ==================== 支付链接管理 ====================
 
   /**
-   * 创建商户订单
-   * 
-   * @description
-   * 此接口用于商户创建支付订单，需要使用商户凭证（ClientID:ClientSecret）进行认证。
-   * 返回的 pay_url 可以提供给用户进行支付。
-   * 订单有效期根据系统配置确定（通常为5分钟）。
-   * 
-   * @param request - 创建订单请求参数
-   * @param clientId - 商户的 Client ID
-   * @param clientSecret - 商户的 Client Secret
-   * @returns 订单信息（包含订单ID和支付URL）
-   * @throws {UnauthorizedError} 当商户凭证无效时
-   * @throws {ValidationError} 当参数验证失败时
+   * 创建支付链接
+   * @param apiKeyId - API Key ID
+   * @returns 创建的支付链接信息
+   * @throws {UnauthorizedError} 当未登录时
+   * @throws {NotFoundError} 当 API Key 不存在时
+   * @throws {ForbiddenError} 当无权访问该 API Key 时
    * 
    * @example
    * ```typescript
-   * const order = await MerchantService.createMerchantOrder(
-   *   {
-   *     order_name: '商品购买',
-   *     amount: 99.99,
-   *     remark: '订单备注'
-   *   },
-   *   'your_client_id',
-   *   'your_client_secret'
-   * );
-   * 
-   * console.log('订单ID:', order.order_id);
-   * console.log('支付链接:', order.pay_url); // 提供给用户支付
+   * const link = await MerchantService.createPaymentLink(123);
+   * console.log('支付链接 Token:', link.token);
    * ```
-   * 
-   * @remarks
-   * - 金额必须大于 0
-   * - 金额最多支持 2 位小数
-   * - 订单在 5 分钟后自动过期
    */
-  static async createMerchantOrder(
-    request: CreateMerchantOrderRequest,
-    clientId: string,
-    clientSecret: string,
-  ): Promise<CreateMerchantOrderResponse> {
-    // 使用 Basic Auth 格式：ClientID:ClientSecret
-    const auth = `${clientId}:${clientSecret}`;
-    const encodedAuth = btoa(auth);
-
-    return this.post<CreateMerchantOrderResponse>('/payment/orders', request, {
-      headers: {
-        Authorization: `Basic ${encodedAuth}`,
-      },
-    } as InternalAxiosRequestConfig);
+  static async createPaymentLink(apiKeyId: number): Promise<PaymentLink> {
+    return this.post<PaymentLink>(`/api-keys/${apiKeyId}/payment-links`, {});
   }
+
+  /**
+   * 获取支付链接列表
+   * @param apiKeyId - API Key ID
+   * @returns 支付链接列表
+   * @throws {UnauthorizedError} 当未登录时
+   * @throws {NotFoundError} 当 API Key 不存在时
+   * @throws {ForbiddenError} 当无权访问该 API Key 时
+   * 
+   * @example
+   * ```typescript
+   * const links = await MerchantService.listPaymentLinks(123);
+   * console.log('支付链接数量:', links.length);
+   * ```
+   */
+  static async listPaymentLinks(apiKeyId: number): Promise<PaymentLink[]> {
+    return this.get<PaymentLink[]>(`/api-keys/${apiKeyId}/payment-links`);
+  }
+
+  /**
+   * 删除支付链接
+   * @param apiKeyId - API Key ID
+   * @param linkId - 支付链接 ID
+   * @returns void
+   * @throws {UnauthorizedError} 当未登录时
+   * @throws {NotFoundError} 当 API Key 或支付链接不存在时
+   * @throws {ForbiddenError} 当无权访问该 API Key 时
+   * 
+   * @example
+   * ```typescript
+   * await MerchantService.deletePaymentLink(123, 456);
+   * ```
+   */
+  static async deletePaymentLink(apiKeyId: number, linkId: number): Promise<void> {
+    return this.delete<void>(`/api-keys/${apiKeyId}/payment-links/${linkId}`);
+  }
+
+  // ==================== 商户支付订单 ====================
 
   /**
    * 查询商户订单信息
@@ -253,6 +261,94 @@ export class MerchantService extends BaseService {
    */
   static async payMerchantOrder(request: PayMerchantOrderRequest): Promise<void> {
     return this.post<void>('/payment', request);
+  }
+
+  /**
+   * 商户查询订单状态
+   * 
+   * @description
+   * 商户使用此接口主动查询订单的支付状态。
+   * 需要提供商户凭证（Client ID 和 Client Secret）。
+   * 
+   * @param params - 查询参数
+   * @returns 订单状态信息
+   * @throws {ValidationError} 当参数验证失败时
+   * @throws {ApiErrorBase} 当商户凭证无效或订单不存在时
+   * 
+   * @example
+   * ```typescript
+   * const orderStatus = await MerchantService.queryMerchantOrder({
+   *   trade_no: 12345,
+   *   pid: 'your_client_id',
+   *   key: 'your_client_secret'
+   * });
+   * 
+   * if (orderStatus.status === 1) {
+   *   console.log('订单已支付');
+   * } else {
+   *   console.log('订单未支付');
+   * }
+   * ```
+   * 
+   * @remarks
+   * - 使用 GET 请求调用 `/api.php` 接口
+   * - 返回的 status 字段：1 表示已支付，0 表示未支付
+   */
+  static async queryMerchantOrder(
+    params: QueryMerchantOrderRequest
+  ): Promise<QueryMerchantOrderResponse> {
+    // 直接使用 apiClient，因为这个接口不在标准 RESTful 路径下
+    const response = await apiClient.get<QueryMerchantOrderResponse>(
+      '/epay/api.php',
+      { params } as InternalAxiosRequestConfig
+    );
+    return response.data;
+  }
+
+  /**
+   * 商户退款
+   * 
+   * @description
+   * 商户使用此接口对已支付的订单进行退款。
+   * 需要提供商户凭证（Client ID 和 Client Secret）。
+   * 退款金额必须与订单金额一致。
+   * 
+   * @param params - 退款请求参数
+   * @returns 退款结果
+   * @throws {ValidationError} 当参数验证失败时
+   * @throws {ApiErrorBase} 当商户凭证无效、订单不存在或退款失败时
+   * 
+   * @example
+   * ```typescript
+   * const result = await MerchantService.refundMerchantOrder({
+   *   trade_no: 12345,
+   *   money: 99.99,
+   *   pid: 'your_client_id',
+   *   key: 'your_client_secret'
+   * });
+   * 
+   * if (result.code === 1) {
+   *   console.log('退款成功');
+   * } else {
+   *   console.error('退款失败:', result.msg);
+   * }
+   * ```
+   * 
+   * @remarks
+   * - 使用 POST 请求调用 `/api.php` 接口
+   * - 退款金额必须与订单金额完全一致
+   * - 只能对状态为"成功"的订单进行退款
+   * - 返回的 code 字段：1 表示成功，-1 表示失败
+   */
+  static async refundMerchantOrder(
+    params: RefundMerchantOrderRequest
+  ): Promise<RefundMerchantOrderResponse> {
+    // 直接使用 apiClient，因为这个接口不在标准 RESTful 路径下
+    const response = await apiClient.post<RefundMerchantOrderResponse>(
+      '/epay/api.php',
+      params
+    );
+    return response.data;
   }
 }
 

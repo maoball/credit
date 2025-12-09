@@ -159,10 +159,16 @@ export function PayingMain() {
         })
       }
 
-      /** 5秒后自动刷新页面 */
+      /** 5秒后跳转到redirect_uri或刷新页面 */
       setTimeout(() => {
+        const redirectUri = orderInfo?.merchant?.redirect_uri
+        if (redirectUri && redirectUri.trim()) {
+          window.location.href = redirectUri
+          return
+        }
+
         window.location.reload()
-      }, 500000)
+      }, 5000)
     } catch (error: unknown) {
       handleServiceError(error, "支付")
 

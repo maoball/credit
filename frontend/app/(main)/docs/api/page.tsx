@@ -15,7 +15,7 @@ const API_DOC = `
 ## 概览
 - 协议：EasyPay / CodePay / VPay 兼容字段
 - 支付方式：仅支持 \`type=epay\`
-- 网关基址：\`https://pay.linux.do/api\`
+- 网关基址：\`https://pay.linux.do/epay\`
 - 订单有效期：取系统配置 \`merchant_order_expire_minutes\`（平台端设置）
 
 ## 常见错误速查
@@ -72,7 +72,7 @@ sign=$(echo -n "\${payload}\${SECRET}" | md5)  # 输出小写
 
 请求示例：
 \`\`\`bash
-curl -X POST https://pay.linux.do/api/pay/submit.php \\
+curl -X POST https://pay.linux.do/epay/pay/submit.php \\
   -H "Content-Type: application/x-www-form-urlencoded" \\
   -d "pid=10001" \\
   -d "type=epay" \\

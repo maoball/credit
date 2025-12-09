@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react"
 import { usePathname } from "next/navigation"
-import { AppSidebar } from "@/components/layout/app-sidebar"
+import { AppSidebar } from "@/components/layout/sidebar"
 import { SiteHeader } from "@/components/layout/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
