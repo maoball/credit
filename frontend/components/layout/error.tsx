@@ -62,18 +62,14 @@ export function ErrorDisplay({
 
   return (
     <div className={cn("flex flex-col items-center justify-center py-12 text-center", className)}>
-      {/* 错误图标 */}
       <div className="size-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mb-4">
         <Icon className="size-6 text-red-600 dark:text-red-400" />
       </div>
 
-      {/* 错误标题 */}
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
 
-      {/* 错误消息 */}
       <p className="text-sm text-muted-foreground max-w-md mb-4">{errorMessage}</p>
 
-      {/* 重试按钮 */}
       {onRetry && (
         <Button
           onClick={onRetry}
@@ -84,7 +80,6 @@ export function ErrorDisplay({
         </Button>
       )}
 
-      {/* 开发模式 */}
       {showStack && error?.stack && process.env.NODE_ENV === 'development' && (
         <details className="mt-6 text-left max-w-2xl w-full">
           <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
