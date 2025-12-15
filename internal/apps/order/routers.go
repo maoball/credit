@@ -84,6 +84,7 @@ func ListTransactions(c *gin.Context) {
 		Joins("LEFT JOIN users as payer_user ON orders.payer_user_id = payer_user.id").
 		Joins("LEFT JOIN users as payee_user ON orders.payee_user_id = payee_user.id")
 
+	clientIDHandled := false
 	if req.Type != "" {
 		orderType := model.OrderType(req.Type)
 
@@ -94,8 +95,16 @@ func ListTransactions(c *gin.Context) {
 		case model.OrderTypeCommunity:
 			// community 类型：查询当前用户作为收款方的 community 订单
 			baseQuery = baseQuery.Where("orders.type = ? AND orders.payee_user_id = ?", orderType, user.ID)
-		case model.OrderTypePayment, model.OrderTypeTransfer, model.OrderTypeOnline:
-			// payment、transfer、online 类型：查询当前用户作为付款方的订单
+		case model.OrderTypeOnline:
+			// 不为空查询商家的 online 订单，否则按照付款人查询
+			if req.ClientID != "" {
+				baseQuery = baseQuery.Where("orders.type = ? AND orders.client_id = ?", orderType, req.ClientID)
+				clientIDHandled = true
+			} else {
+				baseQuery = baseQuery.Where("orders.type = ? AND orders.payer_user_id = ?", orderType, user.ID)
+			}
+		case model.OrderTypePayment, model.OrderTypeTransfer:
+			// payment、transfer 类型：查询当前用户作为付款方的订单
 			baseQuery = baseQuery.Where("orders.type = ? AND orders.payer_user_id = ?", orderType, user.ID)
 		}
 	} else {
@@ -106,7 +115,7 @@ func ListTransactions(c *gin.Context) {
 		baseQuery = baseQuery.Where("orders.status = ?", model.OrderStatus(req.Status))
 	}
 
-	if req.ClientID != "" {
+	if req.ClientID != "" && !clientIDHandled {
 		baseQuery = baseQuery.Where("orders.client_id = ?", req.ClientID)
 	}
 	if req.StartTime != nil {
