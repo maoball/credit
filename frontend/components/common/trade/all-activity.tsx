@@ -13,10 +13,10 @@ export function AllActivity() {
 
   /* 统计数据 */
   const stats = React.useMemo(() => ({
-    totalReceive: user?.total_receive ?? 0,
-    totalPayment: user?.total_payment ?? 0,
-    totalTransfer: user?.total_transfer ?? 0,
-    totalCommunity: user?.total_community ?? 0
+    totalReceive: parseFloat(user?.total_receive || '0'),
+    totalPayment: parseFloat(user?.total_payment || '0'),
+    totalTransfer: parseFloat(user?.total_transfer || '0'),
+    totalCommunity: parseFloat(user?.total_community || '0')
   }), [user])
 
   /* 功能卡片配置 */

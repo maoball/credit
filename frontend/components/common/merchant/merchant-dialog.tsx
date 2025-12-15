@@ -23,6 +23,8 @@ interface MerchantDialogProps {
   trigger?: React.ReactNode
   /** 自定义创建函数 */
   createAPIKey?: (data: CreateAPIKeyRequest) => Promise<MerchantAPIKey>
+  /** 更新函数 */
+  updateAPIKey?: (id: number, data: UpdateAPIKeyRequest) => Promise<void>
 }
 
 /**
@@ -35,7 +37,8 @@ export function MerchantDialog({
   onSuccess,
   onUpdate,
   trigger,
-  createAPIKey
+  createAPIKey,
+  updateAPIKey
 }: MerchantDialogProps) {
   const [open, setOpen] = useState(false)
   const [processing, setProcessing] = useState(false)
@@ -159,7 +162,11 @@ export function MerchantDialog({
 
         onSuccess(newKey)
       } else if (mode === 'update' && apiKey) {
-        await services.merchant.updateAPIKey(apiKey.id, formData as UpdateAPIKeyRequest)
+        if (updateAPIKey) {
+          await updateAPIKey(apiKey.id, formData as UpdateAPIKeyRequest)
+        } else {
+          await services.merchant.updateAPIKey(apiKey.id, formData as UpdateAPIKeyRequest)
+        }
 
         toast.success('更新成功', {
           description: '应用信息已更新'
@@ -173,8 +180,8 @@ export function MerchantDialog({
       setOpen(false)
       resetForm()
     } catch (error) {
-      const errorMessage = (error as Error).message || `无法${mode === 'create' ? '创建' : '更新'}应用`
-      toast.error(`${mode === 'create' ? '创建' : '更新'}失败`, {
+      const errorMessage = (error as Error).message || `无法${ mode === 'create' ? '创建' : '更新' }应用`
+      toast.error(`${ mode === 'create' ? '创建' : '更新' }失败`, {
         description: errorMessage
       })
       throw error

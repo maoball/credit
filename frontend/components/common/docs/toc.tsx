@@ -44,7 +44,7 @@ export function TableOfContents({ content, className }: TableOfContentsProps) {
     };
 
     lines.forEach((line) => {
-      const match = line.match(/^(#{1,3})\s+(.+)$/);
+      const match = line.match(/^(#{1,4})\s+(.+)$/);
       if (match) {
         const level = match[1].length;
         const text = match[2];
@@ -70,7 +70,7 @@ export function TableOfContents({ content, className }: TableOfContentsProps) {
       { rootMargin: "0% 0% -80% 0%" }
     );
 
-    const headers = document.querySelectorAll("h1, h2, h3");
+    const headers = document.querySelectorAll("h1, h2, h3, h4");
     headers.forEach((header) => observer.observe(header));
 
     return () => {
@@ -97,18 +97,18 @@ export function TableOfContents({ content, className }: TableOfContentsProps) {
               setActiveId(item.id);
             }}
             className={cn(
-              "relative block py-1.5 transition-colors duration-200 rounded-md",
+              "relative block py-1.5 transition-colors duration-200 rounded-md text-sm",
               activeId === item.id
-                ? "bg-primary/5 text-primary font-medium"
+                ? "font-medium text-primary"
                 : "text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800"
             )}
             style={{
-              paddingLeft: `${ (item.level - 1) * 12 + 12 }px`, // 12px base padding
-              paddingRight: "8px"
+              paddingLeft: `${ (item.level - 1) * 14 + 12 }px`, // Adjusted indentation step
+              paddingRight: "16px"
             }}
           >
             {activeId === item.id && (
-              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-primary rounded-r-full" />
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-full bg-primary rounded-r-full" />
             )}
             {item.text}
           </a>

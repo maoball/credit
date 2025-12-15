@@ -20,7 +20,8 @@ export const typeConfig: Record<OrderType, { label: string; color: string }> = {
   receive: { label: '收款', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' },
   payment: { label: '付款', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' },
   transfer: { label: '转账', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' },
-  community: { label: '社区划转', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' }
+  community: { label: '社区划转', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' },
+  online: { label: '在线商品', color: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300' }
 }
 
 /* 状态标签配置 */
@@ -39,49 +40,66 @@ export const timeRangeOptions = [
   {
     label: "今天", getValue: () => {
       const today = new Date()
+      today.setHours(0, 0, 0, 0)
       const tomorrow = new Date(today)
-      tomorrow.setDate(today.getDate() + 1)
-      tomorrow.setMilliseconds(-1)
+      tomorrow.setDate(tomorrow.getDate() + 1)
       return { from: today, to: tomorrow }
     }
   },
   {
     label: "最近 7 天", getValue: () => {
-      const to = new Date()
-      const from = new Date()
-      from.setDate(from.getDate() - 7)
-      return { from, to }
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const from = new Date(today)
+      from.setDate(from.getDate() - 6)
+      const tomorrow = new Date(today)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      return { from, to: tomorrow }
     }
   },
   {
     label: "最近 1 个月", getValue: () => {
-      const to = new Date()
-      const from = new Date()
-      from.setDate(from.getDate() - 30)
-      return { from, to }
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const from = new Date(today)
+      from.setDate(from.getDate() - 29)
+      const tomorrow = new Date(today)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      return { from, to: tomorrow }
     }
   },
   {
     label: "最近 6 个月", getValue: () => {
-      const to = new Date()
-      const from = new Date()
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const from = new Date(today)
       from.setMonth(from.getMonth() - 6)
-      return { from, to }
+      const tomorrow = new Date(today)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      return { from, to: tomorrow }
     }
   },
   {
     label: "本月至今", getValue: () => {
-      const to = new Date()
-      const from = new Date(to.getFullYear(), to.getMonth(), 1)
-      return { from, to }
+      const today = new Date()
+      const from = new Date(today.getFullYear(), today.getMonth(), 1)
+      from.setHours(0, 0, 0, 0)
+      const tomorrow = new Date(today)
+      tomorrow.setHours(0, 0, 0, 0)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      return { from, to: tomorrow }
     }
   },
   {
     label: "本季至今", getValue: () => {
-      const to = new Date()
-      const quarter = Math.floor(to.getMonth() / 3)
-      const from = new Date(to.getFullYear(), quarter * 3, 1)
-      return { from, to }
+      const today = new Date()
+      const quarter = Math.floor(today.getMonth() / 3)
+      const from = new Date(today.getFullYear(), quarter * 3, 1)  // 本季第一天 00:00:00
+      from.setHours(0, 0, 0, 0)
+      const tomorrow = new Date(today)
+      tomorrow.setHours(0, 0, 0, 0)
+      tomorrow.setDate(tomorrow.getDate() + 1)  // 明天 00:00:00
+      return { from, to: tomorrow }
     }
   },
   { label: "所有时间", getValue: () => null },
@@ -297,13 +315,22 @@ function TimeRangeFilter({
   /* 处理日历选择 */
   const handleCalendarSelect = (range: { from?: Date; to?: Date } | undefined) => {
     if (range?.from) {
-      let to = range.to || range.from
-      if (!range.to || range.from.getTime() === to.getTime()) {
-        to = new Date(range.from)
-        to.setHours(23, 59, 59, 999)
+      const from = new Date(range.from)
+      from.setHours(0, 0, 0, 0)
+
+      if (range.to) {
+        // 用户选择了完整范围，保存用户选择的日期（不调整）
+        const to = new Date(range.to)
+        to.setHours(0, 0, 0, 0)
+        onTimeRangeChange({ from, to })
+        onQuickSelectionChange?.(null)
+      } else if (range.from.getTime() === selectedTimeRange?.from?.getTime()) {
+        // 用户第二次点击同一日期，作为单日范围
+        const to = new Date(from)
+        to.setHours(0, 0, 0, 0)
+        onTimeRangeChange({ from, to })
+        onQuickSelectionChange?.(null)
       }
-      onTimeRangeChange({ from: range.from, to })
-      onQuickSelectionChange?.(null)
     }
   }
 

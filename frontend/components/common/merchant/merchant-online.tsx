@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import { Key, Smartphone, Tablet, Monitor, RotateCw, Plus, Trash2, Copy, ExternalLink, CreditCard, ArrowLeft, Loader2, Eye, EyeOff, Expand, Minimize, Sun, Moon } from "lucide-react"
@@ -14,20 +14,82 @@ import { Spinner } from "@/components/ui/spinner"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { useMerchant } from "@/contexts/merchant-context"
-import { MerchantService, type PaymentLink, type GetMerchantOrderResponse } from "@/lib/services"
+import { TransactionProvider, useTransaction } from "@/contexts/transaction-context"
+import { MerchantService, type PaymentLink, type GetMerchantOrderResponse, type MerchantAPIKey } from "@/lib/services"
 import { PayingInfo } from "@/components/common/pay/paying/paying-info"
 import { PayingNow } from "@/components/common/pay/paying/paying-now"
+import { MerchantSelector } from "@/components/common/merchant/merchant-selector"
+import { LoadingPage } from "@/components/layout/loading"
+import { TransactionTableList } from "@/components/common/general/table-data"
 
 export function MerchantOnline() {
-  const router = useRouter()
   const searchParams = useSearchParams()
-  const { apiKeys, loading: loadingKeys } = useMerchant()
-
-  /* 派生 selectedKey */
+  const { apiKeys, loading: loadingKeys, loadAPIKeys } = useMerchant()
   const apiKeyId = searchParams.get("apiKeyId")
   const selectedKey = apiKeys.find(k => k.id.toString() === apiKeyId) || null
 
-  /* 数据状态 */
+  if (loadingKeys) {
+    return <LoadingPage text="在线商品" badgeText="商户" />
+  }
+
+  return (
+    <TransactionProvider
+      defaultParams={{
+        page_size: 20,
+        type: 'online',
+        client_id: selectedKey?.client_id
+      }}
+    >
+      <MerchantOnlineContent apiKeys={apiKeys} loadAPIKeys={loadAPIKeys} />
+    </TransactionProvider>
+  )
+}
+
+interface MerchantOnlineContentProps {
+  apiKeys: MerchantAPIKey[]
+  loadAPIKeys: () => Promise<void>
+}
+
+function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const {
+    transactions,
+    loading: loadingTransactions,
+    error: transactionsError,
+    total,
+    currentPage,
+    totalPages,
+    fetchTransactions,
+    loadMore,
+    refresh
+  } = useTransaction()
+
+  /* 加载 API Keys */
+  useEffect(() => {
+    loadAPIKeys()
+  }, [loadAPIKeys])
+
+  /* 派生 selectedKey */
+  const apiKeyId = searchParams.get("apiKeyId")
+
+  /* 处理商户切换 */
+  const handleMerchantSelect = useCallback((id: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("apiKeyId", id.toString())
+    router.push(`${ window.location.pathname }?${ params.toString() }`)
+  }, [searchParams, router])
+
+  /* 自动选择第一个商户 */
+  useEffect(() => {
+    if (apiKeys.length > 0 && !apiKeyId) {
+      handleMerchantSelect(apiKeys[0].id)
+    }
+  }, [apiKeys, apiKeyId, handleMerchantSelect])
+
+  const selectedKey = apiKeys.find(k => k.id.toString() === apiKeyId) || null
+
+  /* 商品状态 */
   const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([])
   const [selectedLink, setSelectedLink] = useState<PaymentLink | null>(null)
   const [previewLink, setPreviewLink] = useState<PaymentLink | null>(null)
@@ -42,32 +104,8 @@ export function MerchantOnline() {
   /* 设备预览状态 */
   const [previewDevice, setPreviewDevice] = useState<'mobile' | 'tablet' | 'desktop'>('mobile')
   const [showToken, setShowToken] = useState(false)
-  const [containerWidth, setContainerWidth] = useState(800)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>('dark')
-  const previewContainerRef = useRef<HTMLDivElement>(null)
-
-  /* 动态缩放宽度 */
-  useEffect(() => {
-    if (!previewContainerRef.current) return
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width)
-      }
-    })
-    observer.observe(previewContainerRef.current)
-    return () => observer.disconnect()
-  }, [])
-
-  /* 计算缩放比例 */
-  const getDeviceScale = () => {
-    const padding = 48
-    const availableWidth = containerWidth - padding
-    const deviceWidth = previewDevice === 'mobile' ? 375 : previewDevice === 'tablet' ? 768 : 1200
-    const maxScale = previewDevice === 'mobile' ? 1 : previewDevice === 'tablet' ? 0.8 : 0.7
-    const calculatedScale = availableWidth / deviceWidth
-    return Math.min(calculatedScale * 0.9, maxScale)
-  }
+  const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>('light')
 
   /* 获取商品列表 */
   const fetchLinks = useCallback(async () => {
@@ -80,8 +118,8 @@ export function MerchantOnline() {
       const links = await MerchantService.listPaymentLinks(selectedKey.id)
       setPaymentLinks(links)
       /* 自动设置第一个商品为预览 */
-      if (links.length > 0 && !previewLink) {
-        setPreviewLink(links[0])
+      if (links.length > 0) {
+        setPreviewLink(prev => prev || links[0])
       }
     } catch (error) {
       console.error(error)
@@ -89,11 +127,19 @@ export function MerchantOnline() {
     } finally {
       setLoading(false)
     }
-  }, [selectedKey, previewLink])
+  }, [selectedKey])
 
+  /* 当 selectedKey 变化时,重新获取商品列表和交易数据 */
   useEffect(() => {
-    if (selectedKey) {
+    if (selectedKey?.client_id) {
       fetchLinks()
+      // 触发交易数据获取
+      fetchTransactions({
+        page: 1,
+        page_size: 20,
+        type: 'online',
+        client_id: selectedKey.client_id
+      })
       setIsCreating(false)
       setSelectedLink(null)
     } else {
@@ -101,7 +147,8 @@ export function MerchantOnline() {
       setIsCreating(false)
       setSelectedLink(null)
     }
-  }, [selectedKey, fetchLinks])
+  }, [selectedKey, fetchLinks, fetchTransactions])
+
 
   /* 处理返回 */
   const handleBack = () => {
@@ -209,396 +256,343 @@ export function MerchantOnline() {
     }
   }
 
-  if (loadingKeys) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Spinner className="w-8 h-8" />
-      </div>
-    )
-  }
-
-  if (!selectedKey) {
-    return (
-      <div className="flex flex-col gap-6 py-6 box-border">
-        <div className="flex items-center justify-between border-b border-border pb-2 mb-4">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold">在线商品</h1>
-          </div>
+  return (
+    <div className="flex flex-col gap-6 py-6 box-border h-[calc(100vh-60px)]">
+      <div className="flex items-center justify-between border-b border-border pb-2 shrink-0">
+        <h1 className="text-2xl font-semibold">在线商品</h1>
+        <div className="flex items-center gap-3">
+          {apiKeys.length > 0 && (
+            <MerchantSelector
+              apiKeys={apiKeys}
+              selectedKeyId={selectedKey?.id || null}
+              onSelect={handleMerchantSelect}
+            />
+          )}
           <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleBack}>
-            <ArrowLeft className="mr-1.5 h-3 w-3" /> 返回
+            <ArrowLeft className="h-3 w-3" /> 返回
           </Button>
         </div>
+      </div>
 
-        <div className="flex flex-col items-center justify-center p-8 text-center border border-dashed rounded-lg min-h-[40vh]">
+      {!selectedKey ? (
+        <div className="flex flex-col items-center justify-center p-8 text-center border border-dashed rounded-lg flex-1">
           <div className="rounded-lg p-3 bg-muted/50 mb-4">
             <Key className="size-6 text-muted-foreground" />
           </div>
-          <h3 className="text-sm font-semibold mb-1">未选择应用</h3>
-          <p className="text-xs text-muted-foreground mb-4">请先在左上角选择一个应用以管理商品</p>
+          <h3 className="text-sm font-semibold mb-1">
+            {apiKeys.length === 0 ? "暂无商户应用" : "未选择应用"}
+          </h3>
+          <p className="text-xs text-muted-foreground mb-4 max-w-sm mx-auto">
+            {apiKeys.length === 0
+              ? "您还没有创建任何商户应用。请前往商户中心创建一个应用，即可开始管理在线商品。"
+              : "请先在右上角选择一个应用以管理商品"}
+          </p>
+          {apiKeys.length === 0 && (
+            <Button onClick={() => router.push('/merchant')} variant="default" size="sm">
+              前往商户中心
+            </Button>
+          )}
         </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex flex-col gap-6 py-6 box-border">
-      <div className="flex items-center justify-between border-b border-border pb-2">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-semibold">在线商品</h1>
-          <span className="text-xs text-muted-foreground">{selectedKey?.app_name}</span>
-        </div>
-        <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleBack}>
-          <ArrowLeft className="h-3 w-3" /> 返回
-        </Button>
-      </div>
-
-      <div className="space-y-4">
-        <h2 className="font-semibold -mt-2">商品列表</h2>
-        <ScrollArea className="w-full whitespace-nowrap">
-          <div className="flex gap-4 pb-3">
-            <button
-              onClick={() => {
-                setIsCreating(true)
-                setSelectedLink(null)
-                setProductName("")
-                setAmount("")
-                setRemark("")
-              }}
-              className="rounded-lg p-4 border border-dashed hover:border-primary/50 shadow-none transition-all text-left group bg-background min-h-[100px] w-[180px] shrink-0 flex flex-col items-center justify-center gap-2"
-            >
-              <div className="rounded-lg p-2 bg-purple-50 dark:bg-purple-950/20">
-                <Plus className="h-4 w-4 text-purple-600" />
-              </div>
-              <div className="text-center">
-                <h3 className="font-medium text-sm group-hover:text-foreground">创建商品</h3>
-                <p className="text-xs text-muted-foreground">添加新的收款链接</p>
-              </div>
-            </button>
-
-            {loading && paymentLinks.length === 0 && (
-              <div className="flex items-center justify-center h-[100px] w-[180px] shrink-0">
-                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-              </div>
-            )}
-
-
-            {paymentLinks.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => {
-                  setSelectedLink(link)
-                  setPreviewLink(link)
-                  setIsCreating(false)
-                }}
-                className={`rounded-lg p-4 border border-dashed shadow-none transition-all text-left group bg-background min-h-[100px] w-[180px] shrink-0 flex flex-col justify-between ${ previewLink?.id === link.id
-                  ? "border-primary bg-primary/5"
-                  : "hover:border-primary/50"
-                  }`}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] text-muted-foreground truncate mb-1">{link.app_name}</p>
-                    <h3 className="font-medium text-sm truncate">{link.product_name}</h3>
-                    <p className="text-xs text-muted-foreground truncate">{link.remark || "无备注"}</p>
+      ) : (
+        <div className="flex flex-col gap-6 h-full min-h-0">
+          <div className="space-y-4 shrink-0">
+            <h2 className="font-semibold -mt-2">商品列表</h2>
+            <ScrollArea className="w-full whitespace-nowrap">
+              <div className="flex gap-4 pb-3">
+                <button
+                  onClick={() => {
+                    setIsCreating(true)
+                    setSelectedLink(null)
+                    setProductName("")
+                    setAmount("")
+                    setRemark("")
+                  }}
+                  className="rounded-lg p-4 border border-dashed hover:border-primary/50 shadow-none transition-all text-left group bg-background min-h-[100px] w-[180px] shrink-0 flex flex-col items-center justify-center gap-2"
+                >
+                  <div className="rounded-lg p-2 bg-purple-50 dark:bg-purple-950/20">
+                    <Plus className="h-4 w-4 text-purple-600" />
                   </div>
-                  <div className="rounded-lg p-1.5 bg-green-50 dark:bg-green-950/20 shrink-0">
-                    <CreditCard className="h-3 w-3 text-green-600" />
+                  <div className="text-center">
+                    <h3 className="font-medium text-sm group-hover:text-foreground">创建商品</h3>
+                    <p className="text-xs text-muted-foreground">添加新的收款链接</p>
                   </div>
-                </div>
-                <div className="flex items-baseline gap-1 mt-2">
-                  <span className="text-[10px] text-muted-foreground">LDC</span>
-                  <span className="text-lg font-mono font-semibold">{parseFloat(link.amount).toFixed(2)}</span>
-                </div>
-              </button>
-            ))}
+                </button>
+
+                {loading && paymentLinks.length === 0 && (
+                  <div className="flex items-center justify-center h-[100px] w-[180px] shrink-0">
+                    <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                  </div>
+                )}
+
+                {paymentLinks.map((link) => (
+                  <button
+                    key={link.id}
+                    onClick={() => {
+                      if (previewLink?.id === link.id) {
+                        setSelectedLink(link)
+                        setIsCreating(false)
+                      } else {
+                        setPreviewLink(link)
+                        setIsCreating(false)
+                        toast.info("再次点击打开详情", {
+                          duration: 1500,
+                          position: "bottom-center"
+                        })
+                      }
+                    }}
+                    className={`rounded-lg p-4 border border-dashed shadow-none transition-all text-left group bg-background min-h-[100px] w-[180px] shrink-0 flex flex-col justify-between ${ previewLink?.id === link.id
+                      ? "border-primary bg-primary/5"
+                      : "hover:border-primary/50"
+                      }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-sm truncate">{link.product_name}</h3>
+                        <p className="text-xs text-muted-foreground truncate">{link.remark || "无备注"}</p>
+                      </div>
+                      <div className="rounded-lg p-1.5 bg-green-50 dark:bg-green-950/20 shrink-0">
+                        <CreditCard className="h-3 w-3 text-green-600" />
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-1 mt-2">
+                      <span className="text-xs text-muted-foreground">LDC</span>
+                      <span className="text-lg font-mono font-semibold">{parseFloat(link.amount).toFixed(2)}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div >
 
-      <Sheet open={isCreating || !!selectedLink} onOpenChange={(open) => { if (!open) { setIsCreating(false); setSelectedLink(null); } }}>
-        <SheetContent className="w-full sm:max-w-md overflow-y-auto custom-scrollbar px-6">
-          {isCreating ? (
-            <div className="space-y-6">
-              <SheetHeader>
-                <SheetTitle>创建新商品</SheetTitle>
-                <SheetDescription>创建一个固定收款链接。</SheetDescription>
-              </SheetHeader>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between shrink-0">
+                <h2 className="font-semibold">交易数据</h2>
+              </div>
+              <div className="h-[600px] overflow-hidden">
+                <TransactionTableList
+                  loading={loadingTransactions}
+                  error={transactionsError}
+                  transactions={transactions}
+                  total={total}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onRetry={refresh}
+                  onLoadMore={loadMore}
+                  emptyDescription="暂无交易数据"
+                />
+              </div>
+            </div>
 
-              <div className="border border-dashed rounded-lg p-4 space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-xs font-medium text-muted-foreground">商品名称 <span className="text-red-500">*</span></Label>
-                  <Input
-                    placeholder="例如：高级会员订阅"
-                    value={productName}
-                    onChange={e => setProductName(e.target.value)}
-                    maxLength={50}
-                  />
+            <div className={`space-y-4 ${ isFullscreen ? 'fixed inset-0 z-10 bg-background p-6' : '' }`}>
+              <div className="flex items-center justify-between shrink-0">
+                <h2 className="font-semibold">{isFullscreen ? '全屏预览' : '实时预览'}</h2>
+              </div>
+              <div className={`border-none overflow-hidden relative h-[600px] ${ isFullscreen ? 'border-0 rounded-none h-full' : '' }`}>
+                <div className="absolute z-15 left-1/2 -translate-x-1/2">
+                  <div className="h-8 bg-background border border-border rounded-full p-1.5 flex items-center gap-0.5 shadow-lg">
+                    <Button variant={previewDevice === 'mobile' ? 'secondary' : 'ghost'} size="icon" className="size-6 rounded-full" onClick={() => setPreviewDevice('mobile')}>
+                      <Smartphone className="size-3.5" />
+                    </Button>
+                    <Button variant={previewDevice === 'tablet' ? 'secondary' : 'ghost'} size="icon" className="size-6 rounded-full" onClick={() => setPreviewDevice('tablet')}>
+                      <Tablet className="size-3.5" />
+                    </Button>
+                    <Button variant={previewDevice === 'desktop' ? 'secondary' : 'ghost'} size="icon" className="size-6 rounded-full" onClick={() => setPreviewDevice('desktop')}>
+                      <Monitor className="size-3.5" />
+                    </Button>
+                    <div className="w-px h-5 bg-border mx-1" />
+                    <Button variant="ghost" size="icon" className="size-6 rounded-full" onClick={() => setIsFullscreen(!isFullscreen)}>
+                      {isFullscreen ? <Minimize className="size-3.5" /> : <Expand className="size-3.5" />}
+                    </Button>
+                    <Button variant="ghost" size="icon" className="size-6 rounded-full" onClick={() => { const current = previewDevice; setPreviewDevice('mobile'); setTimeout(() => setPreviewDevice(current), 50) }}>
+                      <RotateCw className="size-3.5" />
+                    </Button>
+                    <div className="w-px h-5 bg-border mx-1" />
+                    <Button variant="ghost" size="icon" className="size-6 rounded-full" onClick={() => setPreviewTheme(previewTheme === 'dark' ? 'light' : 'dark')}>
+                      {previewTheme === 'dark' ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}
+                    </Button>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-medium text-muted-foreground">金额 (LDC) <span className="text-red-500">*</span></Label>
-                  <Input
-                    type="number"
-                    placeholder="0.00"
-                    className="font-mono"
-                    value={amount}
-                    onChange={e => setAmount(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-medium text-muted-foreground">备注 (可选)</Label>
-                  <Textarea
-                    placeholder="订单备注信息..."
-                    className="resize-none h-20"
-                    value={remark}
-                    onChange={e => setRemark(e.target.value)}
-                    maxLength={200}
-                  />
+
+                <div className={`flex justify-center items-center p-6 relative overflow-hidden h-full ${ isFullscreen ? 'min-h-screen' : '' }`}>
+                  <div className="absolute inset-0 pattern-grid-lg opacity-5" />
+                  <motion.div
+                    layout
+                    initial={false}
+                    animate={{
+                      width: previewDevice === 'mobile' ? 375 : previewDevice === 'tablet' ? 768 : 1200,
+                      height: previewDevice === 'mobile' ? 812 : previewDevice === 'tablet' ? 1024 : 750,
+                      borderRadius: previewDevice === 'mobile' ? 50 : previewDevice === 'tablet' ? 32 : 16,
+                      borderWidth: previewDevice === 'mobile' ? 14 : previewDevice === 'tablet' ? 18 : 8,
+                      scale: previewDevice === 'mobile' ? 0.6 : previewDevice === 'tablet' ? 0.45 : 0.35,
+                    }}
+                    transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                    className="shrink-0 overflow-hidden shadow-2xl bg-black relative border-[#1f1f1f] origin-center rounded-[50px]"
+                  >
+                    <AnimatePresence>
+                      {previewDevice === 'mobile' && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute top-0 left-0 w-full h-full pointer-events-none z-10" key="mobile-frame">
+                          <div className="absolute top-[11px] left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full flex items-center justify-center gap-3 shadow-sm border border-white/5">
+                            <div className="w-2 h-2 rounded-full bg-[#1a1a1a]" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#0f0f0f]" />
+                          </div>
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-white/20 rounded-full" />
+                        </motion.div>
+                      )}
+                      {previewDevice === 'tablet' && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute top-0 left-0 w-full h-full pointer-events-none z-50" key="tablet-frame">
+                          <div className="absolute top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-gray-600 border border-gray-500" />
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-white/20 rounded-full" />
+                        </motion.div>
+                      )}
+                      {previewDevice === 'desktop' && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute top-0 left-0 w-full h-full pointer-events-none z-50" key="desktop-frame">
+                          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-8 bg-[#1f1f1f] rounded-b-xl flex items-center justify-center border-b border-x border-black/50">
+                            <div className="w-1.5 h-1.5 rounded-full bg-black/50" />
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <div className={`h-full w-full overflow-y-auto custom-scrollbar flex items-center justify-center p-4 ${ previewTheme === 'dark' ? 'dark bg-zinc-900' : 'bg-white' }`}>
+                      <div className={`flex ${ previewDevice === 'mobile' ? 'flex-col' : 'flex-row' } w-full max-w-4xl backdrop-blur-2xl border rounded-3xl overflow-hidden shadow-2xl relative shrink-0 ${ previewTheme === 'dark' ? 'bg-card/70 border-border/50' : 'bg-white border-gray-200' }`}>
+                        <PayingInfo orderInfo={previewOrderInfo} loading={loading} forceMobile={previewDevice === 'mobile'} />
+                        <PayingNow orderInfo={previewOrderInfo} paying={false} payKey="" currentStep="method" selectedMethod="alipay" isOpen={false} loading={false} onPayKeyChange={() => { }} onCurrentStepChange={() => { }} onSelectedMethodChange={() => { }} onIsOpenChange={() => { }} onPayOrder={() => { }} forceMobile={previewDevice === 'mobile'} />
+                        <div className="absolute inset-0 z-50 bg-transparent cursor-default" />
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 z-40 bg-transparent cursor-default" />
+                  </motion.div>
                 </div>
               </div>
-
-              <SheetFooter className="flex flex-row justify-end items-center gap-2">
-                <Button variant="ghost" onClick={() => setIsCreating(false)} className="h-8 text-xs">取消</Button>
-                <Button onClick={handleCreate} disabled={loading} className="bg-indigo-500 hover:bg-indigo-600 h-8 text-xs">
-                  {loading && <Spinner className="mr-1 h-3 w-3" />} 创建
-                </Button>
-              </SheetFooter>
             </div>
-          ) : selectedLink ? (
-            <div className="space-y-6">
-              <SheetHeader>
-                <SheetTitle>{selectedLink.product_name}</SheetTitle>
-                <SheetDescription>商品详情与管理</SheetDescription>
-              </SheetHeader>
+          </div>
 
-              <div>
-                <h2 className="text-sm font-semibold mb-4">商品信息</h2>
-                <div className="border border-dashed rounded-lg">
-                  <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
-                    <label className="text-xs font-medium text-muted-foreground">商品名称</label>
-                    <p className="text-xs font-medium truncate text-right max-w-[70%]">{selectedLink.product_name}</p>
+          <Sheet open={isCreating || !!selectedLink} onOpenChange={(open) => { if (!open) { setIsCreating(false); setSelectedLink(null); } }}>
+            <SheetContent className="w-full sm:max-w-md overflow-y-auto custom-scrollbar px-6">
+              {isCreating ? (
+                <div className="space-y-6">
+                  <SheetHeader>
+                    <SheetTitle>创建新商品</SheetTitle>
+                    <SheetDescription>创建一个固定收款链接。</SheetDescription>
+                  </SheetHeader>
+
+                  <div className="border border-dashed rounded-lg p-4 space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium text-muted-foreground">商品名称 <span className="text-red-500">*</span></Label>
+                      <Input
+                        placeholder="例如：高级会员订阅"
+                        value={productName}
+                        onChange={e => setProductName(e.target.value)}
+                        maxLength={50}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium text-muted-foreground">金额 (LDC) <span className="text-red-500">*</span></Label>
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        className="font-mono"
+                        value={amount}
+                        onChange={e => setAmount(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium text-muted-foreground">备注 (可选)</Label>
+                      <Textarea
+                        placeholder="订单备注信息..."
+                        className="resize-none h-20"
+                        value={remark}
+                        onChange={e => setRemark(e.target.value)}
+                        maxLength={200}
+                      />
+                    </div>
                   </div>
-                  <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
-                    <label className="text-xs font-medium text-muted-foreground">支付金额</label>
-                    <p className="text-sm font-mono font-bold text-primary">LDC {parseFloat(selectedLink.amount).toFixed(2)}</p>
-                  </div>
-                  <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
-                    <label className="text-xs font-medium text-muted-foreground">创建时间</label>
-                    <p className="text-xs text-muted-foreground">{new Date(selectedLink.created_at).toLocaleString()}</p>
-                  </div>
-                  <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
-                    <label className="text-xs font-medium text-muted-foreground">备注</label>
-                    <p className="text-xs text-muted-foreground truncate text-right max-w-[70%]">{selectedLink.remark || "无备注"}</p>
-                  </div>
-                  <div className="px-3 py-2 border-b border-dashed last:border-b-0">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-medium text-muted-foreground shrink-0">Token</label>
-                      <div className="flex items-center p-1 h-7 border border-dashed rounded-sm bg-background max-w-[200px]">
-                        <code className="text-xs text-muted-foreground font-mono flex-1 overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] whitespace-nowrap">
-                          {showToken ? selectedLink.token : '•'.repeat(36)}
-                        </code>
-                        <Button
-                          variant="ghost"
-                          className="p-0.5 w-5 h-5 shrink-0"
-                          onClick={() => setShowToken(!showToken)}
-                        >
-                          {showToken ? <EyeOff className="size-2.5 text-muted-foreground" /> : <Eye className="size-2.5 text-muted-foreground" />}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          onClick={() => handleCopyLink(selectedLink.token)}
-                          className="p-0.5 w-5 h-5 shrink-0"
-                        >
-                          <Copy className="size-2.5" />
-                        </Button>
+
+                  <SheetFooter className="flex flex-row justify-end items-center gap-2">
+                    <Button variant="ghost" onClick={() => setIsCreating(false)} className="h-8 text-xs">取消</Button>
+                    <Button onClick={handleCreate} disabled={loading} className="bg-indigo-500 hover:bg-indigo-600 h-8 text-xs">
+                      {loading && <Spinner className="mr-1 h-3 w-3" />} 创建
+                    </Button>
+                  </SheetFooter>
+                </div>
+              ) : selectedLink ? (
+                <div className="space-y-6">
+                  <SheetHeader>
+                    <SheetTitle>{selectedLink.product_name}</SheetTitle>
+                    <SheetDescription>商品详情与管理</SheetDescription>
+                  </SheetHeader>
+
+                  <div>
+                    <h2 className="text-sm font-semibold mb-4">商品信息</h2>
+                    <div className="border border-dashed rounded-lg">
+                      <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
+                        <label className="text-xs font-medium text-muted-foreground">商品名称</label>
+                        <p className="text-xs font-medium truncate text-right max-w-[70%]">{selectedLink.product_name}</p>
+                      </div>
+                      <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
+                        <label className="text-xs font-medium text-muted-foreground">支付金额</label>
+                        <p className="text-sm font-mono font-bold text-primary">LDC {parseFloat(selectedLink.amount).toFixed(2)}</p>
+                      </div>
+                      <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
+                        <label className="text-xs font-medium text-muted-foreground">创建时间</label>
+                        <p className="text-xs text-muted-foreground">{new Date(selectedLink.created_at).toLocaleString()}</p>
+                      </div>
+                      <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
+                        <label className="text-xs font-medium text-muted-foreground">备注</label>
+                        <p className="text-xs text-muted-foreground truncate text-right max-w-[70%]">{selectedLink.remark || "无备注"}</p>
+                      </div>
+                      <div className="px-3 py-2 border-b border-dashed last:border-b-0">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-medium text-muted-foreground shrink-0">Token</label>
+                          <div className="flex items-center p-1 h-7 border border-dashed rounded-sm bg-background max-w-[200px]">
+                            <code className="text-xs text-muted-foreground font-mono flex-1 overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] whitespace-nowrap">
+                              {showToken ? selectedLink.token : '•'.repeat(36)}
+                            </code>
+                            <Button
+                              variant="ghost"
+                              className="p-0.5 w-5 h-5 shrink-0"
+                              onClick={() => setShowToken(!showToken)}
+                            >
+                              {showToken ? <EyeOff className="size-2.5 text-muted-foreground" /> : <Eye className="size-2.5 text-muted-foreground" />}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleCopyLink(selectedLink.token)}
+                              className="p-0.5 w-5 h-5 shrink-0"
+                            >
+                              <Copy className="size-2.5" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              <div>
-                <h2 className="text-sm font-semibold mb-4">商品管理</h2>
-                <div className="flex gap-2 flex-wrap">
-                  <Button variant="outline" className="text-xs h-8 border-dashed" onClick={() => handleCopyLink(selectedLink.token)}>
-                    <Copy className="size-3 mr-1" />
-                    复制链接
-                  </Button>
-                  <Button variant="outline" className="text-xs h-8 border-dashed" onClick={() => window.open(`/paying/online?token=${ selectedLink.token }`, '_blank')}>
-                    <ExternalLink className="size-3 mr-1" />
-                    打开支付
-                  </Button>
-                  <Button variant="outline" className="text-xs text-destructive h-8 border-dashed border-destructive/50 hover:bg-destructive/5" onClick={() => handleDelete(selectedLink)}>
-                    <Trash2 className="size-3 mr-1" />
-                    删除商品
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ) : null}
-        </SheetContent>
-      </Sheet>
-
-      <div className={`space-y-4 ${ isFullscreen ? 'fixed inset-0 z-40' : '' }`}>
-        {!isFullscreen && <h2 className="font-semibold">实时预览</h2>}
-        <div className={`border border-dashed rounded-lg overflow-hidden relative ${ isFullscreen ? 'border-0 rounded-none h-full' : '' }`}>
-          <div className="absolute top-3 right-3 z-10">
-            <div className="bg-background border border-border rounded-full px-2 py-1.5 flex items-center gap-0.5 shadow-lg">
-              <Button
-                variant={previewDevice === 'mobile' ? 'secondary' : 'ghost'}
-                size="icon"
-                className="size-8 rounded-full"
-                onClick={() => setPreviewDevice('mobile')}
-              >
-                <Smartphone className="size-4" />
-              </Button>
-              <Button
-                variant={previewDevice === 'tablet' ? 'secondary' : 'ghost'}
-                size="icon"
-                className="size-8 rounded-full"
-                onClick={() => setPreviewDevice('tablet')}
-              >
-                <Tablet className="size-4" />
-              </Button>
-              <Button
-                variant={previewDevice === 'desktop' ? 'secondary' : 'ghost'}
-                size="icon"
-                className="size-8 rounded-full"
-                onClick={() => setPreviewDevice('desktop')}
-              >
-                <Monitor className="size-4" />
-              </Button>
-
-              <div className="w-px h-5 bg-border mx-1" />
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-8 rounded-full"
-                onClick={() => setIsFullscreen(!isFullscreen)}
-              >
-                {isFullscreen ? <Minimize className="size-4" /> : <Expand className="size-4" />}
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-8 rounded-full"
-                onClick={() => {
-                  const current = previewDevice
-                  setPreviewDevice('mobile')
-                  setTimeout(() => setPreviewDevice(current), 50)
-                }}
-              >
-                <RotateCw className="size-4" />
-              </Button>
-
-              <div className="w-px h-5 bg-border mx-1" />
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-8 rounded-full"
-                onClick={() => setPreviewTheme(previewTheme === 'dark' ? 'light' : 'dark')}
-              >
-                {previewTheme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
-              </Button>
-            </div>
-          </div>
-
-          <div
-            ref={previewContainerRef}
-            className={`flex justify-center items-center p-6 relative overflow-hidden transition-all ${ isFullscreen
-              ? 'fixed inset-0 z-50 bg-background min-h-screen'
-              : 'min-h-[450px]'
-              }`}
-          >
-            <div className="absolute inset-0 pattern-grid-lg opacity-5" />
-
-            <motion.div
-              layout
-              initial={false}
-              animate={{
-                width: previewDevice === 'mobile' ? 375 : previewDevice === 'tablet' ? 768 : 1200,
-                height: previewDevice === 'mobile' ? 812 : previewDevice === 'tablet' ? 1024 : 750,
-                borderRadius: previewDevice === 'mobile' ? 50 : previewDevice === 'tablet' ? 32 : 16,
-                borderWidth: previewDevice === 'mobile' ? 14 : previewDevice === 'tablet' ? 18 : 8,
-                scale: getDeviceScale(),
-              }}
-              transition={{ type: "spring", stiffness: 200, damping: 25 }}
-              className="shrink-0 overflow-hidden shadow-2xl bg-black relative border-[#1f1f1f] origin-center rounded-[50px]"
-            >
-              <AnimatePresence>
-                {previewDevice === 'mobile' && (
-                  <motion.div
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute top-0 left-0 w-full h-full pointer-events-none z-50"
-                    key="mobile-frame"
-                  >
-                    <div className="absolute top-[11px] left-1/2 -translate-x-1/2 w-[120px] h-[35px] bg-black rounded-full flex items-center justify-center gap-3 shadow-sm border border-white/5">
-                      <div className="w-2 h-2 rounded-full bg-[#1a1a1a]" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#0f0f0f]" />
+                  <div>
+                    <h2 className="text-sm font-semibold mb-4">商品管理</h2>
+                    <div className="flex gap-2 flex-wrap">
+                      <Button variant="outline" className="text-xs h-8 border-dashed border-green-500 hover:bg-green-50 shadow-none" onClick={() => handleCopyLink(selectedLink.token)}>
+                        <Copy className="size-3 mr-1" />
+                        复制链接
+                      </Button>
+                      <Button variant="outline" className="text-xs h-8 border-dashed border-green-500 hover:bg-green-50 shadow-none" onClick={() => window.open(`/paying/online?token=${ selectedLink.token }`, '_blank')}>
+                        <ExternalLink className="size-3 mr-1" />
+                        打开支付
+                      </Button>
+                      <Button variant="outline" className="text-xs text-destructive h-8 border-dashed border-destructive/50 hover:bg-destructive/5 shadow-none" onClick={() => handleDelete(selectedLink)}>
+                        <Trash2 className="size-3 mr-1" />
+                        删除商品
+                      </Button>
                     </div>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-white/20 rounded-full" />
-                  </motion.div>
-                )}
-
-                {previewDevice === 'tablet' && (
-                  <motion.div
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute top-0 left-0 w-full h-full pointer-events-none z-50"
-                    key="tablet-frame"
-                  >
-                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-gray-600 border border-gray-500" />
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-white/20 rounded-full" />
-                  </motion.div>
-                )}
-
-                {previewDevice === 'desktop' && (
-                  <motion.div
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute top-0 left-0 w-full h-full pointer-events-none z-50"
-                    key="desktop-frame"
-                  >
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-8 bg-[#1f1f1f] rounded-b-xl flex items-center justify-center border-b border-x border-black/50">
-                      <div className="w-1.5 h-1.5 rounded-full bg-black/50" />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div className={`h-full w-full overflow-y-auto custom-scrollbar flex items-center justify-center p-4 ${ previewTheme === 'dark' ? 'dark bg-zinc-900' : 'bg-white' }`}>
-                <div className={`flex ${ previewDevice === 'mobile' ? 'flex-col' : 'flex-row' } w-full max-w-4xl backdrop-blur-2xl border rounded-3xl overflow-hidden shadow-2xl relative shrink-0 ${ previewTheme === 'dark' ? 'bg-card/70 border-border/50' : 'bg-white border-gray-200' }`}>
-                  <PayingInfo
-                    orderInfo={previewOrderInfo}
-                    loading={loading}
-                    forceMobile={previewDevice === 'mobile'}
-                  />
-                  <PayingNow
-                    orderInfo={previewOrderInfo}
-                    paying={false}
-                    payKey=""
-                    currentStep="method"
-                    selectedMethod="alipay"
-                    isOpen={false}
-                    loading={false}
-                    onPayKeyChange={() => { }}
-                    onCurrentStepChange={() => { }}
-                    onSelectedMethodChange={() => { }}
-                    onIsOpenChange={() => { }}
-                    onPayOrder={() => { }}
-                    forceMobile={previewDevice === 'mobile'}
-                  />
-
-                  <div className="absolute inset-0 z-50 bg-transparent cursor-default" />
+                  </div>
                 </div>
-              </div>
-
-              <div className="absolute inset-0 z-40 bg-transparent cursor-default" />
-            </motion.div>
-          </div>
+              ) : null}
+            </SheetContent>
+          </Sheet>
         </div>
-      </div>
-    </div >
+      )}
+    </div>
   )
 }

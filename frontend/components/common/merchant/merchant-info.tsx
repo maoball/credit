@@ -17,22 +17,24 @@ import {
 } from "@/components/ui/alert-dialog"
 import { MerchantDialog } from "@/components/common/merchant/merchant-dialog"
 import { formatDateTime } from "@/lib/utils"
-import { type MerchantAPIKey } from "@/lib/services"
+import { type UpdateAPIKeyRequest, type MerchantAPIKey } from "@/lib/services"
 
 interface MerchantInfoProps {
   /** API Key */
   apiKey: MerchantAPIKey
   /** 更新回调 */
-  onUpdate: (updatedKey: MerchantAPIKey) => void
+  onUpdate?: (updatedKey: MerchantAPIKey) => void
   /** 删除回调 */
   onDelete: (id: number) => void
+  /** 更新 API Key */
+  updateAPIKey?: (id: number, data: UpdateAPIKeyRequest) => Promise<void>
 }
 
 /**
  * 商户信息组件
  * 显示商户的凭证信息（Client ID 和 Secret）
  */
-export function MerchantInfo({ apiKey, onUpdate, onDelete }: MerchantInfoProps) {
+export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: MerchantInfoProps) {
   const [showClientId, setShowClientId] = useState(false)
   const [showClientSecret, setShowClientSecret] = useState(false)
 
@@ -53,7 +55,7 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete }: MerchantInfoProps) 
   return (
     <div className="space-y-6 sticky top-0">
       <div>
-        <h2 className="text-sm font-semibold mb-4">应用信息</h2>
+        <h2 className="font-semibold mb-4">应用信息</h2>
         <div className="border border-dashed rounded-lg">
           <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
             <label className="text-xs font-medium text-muted-foreground">应用名称</label>
@@ -117,7 +119,7 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete }: MerchantInfoProps) 
       </div>
 
       <div>
-        <h2 className="text-sm font-semibold mb-4">API 配置列表</h2>
+        <h2 className="font-semibold mb-4">API 配置</h2>
         <div className="border border-dashed rounded-lg px-3 py-2 space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -174,13 +176,14 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete }: MerchantInfoProps) 
       </div>
 
       <div>
-        <h2 className="text-sm font-semibold mb-4">应用管理</h2>
+        <h2 className="font-semibold mb-4">应用管理</h2>
         <div className="flex gap-2">
           <MerchantDialog
             mode="update"
             apiKey={apiKey}
             onSuccess={() => { }}
             onUpdate={onUpdate}
+            updateAPIKey={updateAPIKey}
             trigger={
               <Button variant="outline" className="text-xs text-primary h-8 border-dashed border-primary/50 hover:bg-primary/5">
                 <Edit className="size-3 mr-1" />

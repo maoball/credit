@@ -49,10 +49,29 @@ interface MerchantDataProps {
  */
 export function MerchantData({ apiKey }: MerchantDataProps) {
   const getLastMonthRange = () => {
-    const now = new Date()
-    const endTime = now.toISOString()
-    const startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
-    return { startTime, endTime }
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const start = new Date(today)
+    start.setDate(start.getDate() - 29)
+
+    // 格式化为 RFC3339 格式，保持北京时区
+    const formatLocalDate = (date: Date) => {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      const seconds = String(date.getSeconds()).padStart(2, '0')
+      return `${ year }-${ month }-${ day }T${ hours }:${ minutes }:${ seconds }+08:00`
+    }
+
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    return {
+      startTime: formatLocalDate(start),
+      endTime: formatLocalDate(tomorrow)
+    }
   }
 
   const { startTime, endTime } = getLastMonthRange()
@@ -91,17 +110,21 @@ function MerchantDataContent({ apiKey }: MerchantDataProps) {
   const [selectedStatuses, setSelectedStatuses] = React.useState<OrderStatus[]>([])
   const [selectedQuickSelection, setSelectedQuickSelection] = React.useState<string | null>("最近 1 个月")
   const [dateRange, setDateRange] = React.useState<{ from: Date; to: Date } | null>(() => {
-    const now = new Date()
-    const from = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-    return { from, to: now }
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const from = new Date(today)
+    from.setDate(from.getDate() - 29)
+    return { from, to: today }
   })
 
   const clearAllFilters = () => {
     setSelectedTypes([])
     setSelectedStatuses([])
-    const now = new Date()
-    const from = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-    setDateRange({ from, to: now })
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const from = new Date(today)
+    from.setDate(from.getDate() - 29)
+    setDateRange({ from, to: today })
     setSelectedQuickSelection("最近 1 个月")
   }
 
@@ -109,13 +132,27 @@ function MerchantDataContent({ apiKey }: MerchantDataProps) {
    * 当筛选条件或 API key 改变时，重新加载数据
    */
   useEffect(() => {
+    const formatLocalDate = (date: Date) => {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      const seconds = String(date.getSeconds()).padStart(2, '0')
+      return `${ year }-${ month }-${ day }T${ hours }:${ minutes }:${ seconds }+08:00`
+    }
+
     const params = {
       page: 1,
       page_size: 20,
       type: selectedTypes.length > 0 ? selectedTypes[0] as OrderType : undefined,
       status: selectedStatuses.length > 0 ? selectedStatuses[0] as OrderStatus : undefined,
-      startTime: dateRange ? dateRange.from.toISOString() : undefined,
-      endTime: dateRange ? dateRange.to.toISOString() : undefined,
+      startTime: dateRange ? formatLocalDate(dateRange.from) : undefined,
+      endTime: dateRange ? (() => {
+        const endDate = new Date(dateRange.to)
+        endDate.setDate(endDate.getDate() + 1)
+        return formatLocalDate(endDate)
+      })() : undefined,
       client_id: apiKey.client_id,
     }
 
@@ -141,8 +178,6 @@ function MerchantDataContent({ apiKey }: MerchantDataProps) {
       description: '正在获取商户的所有交易'
     })
   }
-
-
 
   return (
     <div className="space-y-6">

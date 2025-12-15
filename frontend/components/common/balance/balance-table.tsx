@@ -35,6 +35,7 @@ const TABS = [
   { value: "payment" as const, label: "付款" },
   { value: "transfer" as const, label: "转账" },
   { value: "community" as const, label: "社区划转" },
+  { value: "online" as const, label: "在线商品" },
   { value: "all" as const, label: "所有活动" },
 ] as const
 

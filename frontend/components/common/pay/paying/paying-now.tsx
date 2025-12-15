@@ -9,6 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { AlertCircle, CreditCard, ArrowLeft, ShieldCheck, Lock } from "lucide-react"
 
 import type { GetMerchantOrderResponse } from "@/lib/services"
+import { useUser } from "@/contexts/user-context"
 
 
 type PaymentStep = typeof PAYMENT_STEPS[keyof typeof PAYMENT_STEPS]
@@ -155,6 +156,8 @@ function MethodSelectionStep({
   onCurrentStepChange: (step: PaymentStep) => void
   forceMobile?: boolean
 }) {
+  const { user } = useUser()
+
   return (
     <motion.div
       key="method-step"
@@ -222,7 +225,7 @@ function MethodSelectionStep({
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[10px] opacity-70">付款账户</span>
-                    <span className="font-medium text-foreground">{orderInfo.order.payer_username}</span>
+                    <span className="font-medium text-foreground">{orderInfo.order.payer_username || user?.username}</span>
                   </div>
                 </div>
                 <Button

@@ -41,27 +41,6 @@ export function MerchantMain() {
     setSelectedKeyId(newKey.id)
   }
 
-  /* 更新成功回调 */
-  const handleUpdate = async (updatedKey: MerchantAPIKey) => {
-    try {
-      await updateAPIKey(updatedKey.id, {
-        app_name: updatedKey.app_name,
-        app_homepage_url: updatedKey.app_homepage_url,
-        app_description: updatedKey.app_description,
-        redirect_uri: updatedKey.redirect_uri,
-      })
-
-      toast.success('更新成功', {
-        description: '应用信息已更新'
-      })
-
-    } catch (error) {
-      toast.error('更新失败', {
-        description: (error as Error).message || '无法更新应用'
-      })
-    }
-  }
-
   /* 删除成功回调 */
   const handleDelete = async (id: number) => {
     try {
@@ -147,7 +126,11 @@ export function MerchantMain() {
               </div>
 
               <div className="lg:col-span-1">
-                <MerchantInfo apiKey={selectedKey} onUpdate={handleUpdate} onDelete={handleDelete} />
+                <MerchantInfo
+                  apiKey={selectedKey}
+                  onDelete={handleDelete}
+                  updateAPIKey={updateAPIKey}
+                />
               </div>
             </div>
           )}

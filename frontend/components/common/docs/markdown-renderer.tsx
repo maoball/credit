@@ -104,24 +104,30 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       <h4 className={cn("scroll-m-20 text-base font-semibold tracking-tight mt-6 mb-2", className)} {...props} />
     ),
     p: ({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
-      <p className={cn("leading-7 [&:not(:first-child)]:mt-6 text-zinc-700 dark:text-zinc-300", className)} {...props} />
+      <p className={cn("leading-7 [&:not(:first-child)]:mt-5 text-zinc-700 dark:text-zinc-300", className)} {...props} />
     ),
     ul: ({ className, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
-      <ul className={cn("my-6 ml-6 list-disc [&>li]:mt-2 marker:text-zinc-400 dark:marker:text-zinc-500", className)} {...props} />
+      <ul className={cn("my-6 ml-0 pl-6 list-disc [&>li]:mt-2 marker:text-zinc-400 dark:marker:text-zinc-500", className)} {...props} />
     ),
     ol: ({ className, ...props }: React.HTMLAttributes<HTMLOListElement>) => (
-      <ol className={cn("my-6 ml-6 list-decimal [&>li]:mt-2 marker:text-zinc-600 dark:marker:text-zinc-400", className)} {...props} />
+      <ol className={cn("my-6 ml-0 pl-6 list-decimal [&>li]:mt-2 marker:text-zinc-600 dark:marker:text-zinc-400", className)} {...props} />
     ),
     li: ({ className, ...props }: React.LiHTMLAttributes<HTMLLIElement>) => (
-      <li className={cn("text-zinc-700 dark:text-zinc-300", className)} {...props} />
+      <li className={cn("text-zinc-700 dark:text-zinc-300 leading-relaxed [&>p:not(:first-child)]:mt-2", className)} {...props} />
     ),
     hr: ({ className, ...props }: React.HTMLAttributes<HTMLHRElement>) => (
       <hr className={cn("my-8 border-t border-zinc-200 dark:border-zinc-800", className)} {...props} />
     ),
+    a: ({ className, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+      <a
+        className={cn("font-medium text-primary underline underline-offset-4 decoration-primary/30 hover:decoration-primary transition-colors cursor-pointer", className)}
+        {...props}
+      />
+    ),
   };
 
   return (
-    <article className="max-w-none">
+    <article className="max-w-none" >
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSlug]}
@@ -129,6 +135,6 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       >
         {content}
       </ReactMarkdown>
-    </article>
+    </article >
   );
 };

@@ -17,7 +17,7 @@ export function BalanceMain() {
 
   /** 计算总余额 */
   const totalBalance = React.useMemo(() => {
-    return (user?.available_balance ?? 0) + (user?.community_balance ?? 0)
+    return parseFloat(user?.available_balance || '0') + parseFloat(user?.community_balance || '0')
   }, [user?.available_balance, user?.community_balance])
 
   return (

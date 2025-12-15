@@ -43,17 +43,17 @@ export interface User {
   /** 头像 URL */
   avatar_url: string;
   /** 总接收金额 */
-  total_receive: number;
+  total_receive: string;
   /** 总支付金额 */
-  total_payment: number;
+  total_payment: string;
   /** 总转账金额 */
-  total_transfer: number;
+  total_transfer: string;
   /** 总社区金额 */
-  total_community: number;
+  total_community: string;
   /** 社区余额 */
-  community_balance: number;
+  community_balance: string;
   /** 可用余额 */
-  available_balance: number;
+  available_balance: string;
   /** 支付分数 */
   pay_score: number;
   /** 是否有支付密钥 */
@@ -61,7 +61,7 @@ export interface User {
   /** 是否为管理员 */
   is_admin: boolean;
   /** 当日剩余配额 */
-  remain_quota: number;
+  remain_quota: string;
   /** 支付等级 */
   pay_level: PayLevel;
   /** 每日限额 */

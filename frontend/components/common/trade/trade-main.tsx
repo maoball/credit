@@ -8,6 +8,7 @@ import { Payment } from "@/components/common/trade/payment"
 import { Receive } from "@/components/common/trade/receive"
 import { TradeTable } from "@/components/common/trade/trade-table"
 import { Transfer } from "@/components/common/trade/transfer"
+import { Online } from "@/components/common/trade/online"
 import { TransactionProvider } from "@/contexts/transaction-context"
 import type { OrderType } from "@/lib/services"
 
@@ -62,6 +63,8 @@ export function TradeMain() {
         return <Transfer />
       case 'community':
         return <Community />
+      case 'online':
+        return <Online />
       case 'all':
         return <AllActivity />
       default:
@@ -85,6 +88,7 @@ export function TradeMain() {
               <TabsTrigger value="payment" className={TAB_TRIGGER_STYLES}>付款</TabsTrigger>
               <TabsTrigger value="transfer" className={TAB_TRIGGER_STYLES}>转账</TabsTrigger>
               <TabsTrigger value="community" className={TAB_TRIGGER_STYLES}>社区划转</TabsTrigger>
+              <TabsTrigger value="online" className={TAB_TRIGGER_STYLES}>在线商品</TabsTrigger>
               <TabsTrigger value="all" className={TAB_TRIGGER_STYLES}>所有活动</TabsTrigger>
             </TabsList>
           </div>

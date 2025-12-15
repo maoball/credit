@@ -152,7 +152,7 @@ function OrderDetailDialog({ order }: { order: Order }) {
                     <div
                       key={i}
                       className="bg-foreground w-[2px]"
-                      style={{ height: `${Math.max(40, Math.random() * 100)}%` }}
+                      style={{ height: `${ Math.max(40, Math.random() * 100) }%` }}
                     />
                   ))}
                 </div>
@@ -781,7 +781,7 @@ function RefundReviewDialog({ order, onSuccess }: { order: Order; onSuccess?: ()
               <div className="grid grid-cols-2 gap-3">
                 <Button
                   variant="outline"
-                  className={`h-auto py-2 flex flex-col gap-1 hover:bg-transparent hover:border-primary ${action === 'refund' && 'border-primary text-primary'}`}
+                  className={`h-auto py-2 flex flex-col gap-1 hover:bg-transparent hover:border-primary ${ action === 'refund' && 'border-primary text-primary' }`}
                   onClick={() => setAction('refund')}
                 >
                   <div className="flex items-center gap-2">
@@ -793,7 +793,7 @@ function RefundReviewDialog({ order, onSuccess }: { order: Order; onSuccess?: ()
 
                 <Button
                   variant="outline"
-                  className={`h-auto py-2 flex flex-col gap-1 hover:bg-transparent hover:border-destructive ${action === 'closed' && 'border-destructive text-destructive'}`}
+                  className={`h-auto py-2 flex flex-col gap-1 hover:bg-transparent hover:border-destructive ${ action === 'closed' && 'border-destructive text-destructive' }`}
                   onClick={() => setAction('closed')}
                 >
                   <div className="flex items-center gap-2">
@@ -872,7 +872,7 @@ function TransactionTableRow({ order }: { order: Order }) {
       key={order.id}
       className={`
         border-dashed group hover:bg-muted/50 data-[state=selected]:bg-muted
-        ${isDisputing ? 'bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100/50 dark:hover:bg-yellow-900/30' : ''}
+        ${ isDisputing ? 'bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100/50 dark:hover:bg-yellow-900/30' : '' }
       `}
     >
       <TableCell className="text-[11px] font-medium whitespace-nowrap py-1">
@@ -884,7 +884,7 @@ function TransactionTableRow({ order }: { order: Order }) {
       <TableCell className="text-[11px] font-medium whitespace-nowrap text-center py-1">
         <Badge
           variant="secondary"
-          className={`text-[10px] px-1 ${typeConfig[order.type].color}`}
+          className={`text-[10px] px-1 ${ typeConfig[order.type].color }`}
         >
           {typeConfig[order.type].label}
         </Badge>
@@ -892,47 +892,51 @@ function TransactionTableRow({ order }: { order: Order }) {
       <TableCell className="text-[11px] font-medium whitespace-nowrap text-center py-1">
         <Badge
           variant="secondary"
-          className={`text-[10px] px-1 ${statusConfig[order.status].color}`}
+          className={`text-[10px] px-1 ${ statusConfig[order.status].color }`}
         >
           {statusConfig[order.status].label}
         </Badge>
       </TableCell>
       <TableCell className="text-[11px] font-medium whitespace-nowrap text-center py-1">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center cursor-pointer gap-1 justify-center">
-                <Avatar className="h-4 w-4">
-                  <AvatarImage src={undefined} />
-                  <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
-                    {order.payer_username.substring(0, 1).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-xs font-bold">⭢</div>
-                <Avatar className="h-4 w-4">
-                  <AvatarImage src={undefined} />
-                  <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
-                    {order.payee_username.substring(0, 1).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="p-3">
-              <div className="space-y-2">
-                <div>
-                  <p className="text-xs font-semibold">付款方</p>
-                  <p className="text-xs">ID: {order.payer_user_id}</p>
-                  <p className="text-xs">账户: {order.payer_username}</p>
+        {order.status === 'pending' || order.status === 'expired' ? (
+          <div className="text-muted-foreground">-</div>
+        ) : (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center cursor-pointer gap-1 justify-center">
+                  <Avatar className="h-4 w-4">
+                    <AvatarImage src={undefined} />
+                    <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
+                      {order.payer_username.substring(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="text-xs font-bold">⭢</div>
+                  <Avatar className="h-4 w-4">
+                    <AvatarImage src={undefined} />
+                    <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
+                      {order.payee_username.substring(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold">收款方</p>
-                  <p className="text-xs">ID: {order.payee_user_id}</p>
-                  <p className="text-xs">账户: {order.payee_username}</p>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="p-3">
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-xs font-semibold">付款方</p>
+                    <p className="text-xs">ID: {order.payer_user_id}</p>
+                    <p className="text-xs">账户: {order.payer_username}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold">收款方</p>
+                    <p className="text-xs">ID: {order.payee_user_id}</p>
+                    <p className="text-xs">账户: {order.payee_username}</p>
+                  </div>
                 </div>
-              </div>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </TableCell>
       <TableCell className="text-[11px] font-medium text-center py-1">
         {order.app_name || '-'}
@@ -956,9 +960,9 @@ function TransactionTableRow({ order }: { order: Order }) {
         sticky right-0 whitespace-nowrap text-center shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] py-1 z-10
         bg-background
         after:absolute after:inset-0 after:z-[-1] after:content-[''] after:pointer-events-none after:transition-colors
-        ${isDisputing
+        ${ isDisputing
           ? 'after:bg-yellow-50 dark:after:bg-yellow-900/20 group-hover:after:bg-yellow-100/50 dark:group-hover:after:bg-yellow-900/30'
-          : 'group-hover:after:bg-muted/50'}
+          : 'group-hover:after:bg-muted/50' }
       `}>
         <OrderDetailDialog order={order} />
 
@@ -1055,7 +1059,7 @@ export function TransactionTableList({
           disabled={loading}
           className="w-full text-xs border-dashed shadow-none"
         >
-          {loading ? (<><Spinner className="size-4" />正在加载</>) : (`加载更多 (${transactions.length}/${total})`)}
+          {loading ? (<><Spinner className="size-4" />正在加载</>) : (`加载更多 (${ transactions.length }/${ total })`)}
         </Button>
       )}
 

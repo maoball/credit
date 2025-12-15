@@ -32,8 +32,8 @@ function calculatePercentages(available: number, total: number) {
 export function BalanceSummary() {
   const { user, loading } = useUser()
 
-  const available = user?.available_balance ?? 0
-  const community = user?.community_balance ?? 0
+  const available = parseFloat(user?.available_balance || '0')
+  const community = parseFloat(user?.community_balance || '0')
   const total = available + community
   const pending = total - available
 

@@ -52,6 +52,7 @@ import {
   UserRound,
   FileQuestionMark,
   ShieldCheck,
+  Globe,
 } from "lucide-react"
 
 import { useUser } from "@/contexts/user-context"
@@ -71,10 +72,11 @@ const data = {
   ],
   document: [
     { title: "接口文档", url: "/docs/api", icon: CreditCard },
-    { title: "使用文档", url: "/docs/how-to-use-demo", icon: FileText },
+    { title: "使用文档", url: "/docs/how-to-use", icon: FileText },
   ],
   products: [
     { title: "我的报表", url: "#", icon: BarChart3 },
+    { title: "在线商品", url: "/merchant/online-paying", icon: Globe },
   ],
 }
 

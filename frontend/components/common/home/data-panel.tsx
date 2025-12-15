@@ -34,8 +34,8 @@ const chartConfig = {
 export function DataPanel() {
   const { user, loading } = useUser()
 
-  const availableBalance = user?.available_balance ?? 0
-  const remainQuota = user?.remain_quota ?? 0
+  const availableBalance = parseFloat(user?.available_balance || '0')
+  const remainQuota = parseFloat(user?.remain_quota || '0')
 
   return (
     <div>
