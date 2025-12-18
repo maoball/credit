@@ -12,11 +12,11 @@ import type { GetMerchantOrderResponse } from "@/lib/services"
 
 
 /**
- * 支付主页面组件
- * 通过 order_no 查询订单信息并完成支付
+ * 积分认证主页面组件
+ * 通过 order_no 查询订单信息并完成积分认证
  */
 export function PayingMain() {
-  /** 获取URL参数中的订单号 */
+  /** 获取URL参数中的认证编号 */
   const searchParams = useSearchParams()
   const encryptedOrderNo = searchParams.get('order_no')
 
@@ -54,13 +54,13 @@ export function PayingMain() {
     }
 
     const errorMap: Record<string, string> = {
-      '订单不存在': "订单不存在或已过期",
-      '未登录': "请先登录后再进行支付",
-      '余额不足': "账户余额不足",
-      '支付密码': "支付密码错误",
-      '不能支付自己的订单': "不能支付自己创建的订单",
-      '每日限额': "已达到每日支付限额",
-      '已完成': "订单已支付完成"
+      '订单不存在': "此积分流转服务不存在或已过期",
+      '未登录': "请先登录后再进行认证",
+      '余额不足': "您的积分余额不足",
+      '安全密码': "安全密码错误",
+      '不能认证自己的订单': "不能认证自己创建的积分流转服务",
+      '每日限额': "已达到每日认证限额",
+      '已完成': "认证完成"
     }
 
     const userMessage = Object.entries(errorMap).find(([key]) =>
@@ -87,7 +87,7 @@ export function PayingMain() {
   const handleQueryOrder = async (queryOrderNo?: string) => {
     const targetOrderNo = queryOrderNo || encryptedOrderNo
     if (!targetOrderNo) {
-      toast.error("缺少订单号", { id: 'missing-order-no' })
+      toast.error("缺少认证编号", { id: 'missing-order-no' })
       return
     }
 
@@ -97,7 +97,7 @@ export function PayingMain() {
       setOrderInfo(data)
       setError(false)
     } catch (error: unknown) {
-      handleServiceError(error, "查询订单")
+      handleServiceError(error, "查询认证信息")
       setOrderInfo(null)
       setError(true)
     } finally {
@@ -105,17 +105,17 @@ export function PayingMain() {
     }
   }
 
-  /** 执行支付订单操作 */
+  /** 执行积分认证操作 */
   const handlePayOrder = async () => {
     if (!orderInfo) return
 
     if (!payKey.trim()) {
-      toast.error("请输入支付密码")
+      toast.error("请输入安全密码")
       return
     }
 
-    if (payKey.length < 6 || payKey.length > 10) {
-      toast.error("支付密码长度必须为6-10位")
+    if (payKey.length !== 6) {
+      toast.error("安全密码长度为6位，请重新输入")
       return
     }
 
@@ -126,7 +126,7 @@ export function PayingMain() {
       })
 
       if (freshOrderInfo.order.status !== 'pending') {
-        toast.error("订单状态已变更，无法支付")
+        toast.error("此积分流转服务状态已变更，无法认证")
         setOrderInfo(freshOrderInfo)
         return
       }
@@ -136,7 +136,7 @@ export function PayingMain() {
         pay_key: payKey
       })
 
-      toast.success("支付成功！", { id: 'payment-success' })
+      toast.success("积分流转服务认证成功！", { id: 'payment-success' })
 
       /** 支付成功后立即更新订单状态为成功 */
       if (orderInfo) {
@@ -162,7 +162,7 @@ export function PayingMain() {
         window.location.reload()
       }, 5000)
     } catch (error: unknown) {
-      handleServiceError(error, "支付")
+      handleServiceError(error, "认证")
 
       if (
         error &&
@@ -197,7 +197,7 @@ export function PayingMain() {
                 出了点问题
               </h1>
               <p className="text-muted-foreground text-sm">
-                您访问的订单页面已经完成支付或不存在。请检查支付订单地址是否正确，对此如有疑问请联系商家或 LINUX DO PAY。
+                您访问的认证编号已经完成认证或不存在。请检查您的积分流转服务链接是否正确，对此如有疑问请联系社区技术支持。
               </p>
             </div>
           </motion.div>

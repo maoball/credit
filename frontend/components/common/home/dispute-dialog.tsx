@@ -12,12 +12,12 @@ import { toast } from "sonner"
 const DISPUTE_PAGE_SIZE = 20
 
 /**
- * 争议对话框模式
+ * 服务争议对话框模式
  */
 type DisputeDialogMode = 'pending' | 'my-disputes'
 
 /**
- * 争议对话框属性
+ * 服务争议对话框属性
  */
 interface DisputeDialogProps {
   /** 对话框模式 */
@@ -30,7 +30,7 @@ interface DisputeDialogProps {
 
 /**
  * 争议对话框组件
- * 支持两种模式：待处理的争议（商户）和我发起的争议（用户）
+ * 支持两种模式：待处理的服务争议（服务提供者）和我发起的服务争议（积分消费者）
  */
 export function DisputeDialog({ mode, open, onOpenChange }: DisputeDialogProps) {
   const [disputes, setDisputes] = useState<Order[]>([])
@@ -111,8 +111,8 @@ export function DisputeDialog({ mode, open, onOpenChange }: DisputeDialogProps) 
 
   const dialogTitle = mode === 'pending' ? '待处理的争议' : '我发起的争议'
   const dialogDescription = mode === 'pending'
-    ? '您作为收款方，需要处理所有争议中的支付订单'
-    : '您作为付款方发起的所有争议记录'
+    ? '您作为服务提供者，需要处理所有争议中的活动'
+    : '您作为积分消费者发起的所有争议'
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -135,7 +135,7 @@ export function DisputeDialog({ mode, open, onOpenChange }: DisputeDialogProps) 
             onRetry={handleRetry}
             onLoadMore={handleLoadMore}
             emptyIcon={AlertTriangle}
-            emptyDescription={mode === 'pending' ? '暂无待处理的争议' : '暂无发起的争议'}
+            emptyDescription={mode === 'pending' ? '暂无待处理的争议' : '暂无您发起的争议'}
           />
         </div>
       </DialogContent>

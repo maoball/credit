@@ -29,25 +29,25 @@ export function MerchantOnline() {
   const selectedKey = apiKeys.find(k => k.id.toString() === apiKeyId) || null
 
   if (loadingKeys) {
-    return <LoadingPage text="在线商品" badgeText="商户" />
+    return <LoadingPage text="在线流转" badgeText="积分" />
   }
 
   if (apiKeys.length === 0) {
     return (
       <div className="flex flex-col gap-6 py-6 box-border h-[calc(100vh-60px)]">
         <div className="flex items-center justify-between border-b border-border pb-2 shrink-0">
-          <h1 className="text-2xl font-semibold">在线商品</h1>
+          <h1 className="text-2xl font-semibold">在线流转</h1>
         </div>
         <div className="flex flex-col items-center justify-center p-8 text-center border border-dashed rounded-lg flex-1">
           <div className="rounded-lg p-3 bg-muted/50 mb-4">
             <Key className="size-6 text-muted-foreground" />
           </div>
-          <h3 className="text-sm font-semibold mb-1">暂无商户应用</h3>
+          <h3 className="text-sm font-semibold mb-1">暂未创建应用</h3>
           <p className="text-xs text-muted-foreground mb-4 max-w-sm mx-auto">
-            您还没有创建任何商户应用。请前往商户中心创建一个应用，即可开始管理在线商品。
+            您还没有创建任何应用。请前往集市中心创建应用，即可开始使用在线积分流转服务。
           </p>
           <Button onClick={() => window.location.href = '/merchant'} variant="default" size="sm">
-            前往商户中心
+            前往集市中心
           </Button>
         </div>
       </div>
@@ -96,14 +96,14 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
   /* 派生 selectedKey */
   const apiKeyId = searchParams.get("apiKeyId")
 
-  /* 处理商户切换 */
+  /* 处理集市应用切换 */
   const handleMerchantSelect = useCallback((id: number) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("apiKeyId", id.toString())
     router.push(`${ window.location.pathname }?${ params.toString() }`)
   }, [searchParams, router])
 
-  /* 自动选择第一个商户 */
+  /* 自动选择第一个集市应用 */
   useEffect(() => {
     if (apiKeys.length > 0 && !apiKeyId) {
       handleMerchantSelect(apiKeys[0].id)
@@ -113,7 +113,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
 
   const selectedKey = apiKeys.find(k => k.id.toString() === apiKeyId) || null
 
-  /* 商品状态 */
+  /* 集市状态 */
   const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([])
   const [selectedLink, setSelectedLink] = useState<PaymentLink | null>(null)
   const [previewLink, setPreviewLink] = useState<PaymentLink | null>(null)
@@ -131,7 +131,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>('light')
 
-  /* 获取商品列表 */
+  /* 获取应用列表 */
   const fetchLinks = useCallback(async () => {
     if (!selectedKey) {
       setPaymentLinks([])
@@ -141,23 +141,22 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
       setLoading(true)
       const links = await MerchantService.listPaymentLinks(selectedKey.id)
       setPaymentLinks(links)
-      /* 自动设置第一个商品为预览 */
+      /* 自动设置第一个应用为预览 */
       if (links.length > 0) {
         setPreviewLink(prev => prev || links[0])
       }
     } catch (error) {
       console.error(error)
-      toast.error("获取商品列表失败")
+      toast.error("获取应用列表失败")
     } finally {
       setLoading(false)
     }
   }, [selectedKey])
 
-  /* 当 selectedKey 变化时,重新获取商品列表和交易数据 */
+  /* 当 selectedKey 变化时,重新获取应用列表和数据 */
   useEffect(() => {
     if (selectedKey?.client_id) {
       fetchLinks()
-      // 触发交易数据获取
       fetchTransactions({
         page: 1,
         page_size: 20,
@@ -184,11 +183,11 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
   const handleCreate = async () => {
     if (!selectedKey) return
     if (!productName || !amount) {
-      toast.error("请填写商品名称和金额")
+      toast.error("请填写在线积分流转服务的名称和数量")
       return
     }
     if (isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
-      toast.error("金额必须是大于0的数字")
+      toast.error("积分数量必须设置为大于0的数值")
       return
     }
 
@@ -199,7 +198,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
         amount: parseFloat(amount),
         remark
       })
-      toast.success("商品创建成功")
+      toast.success("在线积分流转服务创建成功")
       /* 重置表单 */
       setProductName("")
       setAmount("")
@@ -210,7 +209,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
       setIsCreating(false)
       setSelectedLink(newLink)
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "创建失败"
+      const message = error instanceof Error ? error.message : "在线积分流转服务创建失败"
       toast.error(message)
     } finally {
       setLoading(false)
@@ -220,18 +219,18 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
   /* 处理删除 */
   const handleDelete = async (link: PaymentLink) => {
     if (!selectedKey) return
-    if (!confirm("确定要删除这个商品吗？该操作不可恢复。")) return
+    if (!confirm("确定要删除这个在线积分流转服务吗？该操作不可恢复。")) return
 
     try {
       setLoading(true)
       await MerchantService.deletePaymentLink(selectedKey.id, link.id)
-      toast.success("商品已删除")
+      toast.success("在线积分流转服务已删除")
       if (selectedLink?.id === link.id) {
         setSelectedLink(null)
       }
       fetchLinks()
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "删除失败"
+      const message = error instanceof Error ? error.message : "在线积分流转服务删除失败"
       toast.error(message)
     } finally {
       setLoading(false)
@@ -242,21 +241,21 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
   const handleCopyLink = (token: string) => {
     const url = `${ window.location.origin }/pay/${ token }`
     navigator.clipboard.writeText(url)
-    toast.success("支付链接已复制")
+    toast.success("在线积分流转服务链接已复制")
   }
 
   /* 预览订单信息 */
   const previewOrderInfo: GetMerchantOrderResponse = {
     merchant: {
-      app_name: selectedKey?.app_name || "商户名称",
+      app_name: selectedKey?.app_name || "服务名称",
       redirect_uri: "",
     },
     order: {
       id: 0,
       order_no: previewLink ? `LINK-${ previewLink.id }` : "PREVIEW",
-      order_name: isCreating ? (productName || "商品名称") : (previewLink?.product_name || "商品名称"),
+      order_name: isCreating ? (productName || "服务名称") : (previewLink?.product_name || "服务名称"),
       payer_username: "user",
-      payee_username: selectedKey?.app_name || "商户",
+      payee_username: selectedKey?.app_name || "应用",
       amount: isCreating ? (amount || "0.00") : (previewLink?.amount || "0.00"),
       status: "pending",
       type: "payment",
@@ -284,7 +283,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
   return (
     <div className="flex flex-col gap-6 py-6 box-border h-[calc(100vh-60px)]">
       <div className="flex items-center justify-between border-b border-border pb-2 shrink-0">
-        <h1 className="text-2xl font-semibold">在线商品</h1>
+        <h1 className="text-2xl font-semibold">在线流转</h1>
         <div className="flex items-center gap-3">
           {apiKeys.length > 0 && (
             <MerchantSelector
@@ -305,23 +304,23 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
             <Key className="size-6 text-muted-foreground" />
           </div>
           <h3 className="text-sm font-semibold mb-1">
-            {apiKeys.length === 0 ? "暂无商户应用" : "未选择应用"}
+            {apiKeys.length === 0 ? "暂未创建应用" : "未选择应用"}
           </h3>
           <p className="text-xs text-muted-foreground mb-4 max-w-sm mx-auto">
             {apiKeys.length === 0
-              ? "您还没有创建任何商户应用。请前往商户中心创建一个应用，即可开始管理在线商品。"
-              : "请先在右上角选择一个应用以管理商品"}
+              ? "您还没有创建任何应用。请前往集市中心创建一个应用，即可开始管理在线积分流转服务。"
+              : "请先在右上角选择一个应用以管理此应用的所有在线积分流转服务。"}
           </p>
           {apiKeys.length === 0 && (
             <Button onClick={() => router.push('/merchant')} variant="default" size="sm">
-              前往商户中心
+              前往集市应用中心
             </Button>
           )}
         </div>
       ) : (
         <div className="flex flex-col gap-6 h-full min-h-0">
           <div className="space-y-4 shrink-0">
-            <h2 className="font-semibold -mt-2">商品列表</h2>
+            <h2 className="font-semibold -mt-2">所有服务</h2>
             <ScrollArea className="w-full whitespace-nowrap">
               <div className="flex gap-4 pb-3">
                 <button
@@ -338,8 +337,8 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
                     <Plus className="h-4 w-4 text-purple-600" />
                   </div>
                   <div className="text-center">
-                    <h3 className="font-medium text-sm group-hover:text-foreground">创建商品</h3>
-                    <p className="text-xs text-muted-foreground">添加新的收款链接</p>
+                    <h3 className="font-medium text-sm group-hover:text-foreground">创建服务</h3>
+                    <p className="text-xs text-muted-foreground">添加新的在线积分流转服务</p>
                   </div>
                 </button>
 
@@ -393,7 +392,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between shrink-0">
-                <h2 className="font-semibold">交易数据</h2>
+                <h2 className="font-semibold">活动数据</h2>
               </div>
               <div className="h-[600px] overflow-hidden">
                 <TransactionTableList
@@ -405,7 +404,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
                   totalPages={totalPages}
                   onRetry={refresh}
                   onLoadMore={loadMore}
-                  emptyDescription="暂无交易数据"
+                  emptyDescription="暂无在线流转服务数据"
                 />
               </div>
             </div>
@@ -499,22 +498,22 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
               {isCreating ? (
                 <div className="space-y-6">
                   <SheetHeader>
-                    <SheetTitle>创建新商品</SheetTitle>
-                    <SheetDescription>创建一个固定收款链接。</SheetDescription>
+                    <SheetTitle>创建新服务</SheetTitle>
+                    <SheetDescription>创建一个在线积分流转服务。</SheetDescription>
                   </SheetHeader>
 
                   <div className="border border-dashed rounded-lg p-4 space-y-4">
                     <div className="space-y-2">
-                      <Label className="text-xs font-medium text-muted-foreground">商品名称 <span className="text-red-500">*</span></Label>
+                      <Label className="text-xs font-medium text-muted-foreground">服务名称 <span className="text-red-500">*</span></Label>
                       <Input
-                        placeholder="例如：高级会员订阅"
+                        placeholder="例如：高级会员订阅服务"
                         value={productName}
                         onChange={e => setProductName(e.target.value)}
                         maxLength={50}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs font-medium text-muted-foreground">金额 (LDC) <span className="text-red-500">*</span></Label>
+                      <Label className="text-xs font-medium text-muted-foreground">积分 (LDC) <span className="text-red-500">*</span></Label>
                       <Input
                         type="number"
                         placeholder="0.00"
@@ -526,7 +525,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
                     <div className="space-y-2">
                       <Label className="text-xs font-medium text-muted-foreground">备注 (可选)</Label>
                       <Textarea
-                        placeholder="订单备注信息..."
+                        placeholder="服务备注信息..."
                         className="resize-none h-20"
                         value={remark}
                         onChange={e => setRemark(e.target.value)}
@@ -546,18 +545,18 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
                 <div className="space-y-6">
                   <SheetHeader>
                     <SheetTitle>{selectedLink.product_name}</SheetTitle>
-                    <SheetDescription>商品详情与管理</SheetDescription>
+                    <SheetDescription>服务管理</SheetDescription>
                   </SheetHeader>
 
                   <div>
-                    <h2 className="text-sm font-semibold mb-4">商品信息</h2>
+                    <h2 className="text-sm font-semibold mb-4">服务信息</h2>
                     <div className="border border-dashed rounded-lg">
                       <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
-                        <label className="text-xs font-medium text-muted-foreground">商品名称</label>
+                        <label className="text-xs font-medium text-muted-foreground">服务名称</label>
                         <p className="text-xs font-medium truncate text-right max-w-[70%]">{selectedLink.product_name}</p>
                       </div>
                       <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
-                        <label className="text-xs font-medium text-muted-foreground">支付金额</label>
+                        <label className="text-xs font-medium text-muted-foreground">积分 (LDC)</label>
                         <p className="text-sm font-mono font-bold text-primary">LDC {parseFloat(selectedLink.amount).toFixed(2)}</p>
                       </div>
                       <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
@@ -570,7 +569,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
                       </div>
                       <div className="px-3 py-2 border-b border-dashed last:border-b-0">
                         <div className="flex items-center justify-between">
-                          <label className="text-xs font-medium text-muted-foreground shrink-0">Token</label>
+                          <label className="text-xs font-medium text-muted-foreground shrink-0">服务令牌</label>
                           <div className="flex items-center p-1 h-7 border border-dashed rounded-sm bg-background max-w-[200px]">
                             <code className="text-xs text-muted-foreground font-mono flex-1 overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] whitespace-nowrap">
                               {showToken ? selectedLink.token : '•'.repeat(36)}
@@ -596,7 +595,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
                   </div>
 
                   <div>
-                    <h2 className="text-sm font-semibold mb-4">商品管理</h2>
+                    <h2 className="text-sm font-semibold mb-4">流转服务管理</h2>
                     <div className="flex gap-2 flex-wrap">
                       <Button variant="outline" className="text-xs h-8 border-dashed border-green-500 hover:bg-green-50 shadow-none" onClick={() => handleCopyLink(selectedLink.token)}>
                         <Copy className="size-3 mr-1" />
@@ -604,11 +603,11 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
                       </Button>
                       <Button variant="outline" className="text-xs h-8 border-dashed border-green-500 hover:bg-green-50 shadow-none" onClick={() => window.open(`/paying/online?token=${ selectedLink.token }`, '_blank')}>
                         <ExternalLink className="size-3 mr-1" />
-                        打开支付
+                        查看服务
                       </Button>
                       <Button variant="outline" className="text-xs text-destructive h-8 border-dashed border-destructive/50 hover:bg-destructive/5 shadow-none" onClick={() => handleDelete(selectedLink)}>
                         <Trash2 className="size-3 mr-1" />
-                        删除商品
+                        删除服务
                       </Button>
                     </div>
                   </div>

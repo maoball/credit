@@ -24,7 +24,7 @@ interface PasswordDialogProps {
 }
 
 /**
- * 支付密码输入对话框
+ * 密码输入对话框
  * 
  * 用于敏感操作前的二次确认
  */
@@ -33,8 +33,8 @@ export function PasswordDialog({
   onOpenChange,
   onConfirm,
   loading = false,
-  title = "请输入支付密码",
-  description = "为了您的资金安全，请输入6位支付密码进行验证"
+  title = "请输入密码",
+  description = "为了您的账户安全，请输入6位认证密码进行验证"
 }: PasswordDialogProps) {
   const [password, setPassword] = useState("")
 
@@ -95,7 +95,7 @@ export function PasswordDialog({
                 验证中...
               </>
             ) : (
-              "确认支付"
+              "确认"
             )}
           </Button>
         </div>

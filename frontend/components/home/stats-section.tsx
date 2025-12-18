@@ -8,11 +8,11 @@ import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 const chartData = [
   { month: "Jan", desktop: 186 },
-  { month: "Feb", desktop: 305 },
-  { month: "Mar", desktop: 237 },
-  { month: "Apr", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "Jun", desktop: 214 },
+  { month: "Feb", desktop: 205 },
+  { month: "Mar", desktop: 337 },
+  { month: "Apr", desktop: 233 },
+  { month: "May", desktop: 309 },
+  { month: "Jun", desktop: 414 },
 ];
 
 const chartConfig = {
@@ -52,7 +52,7 @@ export const StatsSection = React.memo(function StatsSection({ className }: Stat
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed"
           >
-            实时数据洞察，助您做出明智决策，轻松掌握每一笔交易动态。
+            实时数据洞察，助您做出明智决策，轻松掌握每一笔积分活动动态。
           </motion.p>
         </div>
 
@@ -68,7 +68,7 @@ export const StatsSection = React.memo(function StatsSection({ className }: Stat
             <div className="relative z-10">
               <div className="flex items-center gap-2 text-muted-foreground mb-2">
                 <Activity className="w-4 h-4" />
-                <span className="text-sm font-medium">总交易额趋势</span>
+                <span className="text-sm font-medium">积分活动趋势</span>
               </div>
               <div className="text-4xl font-bold tracking-tight flex items-baseline gap-1">
                 Coming Soon
@@ -139,7 +139,7 @@ export const StatsSection = React.memo(function StatsSection({ className }: Stat
               <div className="text-3xl font-bold text-foreground mb-1 flex items-baseline gap-1">
                 <CountingNumber number={300} inViewOnce />%
               </div>
-              <div className="text-sm text-muted-foreground font-medium">业务增长</div>
+              <div className="text-sm text-muted-foreground font-medium">活动增长</div>
             </div>
           </motion.div>
 
@@ -153,9 +153,9 @@ export const StatsSection = React.memo(function StatsSection({ className }: Stat
             <div className="relative z-10 flex flex-col justify-between h-full">
               <div className="absolute top-6 left-4">
                 <div className="text-4xl md:text-5xl font-bold text-foreground tracking-tight flex items-baseline">
-                  $<CountingNumber number={100} inViewOnce decimalPlaces={0} />M+
+                  <CountingNumber number={100} inViewOnce decimalPlaces={0} />M+
                 </div>
-                <span className="text-sm font-medium text-muted-foreground">年度总交易规模</span>
+                <span className="text-sm font-medium text-muted-foreground">年度总流动规模</span>
               </div>
             </div>
 

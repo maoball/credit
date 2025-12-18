@@ -1,6 +1,6 @@
-# LINUX DO PAY
+# LINUX DO Credit
 
-🚀 Linux Do 社区 PAY (Content Distribution Kit) 快速分享平台
+🚀 Linux Do 社区 Credit (Content Distribution Kit) 快速分享平台
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go Version](https://img.shields.io/badge/Go-1.24-blue.svg)](https://golang.org/)
@@ -22,7 +22,7 @@
 
 ## 📖 项目简介
 
-LINUX DO CDK 是一个为 Linux Do 社区打造的内容分发工具平台，旨在提供快速、安全、便捷的 CDK 分享服务。平台支持多种分发方式，具备完善的用户权限管理和风险控制机制。
+LINUX DO Credit 是一个为 Linux Do 社区打造的积分处理与委托认证平台，旨在提供积分的处理、委托（订单）认证收取费用功能。平台支持多种委托方式，具备完善的用户权限管理和风险控制机制。
 
 ### ✨ 主要特性
 

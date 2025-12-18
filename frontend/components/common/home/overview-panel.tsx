@@ -14,10 +14,10 @@ import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 
 /**
- * 创建争议订单对象
+ * 创建争议对象
  * @param dispute 争议对象
  * @param type 争议类型
- * @returns 争议订单对象
+ * @returns 争议对象
  */
 const createDisputeOrder = (dispute: DisputeWithOrder, type: 'receive' | 'payment'): Order => ({
   id: dispute.order_id,
@@ -67,7 +67,7 @@ const DisputeListSkeleton = () => (
 )
 
 /**
- * 付款数据骨架屏
+ * 争议列表数据骨架屏
  */
 const PaymentListSkeleton = () => (
   <div className="space-y-1">
@@ -89,23 +89,23 @@ const PaymentListSkeleton = () => (
 )
 
 /**
- * 获取订单状态显示文本
+ * 获取活动状态显示文本
  */
 const getStatusText = (status: string) => {
   const statusMap: Record<string, string> = {
     success: '成功',
-    pending: '待支付',
+    pending: '待处理',
     failed: '失败',
     expired: '已过期',
     disputing: '争议中',
-    refund: '已退款',
+    refund: '已退回',
     refused: '已拒绝'
   }
   return statusMap[status] || status
 }
 
 /**
- * 获取订单状态样式
+ * 获取活动状态样式
  */
 const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
   switch (status) {
@@ -122,10 +122,10 @@ const getStatusVariant = (status: string): "default" | "secondary" | "destructiv
 }
 
 /**
- * 付款卡片
- * 用于显示付款数据
+ * 活动卡片
+ * 用于显示活动列表数据
  * 
- * @returns 付款卡片
+ * @returns 活动列表卡片
  */
 function PaymentCard({ onViewAll }: { onViewAll: () => void }) {
   const [isHidden, setIsHidden] = React.useState(false)
@@ -164,7 +164,7 @@ function PaymentCard({ onViewAll }: { onViewAll: () => void }) {
       <CardHeader>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-4">
-            <CardTitle className="text-sm font-medium">付款</CardTitle>
+            <CardTitle className="text-sm font-medium">活动</CardTitle>
             <p className="font-semibold">{loading ? '-' : <CountingNumber number={total} decimalPlaces={0} />}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -215,7 +215,7 @@ function PaymentCard({ onViewAll }: { onViewAll: () => void }) {
             </div>
           ) : (
             <div className="h-46 flex items-center justify-center">
-              <p className="text-muted-foreground text-xs">暂无付款记录</p>
+              <p className="text-muted-foreground text-xs">暂无积分活动记录</p>
             </div>
           )}
         </ScrollArea>
@@ -244,10 +244,10 @@ function PaymentCard({ onViewAll }: { onViewAll: () => void }) {
 }
 
 /**
- * 总额卡片
- * 用于显示总额数据（所有成功交易的总和）
+ * 积分总额卡片
+ * 用于显示积分总额数据（所有成功活动的积分总额）
  * 
- * @returns 总额卡片
+ * @returns 积分总额列表卡片
  */
 function TotalCard() {
   const [total, setTotal] = React.useState<number>(0)
@@ -286,7 +286,7 @@ function TotalCard() {
     <Card className="bg-background border-0 shadow-none rounded-lg min-h-[200px] flex flex-col h-full">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-sm font-medium">总额</CardTitle>
+          <CardTitle className="text-sm font-medium">积分</CardTitle>
           <Button variant="ghost" size="icon" className="h-4 w-4 p-0" onClick={handleRefresh}>
             <RefreshCcw className="size-4 text-muted-foreground" />
           </Button>
@@ -316,10 +316,10 @@ function TotalCard() {
 }
 
 /**
- * 净交易额卡片
- * 用于显示净交易额数据（收款 - 付款）
+ * 净积分值卡片
+ * 用于显示净积分值数据（积分收益 - 积分消耗）
  * 
- * @returns 净交易额卡片
+ * @returns 净积分值列表卡片
  */
 function NetVolumeCard() {
   const [netAmount, setNetAmount] = React.useState<number>(0)
@@ -329,7 +329,7 @@ function NetVolumeCard() {
     try {
       setLoading(true)
 
-      /* 获取收款总额 */
+      /* 获取积分收益总额 */
       const receiveResponse = await TransactionService.getTransactions({
         page: 1,
         page_size: 100,
@@ -341,7 +341,7 @@ function NetVolumeCard() {
         return sum + parseFloat(order.amount || '0')
       }, 0)
 
-      /* 获取付款总额 */
+      /* 获取积分消耗总额 */
       const paymentResponse = await TransactionService.getTransactions({
         page: 1,
         page_size: 100,
@@ -353,7 +353,7 @@ function NetVolumeCard() {
         return sum + parseFloat(order.amount || '0')
       }, 0)
 
-      /* 计算净交易额 */
+      /* 计算净积分值 */
       setNetAmount(receiveTotal - paymentTotal)
     } catch (error) {
       console.error('Failed to fetch net volume:', error)
@@ -374,7 +374,7 @@ function NetVolumeCard() {
     <Card className="bg-background border-0 shadow-none rounded-lg min-h-[200px] flex flex-col h-full">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-sm font-medium">净交易额</CardTitle>
+          <CardTitle className="text-sm font-medium">净积分值</CardTitle>
           <Button variant="ghost" size="icon" className="h-4 w-4 p-0" onClick={handleRefresh}>
             <RefreshCcw className="size-4 text-muted-foreground" />
           </Button>
@@ -407,17 +407,17 @@ function NetVolumeCard() {
 }
 
 /**
- * 支出最多的客户卡片
- * 用于显示支出最多的客户数据
- * 
- * @returns 支出最多的客户卡片
+ * 积分消耗最多的佬友卡片
+ * 用于显示积分消耗最多的佬友数据
+ *
+ * @returns 积分消耗最多的佬友卡片
  */
 function TopCustomersCard() {
   return (
     <Card className="bg-background border-0 shadow-none rounded-lg min-h-[200px] flex flex-col h-full">
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
-          <CardTitle className="text-sm font-medium">支出最多的客户</CardTitle>
+          <CardTitle className="text-sm font-medium">积分收益排行</CardTitle>
           <Button variant="ghost" size="icon" className="h-4 w-4 p-0">
             <RefreshCcw className="size-4 text-muted-foreground" />
           </Button>
@@ -493,7 +493,7 @@ function PendingDisputesCard({ onViewAll }: { onViewAll: () => void }) {
             </div>
           ) : (
             <div className="h-46 flex items-center justify-center">
-              <p className="text-muted-foreground text-xs">暂无待处理的争议</p>
+              <p className="text-muted-foreground text-xs">暂无待处理的积分活动争议</p>
             </div>
           )}
         </ScrollArea>
@@ -555,7 +555,7 @@ function MyDisputesCard({ onViewAll }: { onViewAll: () => void }) {
                       {dispute.order_name}
                     </p>
                     <p className="text-[10px] text-muted-foreground leading-tight">
-                      商家正在处理争议
+                      积分活动发起者正在处理争议
                     </p>
                   </div>
                   <div className="flex items-center gap-1 ml-2">
@@ -569,7 +569,7 @@ function MyDisputesCard({ onViewAll }: { onViewAll: () => void }) {
             </div>
           ) : (
             <div className="h-46 flex items-center justify-center text-muted-foreground text-xs">
-              暂无我发起的争议
+              暂无我发起的积分活动争议
             </div>
           )}
         </ScrollArea>

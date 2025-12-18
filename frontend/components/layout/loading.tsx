@@ -74,7 +74,7 @@ function LoadingCard() {
               </div>
 
               <div className="font-serif italic text-xl font-bold tracking-widest text-white drop-shadow-md">
-                PAY
+                Credit
               </div>
             </div>
           </div>
@@ -131,7 +131,7 @@ export function LoadingPage({ text = "系统", badgeText = "系统" }: { text?: 
             className="relative flex items-center justify-center gap-2"
           >
             <span className="text-3xl font-bold tracking-tight text-foreground">LINUX DO</span>
-            <span className="text-4xl font-serif font-bold italic text-primary">PAY</span>
+            <span className="text-4xl font-serif font-bold italic text-primary">Credit</span>
 
             {badgeText && (
               <div className="absolute left-full top-1/3 -translate-y-1/2 ml-2">
@@ -183,7 +183,7 @@ interface LoadingStateProps extends React.ComponentProps<"div"> {
  */
 export function LoadingState({
   title = "加载中",
-  description = "正在获取交易数据...",
+  description = "正在获取活动数据...",
   icon: Icon = FileTextIcon,
   className,
   iconSize = "md",

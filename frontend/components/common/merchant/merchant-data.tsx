@@ -10,19 +10,19 @@ import { TransactionTableList } from "@/components/common/general/table-data"
 import type { MerchantAPIKey, OrderType, OrderStatus } from "@/lib/services"
 import { TransactionProvider, useTransaction } from "@/contexts/transaction-context"
 
-/** 商家功能列表 */
+/** 集市功能列表 */
 const MERCHANT_ACTIONS = [
   {
     title: "处理争议",
-    description: "获取此商户的所有争议",
+    description: "获取此应用的所有争议",
     icon: Undo2,
     color: "text-orange-600",
     bgColor: "bg-orange-50 dark:bg-orange-950/20",
     action: "refund",
   },
   {
-    title: "所有订单",
-    description: "显示此商户的所有交易",
+    title: "所有活动",
+    description: "显示此应用的所有活动",
     icon: FileText,
     color: "text-blue-600",
     bgColor: "bg-blue-50 dark:bg-blue-950/20",
@@ -30,8 +30,8 @@ const MERCHANT_ACTIONS = [
   },
 
   {
-    title: "在线收款",
-    description: "创建自定义支付链接",
+    title: "在线流转",
+    description: "创建在线积分流转活动",
     icon: Link2,
     color: "text-purple-600",
     bgColor: "bg-purple-50 dark:bg-purple-950/20",
@@ -44,8 +44,8 @@ interface MerchantDataProps {
 }
 
 /**
- * 商户数据组件
- * 显示应用的收款数据和统计信息
+ * 集市数据组件
+ * 显示应用的活动数据和统计信息
  */
 export function MerchantData({ apiKey }: MerchantDataProps) {
   const getLastMonthRange = () => {
@@ -54,7 +54,6 @@ export function MerchantData({ apiKey }: MerchantDataProps) {
     const start = new Date(today)
     start.setDate(start.getDate() - 29)
 
-    // 格式化为 RFC3339 格式，保持北京时区
     const formatLocalDate = (date: Date) => {
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -91,7 +90,7 @@ export function MerchantData({ apiKey }: MerchantDataProps) {
 }
 
 /**
- * 商户数据内容组件
+ * 集市数据内容组件
  */
 function MerchantDataContent({ apiKey }: MerchantDataProps) {
   const router = useRouter()
@@ -166,23 +165,23 @@ function MerchantDataContent({ apiKey }: MerchantDataProps) {
   const handleRefund = () => {
     setSelectedStatuses(['disputing'])
 
-    toast.success('已切换至争议中订单', {
-      description: '正在显示所有争议中的交易'
+    toast.success('待处理的争议', {
+      description: '显示此应用的所有待处理的争议'
     })
   }
 
   const handleViewAllOrders = () => {
     clearAllFilters()
 
-    toast.success('已显示所有订单', {
-      description: '正在获取商户的所有交易'
+    toast.success('全部活动', {
+      description: '显示此应用的所有积分活动'
     })
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold mb-4">商家操作</h2>
+        <h2 className="font-semibold mb-4">应用服务</h2>
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {MERCHANT_ACTIONS.map((action, index) => {
             const Icon = action.icon
@@ -218,7 +217,7 @@ function MerchantDataContent({ apiKey }: MerchantDataProps) {
       </div>
 
       <div>
-        <h2 className="font-semibold mb-4">交易记录</h2>
+        <h2 className="font-semibold mb-4">活动记录</h2>
         <div className="space-y-2">
           <TableFilter
             enabledFilters={{
@@ -246,7 +245,7 @@ function MerchantDataContent({ apiKey }: MerchantDataProps) {
             totalPages={totalPages}
             onRetry={() => fetchTransactions({ page: 1, client_id: apiKey.client_id })}
             onLoadMore={handleLoadMore}
-            emptyDescription="未发现交易记录"
+            emptyDescription="未发现积分活动记录"
           />
         </div>
       </div>

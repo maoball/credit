@@ -39,20 +39,20 @@ const TAB_TRIGGER_STYLES =
 type TabValue = OrderType | 'all'
 
 /**
- * 交易主页面组件
+ * 活动交易主页面组件
  * 
- * 负责组装交易中心的各个子组件
+ * 负责组装活动交易中心的各个子组件
  */
 export function TradeMain() {
   const [activeTab, setActiveTab] = React.useState<TabValue>('receive')
 
-  /* 获取订单类型 */
+  /* 获取活动类型 */
   const getOrderType = (tab: TabValue): OrderType | undefined => {
     if (tab === 'all') return undefined
     return tab as OrderType
   }
 
-  /* 渲染页面内容 */
+  /* 渲染活动页面内容 */
   const renderPageContent = () => {
     switch (activeTab) {
       case 'receive':
@@ -75,7 +75,7 @@ export function TradeMain() {
   return (
     <TransactionProvider defaultParams={{ page_size: 20 }}>
       <div className="py-6">
-        <h1 className="text-2xl font-semibold mb-4">交易</h1>
+        <h1 className="text-2xl font-semibold mb-4">积分活动</h1>
 
         <Tabs
           value={activeTab}
@@ -84,11 +84,11 @@ export function TradeMain() {
         >
           <div className="border-b border-border">
             <TabsList className="flex p-0 gap-4 rounded-none w-full bg-transparent justify-start h-auto">
-              <TabsTrigger value="receive" className={TAB_TRIGGER_STYLES}>收款</TabsTrigger>
-              <TabsTrigger value="payment" className={TAB_TRIGGER_STYLES}>付款</TabsTrigger>
-              <TabsTrigger value="transfer" className={TAB_TRIGGER_STYLES}>转账</TabsTrigger>
+              <TabsTrigger value="receive" className={TAB_TRIGGER_STYLES}>积分收益</TabsTrigger>
+              <TabsTrigger value="payment" className={TAB_TRIGGER_STYLES}>积分消耗</TabsTrigger>
+              <TabsTrigger value="transfer" className={TAB_TRIGGER_STYLES}>积分转移</TabsTrigger>
               <TabsTrigger value="community" className={TAB_TRIGGER_STYLES}>社区划转</TabsTrigger>
-              <TabsTrigger value="online" className={TAB_TRIGGER_STYLES}>在线商品</TabsTrigger>
+              <TabsTrigger value="online" className={TAB_TRIGGER_STYLES}>在线流转</TabsTrigger>
               <TabsTrigger value="all" className={TAB_TRIGGER_STYLES}>所有活动</TabsTrigger>
             </TabsList>
           </div>
@@ -97,7 +97,7 @@ export function TradeMain() {
             {renderPageContent()}
 
             <div className="space-y-4">
-              <div className="font-semibold">交易记录</div>
+              <div className="font-semibold">活动记录</div>
               <TradeTable type={getOrderType(activeTab)} />
             </div>
           </div>

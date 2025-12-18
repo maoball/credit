@@ -36,9 +36,9 @@ export const HeroSection = React.memo(function HeroSection({ className }: HeroSe
               transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6 text-foreground"
             >
-              LINUX DO PAY <br />
+              LINUX DO Credit <br />
               <span className="bg-clip-text text-primary">
-                社区支付新纪元
+                让积分流通更简单
               </span>
             </motion.h1>
 
@@ -49,9 +49,9 @@ export const HeroSection = React.memo(function HeroSection({ className }: HeroSe
               transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               className="text-sm md:text-base text-muted-foreground max-w-xl leading-relaxed mb-10"
             >
-              专为社区开发者打造的社区支付基础设施
+              专为社区开发者打造的积分流通基础设施
               <br className="hidden md:block" />
-              快速集成、全球覆盖、安全可靠，助您轻松使用平台支付。
+              快速集成、全球覆盖、安全可靠，助您轻松使用积分流通。
             </motion.p>
 
             <motion.div
@@ -118,7 +118,7 @@ export const HeroSection = React.memo(function HeroSection({ className }: HeroSe
               <div className="relative z-10 w-full h-64 bg-background/40 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl p-6 flex flex-col justify-between transform transition-transform hover:scale-[1.02] duration-500">
                 <div className="flex gap-4 items-center">
                   <CreditCard className="size-6" />
-                  <span>LINUX DO PAY</span>
+                  <span>LINUX DO Credit</span>
                 </div>
 
                 <div className="space-y-4">

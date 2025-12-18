@@ -79,7 +79,7 @@ export function LegalPageLayout({
       </div>
 
       <div className="container relative z-10 max-w-7xl mx-auto px-4 md:px-6 py-8 lg:py-16">
-        <header className="mb-12 lg:mb-20 max-w-4xl">
+        <header className="mb-12 ">
           <Link href="/" className="inline-block mb-8">
             <Button
               variant="ghost"
@@ -98,7 +98,7 @@ export function LegalPageLayout({
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
               {title}
             </h1>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-8">
+            <div className="flex items-center gap-4 text-xs text-muted-foreground mb-8">
               <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1 rounded-full border border-border/50">
                 <Calendar className="w-3.5 h-3.5" />
                 最后更新：{lastUpdated}
@@ -109,7 +109,7 @@ export function LegalPageLayout({
               </span>
             </div>
             {description && (
-              <div className="p-6 rounded-2xl bg-muted/30 border border-border/50 backdrop-blur-sm">
+              <div className="w-full p-6 rounded-2xl bg-muted/30 border border-border/50 backdrop-blur-sm">
                 <div className="text-base text-muted-foreground leading-relaxed m-0">
                   {description}
                 </div>

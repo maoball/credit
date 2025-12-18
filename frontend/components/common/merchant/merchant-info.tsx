@@ -31,8 +31,8 @@ interface MerchantInfoProps {
 }
 
 /**
- * 商户信息组件
- * 显示商户的凭证信息（Client ID 和 Secret）
+ * 集市中心应用信息组件
+ * 显示集市中心应用的凭证信息（Client ID 和 Secret）
  */
 export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: MerchantInfoProps) {
   const [showClientId, setShowClientId] = useState(false)

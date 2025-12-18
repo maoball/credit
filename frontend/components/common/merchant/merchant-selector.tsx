@@ -14,8 +14,8 @@ interface MerchantSelectorProps {
 }
 
 /**
- * 商户选择器组件
- * 用于在多个商户应用之间切换
+ * 应用选择器组件
+ * 用于在多个应用之间切换
  */
 export function MerchantSelector({
   apiKeys,
@@ -30,7 +30,7 @@ export function MerchantSelector({
       disabled={loading || apiKeys.length === 0}
     >
       <SelectTrigger className="w-fit text-xs shadow-none h-8" size="sm">
-        <SelectValue placeholder="请选择商户应用" />
+        <SelectValue placeholder="请选择应用" />
       </SelectTrigger>
       <SelectContent>
         {apiKeys.map((apiKey) => (

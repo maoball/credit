@@ -32,11 +32,11 @@ const TAB_TRIGGER_STYLES =
 
 /** 标签配置 - 数据驱动渲染 */
 const TABS = [
-  { value: "receive" as const, label: "收款" },
-  { value: "payment" as const, label: "付款" },
-  { value: "transfer" as const, label: "转账" },
+  { value: "receive" as const, label: "积分收益" },
+  { value: "payment" as const, label: "积分消耗" },
+  { value: "transfer" as const, label: "积分转移" },
   { value: "community" as const, label: "社区划转" },
-  { value: "online" as const, label: "在线商品" },
+  { value: "online" as const, label: "在线流转" },
   { value: "all" as const, label: "所有活动" },
 ] as const
 
@@ -57,14 +57,13 @@ function getTimeRange() {
 }
 
 /**
- * 余额活动表格组件
+ * 积分余额活动表格组件
  * 
- * 显示不同类型的交易记录,支持多标签切换和分页加载
+ * 显示不同类型的积分余额活动记录,支持多标签切换和分页加载
  */
 export function BalanceTable() {
   const [activeTab, setActiveTab] = React.useState<OrderType | "all">("all")
 
-  // 每次渲染时获取新的时间范围，确保不会过期
   const timeRange = getTimeRange()
 
   const handleTabChange = React.useCallback((value: string) => {
@@ -78,7 +77,6 @@ export function BalanceTable() {
         onValueChange={handleTabChange}
         className="w-full"
       >
-        {/* 标签列表 */}
         <TabsList className="flex p-0 gap-4 rounded-none w-full bg-transparent justify-start border-b border-border">
           {TABS.map((tab) => (
             <TabsTrigger
@@ -91,7 +89,6 @@ export function BalanceTable() {
           ))}
         </TabsList>
 
-        {/* 交易列表内容 */}
         <div className="mt-2">
           <TransactionProvider
             defaultParams={{
@@ -111,9 +108,9 @@ export function BalanceTable() {
 }
 
 /**
- * 交易列表组件
+ * 积分余额活动列表组件
  * 
- * 负责获取和显示交易数据
+ * 负责获取和显示积分余额活动数据
  */
 function TransactionList({ type }: { type?: OrderType }) {
   const {
@@ -128,7 +125,7 @@ function TransactionList({ type }: { type?: OrderType }) {
     loadMore,
   } = useTransaction()
 
-  /** 当交易类型变化时重新加载数据 */
+  /** 当积分余额活动类型变化时重新加载数据 */
   React.useEffect(() => {
     fetchTransactions({
       page: 1,
@@ -139,12 +136,12 @@ function TransactionList({ type }: { type?: OrderType }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type])
 
-  /** 处理加载更多 */
+  /** 处理加载更多积分余额活动数据 */
   const handleLoadMore = React.useCallback(() => {
     loadMore()
   }, [loadMore])
 
-  /** 处理重试 */
+  /** 处理重试加载积分余额活动数据 */
   const handleRetry = React.useCallback(() => {
     fetchTransactions({ page: 1 })
   }, [fetchTransactions])

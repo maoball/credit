@@ -5,7 +5,6 @@ import { useUser } from "@/contexts/user-context"
 
 /**
  * 所有活动组件
- * 
  * 显示用户的所有活动统计数据
  */
 export function AllActivity() {
@@ -22,28 +21,28 @@ export function AllActivity() {
   /* 功能卡片配置 */
   const statCards = React.useMemo(() => [
     {
-      title: "总收款",
+      title: "总收益",
       value: stats.totalReceive,
       icon: TrendingUp,
       color: "text-green-600",
       bgColor: "bg-green-100 dark:bg-green-900/20"
     },
     {
-      title: "总付款",
+      title: "总消耗",
       value: stats.totalPayment,
       icon: TrendingDown,
       color: "text-red-600",
       bgColor: "bg-red-100 dark:bg-red-900/20"
     },
     {
-      title: "总转账",
+      title: "总转移",
       value: stats.totalTransfer,
       icon: ArrowRightLeft,
       color: "text-blue-600",
       bgColor: "bg-blue-100 dark:bg-blue-900/20"
     },
     {
-      title: "总社区划转",
+      title: "总划转",
       value: stats.totalCommunity,
       icon: Users,
       color: "text-purple-600",

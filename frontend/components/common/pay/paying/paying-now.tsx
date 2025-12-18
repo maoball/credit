@@ -20,7 +20,7 @@ const PAYMENT_METHODS = {
 
 const PAYMENT_STEPS = {
   METHOD: 'method' as const,
-  PAY: 'pay' as const
+  Credit: 'pay' as const
 } as const
 
 const ORDER_STATUSES = {
@@ -63,7 +63,7 @@ function LoadingSkeleton() {
 
 /**
  * 成功状态组件
- * 显示支付成功状态
+ * 显示认证成功状态
  */
 function SuccessState() {
   const [countdown, setCountdown] = React.useState(5)
@@ -121,7 +121,7 @@ function SuccessState() {
         transition={{ delay: 0.4, duration: 0.4 }}
         className="text-xl font-bold text-foreground mb-2"
       >
-        支付成功
+        认证成功
       </motion.h3>
       <motion.p
         initial={{ opacity: 0, y: 10 }}
@@ -129,15 +129,15 @@ function SuccessState() {
         transition={{ delay: 0.6, duration: 0.4 }}
         className="text-muted-foreground text-sm"
       >
-        您的交易已安全完成，{countdown > 0 ? `${ countdown }秒后自动跳转...` : '正在跳转...'}
+        认证已安全完成，{countdown > 0 ? `${ countdown }秒后自动跳转...` : '正在跳转...'}
       </motion.p>
     </motion.div>
   )
 }
 
 /**
- * 支付方式选择步骤组件
- * 显示支付方式选择步骤
+ * 认证方式选择步骤组件
+ * 显示认证方式选择步骤
  */
 function MethodSelectionStep({
   orderInfo,
@@ -168,8 +168,8 @@ function MethodSelectionStep({
       className="space-y-6 w-full max-w-xs mx-auto"
     >
       <div className={`space-y-2 text-center ${ forceMobile ? '' : 'md:text-left' }`}>
-        <h2 className="text-xl font-bold text-foreground tracking-tight">选择支付方式</h2>
-        <p className="text-xs text-muted-foreground">请选择您想要使用的支付方式</p>
+        <h2 className="text-xl font-bold text-foreground tracking-tight">选择认证平台</h2>
+        <p className="text-xs text-muted-foreground">请选择您想要使用的服务认证平台</p>
       </div>
 
       <div className="space-y-3">
@@ -198,8 +198,8 @@ function MethodSelectionStep({
                   <CreditCard className="size-4" />
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="font-bold text-xs text-foreground">LINUX DO PAY</div>
-                  <div className="text-[9px] text-muted-foreground mt-0.5">即时安全支付</div>
+                  <div className="font-bold text-xs text-foreground">LINUX DO Credit</div>
+                  <div className="text-[9px] text-muted-foreground mt-0.5">即时安全认证</div>
                 </div>
                 <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all duration-300 ${ selectedMethod === PAYMENT_METHODS.LINUX_DO_PAY
                   ? 'border-primary bg-primary text-primary-foreground'
@@ -224,12 +224,12 @@ function MethodSelectionStep({
                     <Lock className="size-3 text-primary" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[10px] opacity-70">付款账户</span>
+                    <span className="text-[10px] opacity-70">消费方账户</span>
                     <span className="font-medium text-foreground">{orderInfo.order.payer_username || user?.username}</span>
                   </div>
                 </div>
                 <Button
-                  onClick={() => onCurrentStepChange(PAYMENT_STEPS.PAY)}
+                  onClick={() => onCurrentStepChange(PAYMENT_STEPS.Credit)}
                   className="w-full rounded-full font-bold text-sm shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   确认并继续
@@ -244,8 +244,8 @@ function MethodSelectionStep({
 }
 
 /**
- * 支付步骤组件
- * 显示支付步骤
+ * 认证步骤组件
+ * 显示认证步骤
  */
 function PaymentStep({
   orderInfo,
@@ -281,7 +281,7 @@ function PaymentStep({
           <ArrowLeft className="size-3.5 mr-1" /> 返回
         </Button>
         <h2 className="text-xl font-bold text-foreground tracking-tight">身份验证</h2>
-        <p className="text-xs text-muted-foreground">请输入您的6位支付密码</p>
+        <p className="text-xs text-muted-foreground">请输入您的6位安全密码</p>
       </div>
 
       <div className="flex justify-center py-4">
@@ -317,7 +317,7 @@ function PaymentStep({
             <Send className="size-4" animate={true} loop={true} loopDelay={2000} /> 处理中...
           </span>
         ) : (
-          `支付 LDC ${ (parseFloat(orderInfo.order.amount)).toFixed(2) }`
+          `消耗 LDC ${ (parseFloat(orderInfo.order.amount)).toFixed(2) }`
         )}
       </Button>
     </motion.div>
@@ -334,7 +334,7 @@ function ErrorState({ status }: { status: string }) {
       <div className="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
         <AlertCircle className="size-6 text-red-500" />
       </div>
-      <h3 className="text-lg font-bold text-foreground mb-1">订单问题</h3>
+      <h3 className="text-lg font-bold text-foreground mb-1">认证出现问题</h3>
       <p className="text-muted-foreground text-sm">状态：<span className="font-medium text-foreground">{status}</span></p>
     </div>
   )
@@ -352,7 +352,7 @@ function Footer({ loading }: { loading?: boolean }) {
   ) : (
     <div className="flex items-center justify-center gap-2 text-[10px] uppercase font-bold text-muted-foreground/40 mt-10">
       <ShieldCheck className="size-3" />
-      <span>由 LINUX DO PAY 提供安全支付</span>
+      <span>由 LINUX DO Credit 提供安全认证</span>
     </div>
   )
 }

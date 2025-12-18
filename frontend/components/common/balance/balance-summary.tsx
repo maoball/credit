@@ -10,7 +10,7 @@ const COLORS = {
 } as const
 
 /**
- * 计算余额百分比
+ * 计算积分余额百分比
  */
 function calculatePercentages(available: number, total: number) {
   if (total <= 0) {
@@ -25,9 +25,9 @@ function calculatePercentages(available: number, total: number) {
 }
 
 /**
- * 余额摘要组件
+ * 积分余额摘要组件
  * 
- * 显示余额的可视化摘要,包括可视化进度条和详细的余额分类列表
+ * 显示积分余额的可视化摘要,包括可视化进度条和详细的积分余额分类列表
  */
 export function BalanceSummary() {
   const { user, loading } = useUser()
@@ -47,7 +47,7 @@ export function BalanceSummary() {
       <div
         className={`w-full h-4 ${ COLORS.emptyState } rounded-sm overflow-hidden flex`}
         role="progressbar"
-        aria-label="余额分布"
+        aria-label="积分余额分布"
         aria-valuenow={percentages.available}
         aria-valuemin={0}
         aria-valuemax={100}
@@ -60,14 +60,14 @@ export function BalanceSummary() {
         <div
           className={`${ COLORS.pending } transition-all duration-300`}
           style={{ width: `${ percentages.pending }%` }}
-          title={`未来款项: ${ percentages.pending.toFixed(1) }%`}
+          title={`未来积分: ${ percentages.pending.toFixed(1) }%`}
         />
       </div>
 
       <div className="space-y-2">
         <div className="flex justify-between items-center text-xs font-medium pb-2 border-b border-border/80">
-          <span>支付类型</span>
-          <span className="text-muted-foreground">金额</span>
+          <span>积分类型</span>
+          <span className="text-muted-foreground">值</span>
         </div>
 
         <div className="flex justify-between items-center font-bold text-sm pb-2 border-b border-border/80">
@@ -91,7 +91,7 @@ export function BalanceSummary() {
         <div className="flex justify-between items-center font-bold text-sm pb-2 border-b border-border/80">
           <div className="flex items-center gap-2">
             <div className={`size-2.5 ${ COLORS.pending } rounded-xs`} aria-hidden="true" />
-            <span>未来款项</span>
+            <span>未来积分</span>
           </div>
           <span className="font-semibold">
             {loading ? "-" : (

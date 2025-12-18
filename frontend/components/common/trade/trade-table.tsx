@@ -6,9 +6,9 @@ import type { OrderStatus, OrderType, TransactionQueryParams } from "@/lib/servi
 import { formatLocalDate } from "@/lib/utils"
 
 /**
- * 交易表格组件
+ * 活动表格组件
  * 
- * 支持类型、状态、时间范围筛选的交易记录显示（支持分页）
+ * 支持类型、状态、时间范围筛选的活动记录显示（支持分页）
  */
 export function TradeTable({ type }: { type?: OrderType }) {
   /* 计算最近一个月的时间范围 */
@@ -37,9 +37,9 @@ export function TradeTable({ type }: { type?: OrderType }) {
 }
 
 /**
- * 交易列表组件
+ * 活动列表组件
  * 
- * 显示交用户交易记录
+ * 显示交用户活动记录
  */
 function TransactionList({ initialType }: { initialType?: OrderType }) {
   const {

@@ -211,7 +211,7 @@ func Serve() {
 					systemConfigRouter.DELETE("", system_config.DeleteSystemConfig)
 				}
 
-				// User Pay Config
+				// User Credit Config
 				adminRouter.POST("/user-pay-configs", user_pay_config.CreateUserPayConfig)
 				adminRouter.GET("/user-pay-configs", user_pay_config.ListUserPayConfigs)
 

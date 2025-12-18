@@ -57,12 +57,12 @@ export function PayingOnline() {
     }
 
     const errorMap: Record<string, string> = {
-      '不存在': "支付链接不存在或已失效",
-      '未登录': "请先登录后再进行支付",
-      '余额不足': "账户余额不足",
-      '支付密码': "支付密码错误",
-      '不能支付': "不能支付自己创建的商品",
-      '每日限额': "已达到每日支付限额",
+      '不存在': "此积分流转服务不存在或已失效",
+      '未登录': "请先登录后再进行认证",
+      '余额不足': "账户积分不足",
+      '支付密码': "安全密码错误",
+      '不能支付': "不能支付自己创建的积分流转服务",
+      '每日限额': "已达到每日认证限额",
     }
 
     const userMessage = Object.entries(errorMap).find(([key]) =>
@@ -135,7 +135,7 @@ export function PayingOnline() {
       setOrderInfo(mockOrderInfo)
       setError(false)
     } catch (error: unknown) {
-      handleServiceError(error, "查询支付链接")
+      handleServiceError(error, "查询积分流转服务")
       setPaymentLink(null)
       setOrderInfo(null)
       setError(true)
@@ -149,12 +149,12 @@ export function PayingOnline() {
     if (!paymentLink || !token) return
 
     if (!payKey.trim()) {
-      toast.error("请输入支付密码")
+      toast.error("请输入安全密码")
       return
     }
 
     if (payKey.length < 6 || payKey.length > 10) {
-      toast.error("支付密码长度必须为6-10位")
+      toast.error("安全密码长度必须为6位")
       return
     }
 
@@ -166,7 +166,7 @@ export function PayingOnline() {
         remark: paymentLink.remark || undefined
       })
 
-      toast.success("支付成功！", { id: 'payment-success' })
+      toast.success("积分流转服务认证成功！", { id: 'payment-success' })
 
       /* 支付成功后更新订单状态 */
       if (orderInfo) {
@@ -185,7 +185,7 @@ export function PayingOnline() {
         window.location.reload()
       }, 5000)
     } catch (error: unknown) {
-      handleServiceError(error, "支付")
+      handleServiceError(error, "认证")
     } finally {
       setPaying(false)
     }
@@ -208,7 +208,7 @@ export function PayingOnline() {
                 出了点问题
               </h1>
               <p className="text-muted-foreground text-sm">
-                您访问的支付链接不存在或已失效。请检查链接地址是否正确，如有疑问请联系商家。
+                您访问的积分流转服务不存在或已失效。请检查链接地址是否正确，对此如有疑问请联系社区技术支持。
               </p>
             </div>
           </motion.div>

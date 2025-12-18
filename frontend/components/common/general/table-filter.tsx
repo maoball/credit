@@ -17,11 +17,11 @@ import type { OrderType, OrderStatus } from "@/lib/services"
 
 /* 类型标签配置 */
 export const typeConfig: Record<OrderType, { label: string; color: string }> = {
-  receive: { label: '收款', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' },
-  payment: { label: '付款', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' },
-  transfer: { label: '转账', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' },
+  receive: { label: '积分收益', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' },
+  payment: { label: '积分消耗', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' },
+  transfer: { label: '积分转移', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' },
   community: { label: '社区划转', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' },
-  online: { label: '在线商品', color: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300' }
+  online: { label: '在线活动', color: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300' }
 }
 
 /* 状态标签配置 */
@@ -31,7 +31,7 @@ export const statusConfig: Record<OrderStatus, { label: string; color: string }>
   failed: { label: '失败', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' },
   expired: { label: '已过期', color: 'bg-muted/50 text-gray-800 dark:bg-gray-900 dark:text-gray-300' },
   disputing: { label: '争议中', color: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300' },
-  refund: { label: '已退款', color: 'bg-muted/50 text-gray-800 dark:bg-gray-900 dark:text-gray-300' },
+  refund: { label: '已退回', color: 'bg-muted/50 text-gray-800 dark:bg-gray-900 dark:text-gray-300' },
   refused: { label: '已拒绝', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' }
 }
 
@@ -319,13 +319,11 @@ function TimeRangeFilter({
       from.setHours(0, 0, 0, 0)
 
       if (range.to) {
-        // 用户选择了完整范围，保存用户选择的日期（不调整）
         const to = new Date(range.to)
         to.setHours(0, 0, 0, 0)
         onTimeRangeChange({ from, to })
         onQuickSelectionChange?.(null)
       } else if (range.from.getTime() === selectedTimeRange?.from?.getTime()) {
-        // 用户第二次点击同一日期，作为单日范围
         const to = new Date(from)
         to.setHours(0, 0, 0, 0)
         onTimeRangeChange({ from, to })

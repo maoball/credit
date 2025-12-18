@@ -16,9 +16,9 @@ import { UserService } from "@/lib/services/user"
 const payKeySchema = z.object({
   newPayKey: z
     .string()
-    .min(6, "支付密码必须是6位数字")
-    .max(6, "支付密码必须是6位数字")
-    .regex(/^\d{6}$/, "支付密码只能包含数字"),
+    .min(6, "密码必须是6位数字")
+    .max(6, "密码必须是6位数字")
+    .regex(/^\d{6}$/, "密码只能包含数字"),
   confirmPayKey: z.string(),
 }).refine((data) => data.newPayKey === data.confirmPayKey, {
   message: "两次输入的密码不一致",
@@ -44,14 +44,14 @@ export function SecurityMain() {
       await UserService.updatePayKey(data.newPayKey)
 
       toast.success("修改成功", {
-        description: "您的支付密码已成功更新",
+        description: "您的密码已成功更新",
       })
 
       /* 重置表单 */
       form.reset()
     } catch (error) {
       toast.error("修改失败", {
-        description: error instanceof Error ? error.message : "更新支付密码时发生错误，请稍后重试",
+        description: error instanceof Error ? error.message : "更新密码时发生错误，请稍后重试",
       })
     } finally {
       setIsSubmitting(false)
@@ -81,7 +81,7 @@ export function SecurityMain() {
       </div>
 
       <div className="space-y-6">
-        <div className="font-medium text-sm text-muted-foreground">支付安全</div>
+        <div className="font-medium text-sm text-muted-foreground">密码安全</div>
 
         <div>
           <Form {...form}>
@@ -91,7 +91,7 @@ export function SecurityMain() {
                 name="newPayKey"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs text-muted-foreground">新支付密码</FormLabel>
+                    <FormLabel className="text-xs text-muted-foreground">新密码</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
@@ -111,7 +111,7 @@ export function SecurityMain() {
                 name="confirmPayKey"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs text-muted-foreground">确认支付密码</FormLabel>
+                    <FormLabel className="text-xs text-muted-foreground">确认密码</FormLabel>
                     <FormControl>
                       <Input
                         type="password"

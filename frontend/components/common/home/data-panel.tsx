@@ -5,7 +5,6 @@ import { CountingNumber } from '@/components/animate-ui/primitives/texts/countin
 import { useUser } from "@/contexts/user-context"
 
 
-/* mock data */
 const chartData = [
   { date: "10-28", total: 0 },
   { date: "10-29", total: 99 },
@@ -18,10 +17,9 @@ const chartData = [
   { date: "11-05", total: 0 },
 ]
 
-/* chart config */
 const chartConfig = {
   total: {
-    label: "总额",
+    label: "积分值",
     color: "hsl(217, 91%, 60%)",
   },
 } satisfies ChartConfig
@@ -41,7 +39,7 @@ export function DataPanel() {
     <div>
       <div className="grid grid-cols-3 gap-12">
         <div className="col-span-2">
-          <h3 className="text-sm text-muted-foreground font-medium">总额</h3>
+          <h3 className="text-sm text-muted-foreground font-medium">积分总额</h3>
 
           <ChartContainer config={chartConfig} className=" w-full h-[240px]">
             <AreaChart
@@ -95,7 +93,7 @@ export function DataPanel() {
 
         <div className="col-span-1 flex flex-col">
           <div className="flex-1 border-b pb-4">
-            <div className="text-sm text-muted-foreground font-medium">LINUX DO 积分</div>
+            <div className="text-sm text-muted-foreground font-medium">LINUX DO Credits</div>
             <div className="text-xl font-semibold pt-2">
               {loading ? '-' : <CountingNumber number={availableBalance} decimalPlaces={2} />}
             </div>

@@ -55,7 +55,7 @@ export const DeveloperSection = React.memo(function DeveloperSection({ className
               </div>
               <pre className="text-sm font-mono text-neutral-300 leading-relaxed">
                 <code className="block">
-                  <span className="text-purple-400">curl</span> <span className="text-green-400">https://api.linux.do/pay/v1/charges</span> \{'\n'}
+                  <span className="text-purple-400">curl</span> <span className="text-green-400">https://api.linux.do/credit/v1/flows</span> \{'\n'}
                   {'  '}-u <span className="text-yellow-400">sk_live_...:</span> \{'\n'}
                   {'  '}-d <span className="text-blue-400">amount</span>=<span className="text-orange-400">1000</span> \{'\n'}
                   {'  '}-d <span className="text-blue-400">currency</span>=<span className="text-green-400">&quot;cny&quot;</span> \{'\n'}
@@ -80,7 +80,7 @@ export const DeveloperSection = React.memo(function DeveloperSection({ className
               开发者快速集成
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-              标准化的 RESTful API 接口，清晰的错误提示，完善的调试工具。无论您使用什么编程语言，只需几行代码，即可完成支付功能接入。
+              标准化的 RESTful API 接口，清晰的错误提示，完善的调试工具。无论您使用什么编程语言，只需几行代码，即可完成积分服务功能接入。
             </p>
 
             <ul className="space-y-4 mb-8">

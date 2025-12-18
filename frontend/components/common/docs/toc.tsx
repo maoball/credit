@@ -36,7 +36,7 @@ export function TableOfContents({ content, className }: TableOfContentsProps) {
     const lines = content.split('\n');
 
     lines.forEach((line) => {
-      const match = line.match(/^(#{1,4})\s+(.+)$/);
+      const match = line.match(/^(#{2,4})\s+(.+)$/);
       if (match) {
         const level = match[1].length;
         const text = match[2].trim();
@@ -140,7 +140,7 @@ export function TableOfContents({ content, className }: TableOfContentsProps) {
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
               style={{
-                paddingLeft: `${ (item.level - 1) * 12 + 8 }px`,
+                paddingLeft: `${ (item.level - 2) * 12 + 8 }px`,
               }}
             >
               {activeId === item.id && (

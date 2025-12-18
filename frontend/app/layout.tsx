@@ -24,8 +24,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LINUX DO PAY",
-  description: "Linux Do 社区支付平台",
+  title: "LINUX DO Credit",
+  description: "Linux Do 社区积分服务平台",
 };
 
 export default function RootLayout({

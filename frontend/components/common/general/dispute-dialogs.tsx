@@ -28,7 +28,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { typeConfig } from "@/components/common/general/table-filter"
 
 /**
- * 订单详情弹窗
+ * 活动详情弹窗
  */
 export function OrderDetailDialog({ order }: { order: Order }) {
   const [open, setOpen] = useState(false)
@@ -53,7 +53,7 @@ export function OrderDetailDialog({ order }: { order: Order }) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle>交易详情</DialogTitle>
+            <DialogTitle>积分流转详情</DialogTitle>
           </DialogHeader>
 
           <div className="relative bg-card rounded-lg shadow-xl overflow-hidden">
@@ -66,7 +66,7 @@ export function OrderDetailDialog({ order }: { order: Order }) {
               </div>
 
               <div className="text-center py-2">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Total Amount</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Total Credits</p>
                 <div className="text-4xl font-black tracking-tighter flex items-start justify-center gap-1">
                   {parseFloat(order.amount).toFixed(2)}
                 </div>
@@ -74,7 +74,7 @@ export function OrderDetailDialog({ order }: { order: Order }) {
 
               <div className="space-y-0 text-sm border-y-2 border-dashed border-border/50 py-4">
                 <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
-                  <span className="text-muted-foreground text-xs uppercase font-medium">订单号</span>
+                  <span className="text-muted-foreground text-xs uppercase font-medium">编号</span>
                   <span className="font-mono text-xs font-medium">{order.order_no}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
@@ -82,16 +82,16 @@ export function OrderDetailDialog({ order }: { order: Order }) {
                   <span className="text-xs font-medium">{typeConfig[order.type]?.label || order.type}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
-                  <span className="text-muted-foreground text-xs uppercase font-medium">付款方</span>
+                  <span className="text-muted-foreground text-xs uppercase font-medium">消费方</span>
                   <span className="text-xs font-medium">{order.payer_username}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
-                  <span className="text-muted-foreground text-xs uppercase font-medium">收款方</span>
+                  <span className="text-muted-foreground text-xs uppercase font-medium">服务方</span>
                   <span className="text-xs font-medium">{order.payee_username}</span>
                 </div>
                 {(order.status === 'success' || order.status === 'refund') && (
                   <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
-                    <span className="text-muted-foreground text-xs uppercase font-medium">交易时间</span>
+                    <span className="text-muted-foreground text-xs uppercase font-medium">时间</span>
                     <span className="font-mono text-xs">{formatDateTime(order.trade_time)}</span>
                   </div>
                 )}
@@ -108,7 +108,7 @@ export function OrderDetailDialog({ order }: { order: Order }) {
                   ))}
                 </div>
                 <p className="text-[10px] text-muted-foreground font-mono tracking-wider text-center">
-                  LINUX DO PAY
+                  LINUX DO Credit
                 </p>
               </div>
             </div>
@@ -169,7 +169,7 @@ export function CreateDisputeDialog({ order, onSuccess }: { order: Order; onSucc
     const now = new Date()
 
     if (now > expiryTime) {
-      toast.error('无法发起争议', { description: '此订单已超过最晚发起争议时间' })
+      toast.error('无法发起争议', { description: '已超过最晚发起争议时间' })
       return
     }
 
@@ -197,7 +197,7 @@ export function CreateDisputeDialog({ order, onSuccess }: { order: Order; onSucc
     try {
       setLoading(true)
       await TransactionService.createDispute({ order_id: order.id, reason: reason.trim() })
-      toast.success('争议已发起', { description: '请等待商家处理' })
+      toast.success('争议已发起', { description: '请等待服务方处理' })
       updateOrderStatus(order.id, { status: 'disputing' })
       setOpen(false)
       resetForm()
@@ -232,7 +232,7 @@ export function CreateDisputeDialog({ order, onSuccess }: { order: Order; onSucc
           <DialogHeader>
             <DialogTitle>发起争议</DialogTitle>
             <DialogDescription>
-              如果您对订单有疑问，可以发起争议。商家将在规定时间内处理。
+              如果您对该积分活动有疑问，可以发起争议，服务方将在规定时间内处理。
             </DialogDescription>
           </DialogHeader>
 
@@ -326,9 +326,9 @@ export function CancelDisputeDialog({ order, onSuccess }: { order: Order; onSucc
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>取消争议</DialogTitle>
+            <DialogTitle>争议取消</DialogTitle>
             <DialogDescription>
-              您确定要取消当前的争议申请吗？取消后交易将恢复正常。
+              您确定取消当前的争议吗？取消后争议将恢复正常。
             </DialogDescription>
           </DialogHeader>
 
@@ -403,7 +403,7 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
   }
 
   const parseDisputeReason = (fullReason: string) => {
-    const match = fullReason.match(/^(.*?)\[商家拒绝理由: (.*?)\]$/)
+    const match = fullReason.match(/^(.*?)\[服务方拒绝理由: (.*?)\]$/)
     if (match) {
       return { userReason: match[1].trim(), merchantReason: match[2].trim() }
     }
@@ -444,7 +444,7 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
                 <div className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-primary ring-4 ring-background" />
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">用户发起争议</span>
+                    <span className="text-sm font-medium">消费方发起争议</span>
                     <span className="text-xs text-muted-foreground">{formatDateTime(disputeHistory.created_at)}</span>
                   </div>
                   <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
@@ -457,7 +457,7 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
                 <div className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-destructive ring-4 ring-background" />
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-destructive">商家驳回争议</span>
+                    <span className="text-sm font-medium text-destructive">服务方驳回争议</span>
                     <span className="text-xs text-muted-foreground">{formatDateTime(disputeHistory.updated_at)}</span>
                   </div>
                   <div className="text-sm text-muted-foreground bg-destructive/5 border border-destructive/10 p-3 rounded-md">
@@ -486,7 +486,7 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
 }
 
 /**
- * 退款审核弹窗
+ * 退款审核活动弹窗
  */
 export function RefundReviewDialog({ order, onSuccess }: { order: Order; onSuccess?: () => void }) {
   const { updateOrderStatus } = useTransaction()
@@ -555,7 +555,7 @@ export function RefundReviewDialog({ order, onSuccess }: { order: Order; onSucce
     }
 
     if (reason.length > 100) {
-      toast.error('拒绝原因不能超过 100 个字符')
+      toast.error('拒绝理由不能超过 100 个字符')
       return
     }
 
@@ -574,7 +574,7 @@ export function RefundReviewDialog({ order, onSuccess }: { order: Order; onSucce
       })
 
       toast.success('处理成功', {
-        description: action === 'refund' ? '已同意退款，争议结束' : '已拒绝退款，交易继续'
+        description: action === 'refund' ? '已同意积分退回，争议结束' : '已拒绝积分退回，此积分活动正常进行'
       })
 
       updateOrderStatus(order.id, {
@@ -586,8 +586,8 @@ export function RefundReviewDialog({ order, onSuccess }: { order: Order; onSucce
       refetchUser()
       onSuccess?.()
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : '处理失败'
-      toast.error('处理失败', { description: errorMessage })
+      const errorMessage = error instanceof Error ? error.message : '处理争议失败'
+      toast.error('处理争议失败', { description: errorMessage })
     } finally {
       setLoading(false)
     }
@@ -618,7 +618,7 @@ export function RefundReviewDialog({ order, onSuccess }: { order: Order; onSucce
           <DialogHeader>
             <DialogTitle>处理争议</DialogTitle>
             <DialogDescription>
-              请审核此争议申请。您可以同意退款或拒绝退款。
+              请审核此争议。您可以选择同意或拒绝退回积分。
             </DialogDescription>
           </DialogHeader>
 
@@ -649,9 +649,9 @@ export function RefundReviewDialog({ order, onSuccess }: { order: Order; onSucce
                 >
                   <div className="flex items-center gap-2">
                     <Banknote className="h-4 w-4" />
-                    <span className="font-semibold">同意退款</span>
+                    <span className="font-semibold">同意积分退回</span>
                   </div>
-                  <span className="text-[10px] text-muted-foreground font-normal">全额退款，争议结束</span>
+                  <span className="text-[10px] text-muted-foreground font-normal">积分全额退回，争议结束</span>
                 </Button>
 
                 <Button
@@ -661,9 +661,9 @@ export function RefundReviewDialog({ order, onSuccess }: { order: Order; onSucce
                 >
                   <div className="flex items-center gap-2">
                     <TicketSlash className="h-4 w-4" />
-                    <span className="font-semibold">拒绝退款</span>
+                    <span className="font-semibold">拒绝积分退回</span>
                   </div>
-                  <span className="text-[10px] text-muted-foreground font-normal">拒绝申请，交易继续</span>
+                  <span className="text-[10px] text-muted-foreground font-normal">拒绝积分退回，此积分活动正常进行</span>
                 </Button>
               </div>
 
@@ -674,7 +674,7 @@ export function RefundReviewDialog({ order, onSuccess }: { order: Order; onSucce
                   </Label>
                   <Textarea
                     id="reject-reason"
-                    placeholder="请说明拒绝退款的原因..."
+                    placeholder="请说明拒绝退回的原因..."
                     maxLength={100}
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}

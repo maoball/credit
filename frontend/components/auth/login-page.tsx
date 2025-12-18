@@ -47,13 +47,13 @@ export function LoginPage() {
   const isConfirmValid = confirmPayKey.length === 6 && /^\d{6}$/.test(confirmPayKey)
   const passwordsMatch = payKey === confirmPayKey
 
-  /* 支付密码输入 */
+  /* 安全密码输入 */
   const handlePayKeyChange = (value: string) => {
     const numericValue = value.replace(/\D/g, '')
     setPayKey(numericValue)
   }
 
-  /* 确认支付密码 */
+  /* 确认安全密码 */
   const handleConfirmPayKeyChange = (value: string) => {
     const numericValue = value.replace(/\D/g, '')
     setConfirmPayKey(numericValue)
@@ -98,13 +98,13 @@ export function LoginPage() {
     handleOAuthCallback()
   }, [searchParams, router])
 
-  /* 支付密码设置 */
+  /* 安全密码设置 */
   const handlePayKeySubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (setupStep === 'password') {
       if (!isPayKeyValid) {
-        toast.error("支付密码必须为6位数字")
+        toast.error("安全密码必须为6位数字")
         return
       }
       setSetupStep('confirm')
@@ -115,7 +115,7 @@ export function LoginPage() {
       }
 
       if (!passwordsMatch) {
-        toast.error("两次输入的支付密码不一致")
+        toast.error("两次输入的安全密码不一致")
         setSetupStep('password')
         setConfirmPayKey("")
         return
@@ -124,7 +124,7 @@ export function LoginPage() {
       setIsSubmittingPayKey(true)
       try {
         await services.user.updatePayKey(payKey)
-        toast.success("支付密码设置成功")
+        toast.success("安全密码设置成功")
         setNeedsPayKeySetup(false)
         setLoginSuccess(true)
         setPayKey("")
@@ -138,7 +138,7 @@ export function LoginPage() {
           router.replace(callbackUrl)
         }, 1500)
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "设置支付密码失败"
+        const errorMessage = error instanceof Error ? error.message : "设置安全密码失败"
         toast.error(errorMessage)
         setSetupStep('password')
         setConfirmPayKey("")
@@ -159,11 +159,11 @@ export function LoginPage() {
     >
       <div className="flex flex-col items-center gap-2 mb-4">
         <h3 className="text-base font-bold tracking-tight text-center">
-          {setupStep === 'password' ? '设置支付密码' : '确认支付密码'}
+          {setupStep === 'password' ? '设置安全密码' : '确认安全密码'}
         </h3>
         <p className="text-xs text-muted-foreground text-center max-w-[320px] mx-auto">
           {setupStep === 'password'
-            ? '请设置6位数字支付密码，用于安全交易'
+            ? '请设置6位数字安全密码，用于安全操作'
             : '请再次输入密码进行确认'}
         </p>
       </div>
@@ -258,7 +258,7 @@ export function LoginPage() {
       >
         <div className="text-center mb-8 space-y-2">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            LINUX DO <span className="font-serif italic text-primary">PAY</span>
+            LINUX DO <span className="font-serif italic text-primary">Credit</span>
           </h1>
           <p className="text-sm text-muted-foreground font-light">
             简单、安全，专为社区设计
@@ -317,7 +317,7 @@ export function LoginPage() {
         </AnimatePresence>
 
         <div className="mt-8 text-center text-xs text-neutral-400">
-          &copy; {new Date().getFullYear()} LINUX DO PAY. 版权所有
+          &copy; {new Date().getFullYear()} LINUX DO Credit. 版权所有
         </div>
       </motion.div>
     </AuroraBackground>

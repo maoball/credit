@@ -9,7 +9,7 @@ import type { GetMerchantOrderResponse } from "@/lib/services"
 
 /**
  * 加载中骨架组件
- * 显示订单信息加载中的骨架
+ * 显示活动信息加载中的骨架
  */
 function LoadingSkeleton() {
   return (
@@ -48,8 +48,8 @@ function LoadingSkeleton() {
 }
 
 /**
- * 订单信息组件
- * 显示订单信息
+ * 活动信息组件
+ * 显示活动信息
  */
 function OrderContent({ orderInfo, forceMobile = false }: { orderInfo: GetMerchantOrderResponse, forceMobile?: boolean }) {
   const amount = parseFloat(orderInfo.order.amount).toFixed(2)
@@ -60,7 +60,7 @@ function OrderContent({ orderInfo, forceMobile = false }: { orderInfo: GetMercha
     <div className="w-full">
       <div className={`mb-4 text-center ${ forceMobile ? '' : 'md:mb-6 md:text-left' }`}>
         <div className={`inline-flex items-center justify-center gap-1.5 mb-1 text-white/50 text-[10px] font-medium uppercase tracking-wider ${ forceMobile ? '' : 'md:justify-start md:gap-2 md:mb-1.5 md:text-xs' }`}>
-          <span>支付给</span>
+          <span>服务方</span>
           <span className="w-1 h-1 rounded-full bg-white/30" />
           <span className="text-white hover:text-blue-400 transition-colors cursor-pointer font-bold">{orderInfo.merchant.app_name}</span>
         </div>
@@ -84,21 +84,21 @@ function OrderContent({ orderInfo, forceMobile = false }: { orderInfo: GetMercha
           </div>
 
           <button className="w-full text-xs text-left mb-3 text-white/40 hover:text-white transition-colors duration-200 flex items-center gap-2 group">
-            <span>添加促销码</span>
+            <span>添加优惠码</span>
             <span className="px-1.5 py-0.5 rounded text-[10px] bg-white/5 text-white/30">暂未开放</span>
           </button>
 
           <div className="flex justify-between items-center pt-2">
-            <p className="text-base font-bold text-white">应付合计</p>
+            <p className="text-base font-bold text-white">积分合计</p>
             <p className="text-lg font-bold text-white tracking-tight">LDC {amount}</p>
           </div>
         </div>
 
         <div className="px-2">
           <p className="text-[10px] text-white/30 space-y-0.5 leading-relaxed">
-            * 包含 {feeRate}% 手续费 (由商家承担)。
+            * 包含 {feeRate}% 的服务手续费 (由服务方承担)。
             <br />
-            手续费率根据商家等级动态调整，不会增加您的支付金额。
+            服务手续费率根据服务方等级动态调整，不会消耗您（消费者）的积分。
           </p>
         </div>
       </div>
@@ -107,8 +107,8 @@ function OrderContent({ orderInfo, forceMobile = false }: { orderInfo: GetMercha
 }
 
 /**
- * 支付信息组件
- * 显示支付信息
+ * 活动信息组件
+ * 显示活动信息
  */
 export function PayingInfo({ orderInfo, loading = false, forceMobile = false }: { orderInfo: GetMerchantOrderResponse, loading: boolean, forceMobile?: boolean }) {
 
@@ -130,7 +130,7 @@ export function PayingInfo({ orderInfo, loading = false, forceMobile = false }: 
             </div>
           ) : (
             <>
-              <div className="text-white/50 text-[10px] uppercase tracking-wider mb-1">支付给 {orderInfo.merchant.app_name}</div>
+              <div className="text-white/50 text-[10px] uppercase tracking-wider mb-1">服务方 {orderInfo.merchant.app_name}</div>
               <div className="text-3xl font-bold text-white tracking-tight flex items-baseline justify-center gap-1">
                 <span className="text-lg text-white/50 font-normal">LDC</span>
                 {(parseFloat(orderInfo.order.amount)).toFixed(2)}
@@ -151,7 +151,7 @@ export function PayingInfo({ orderInfo, loading = false, forceMobile = false }: 
             {loading ? (
               <Skeleton className="h-5 w-24 bg-white/10" />
             ) : (
-              <span className="text-xs font-bold text-white/60">订单摘要</span>
+              <span className="text-xs font-bold text-white/60">积分流转信息</span>
             )}
           </div>
         </div>
@@ -170,7 +170,7 @@ export function PayingInfo({ orderInfo, loading = false, forceMobile = false }: 
 
         <div className={`hidden mt-auto pt-8 ${ forceMobile ? '' : 'md:block' }`}>
           <div className="text-[10px] text-white/20 font-mono">
-            ODR: {orderInfo?.order?.order_no || 'LOADING...'}
+            ORDER: {orderInfo?.order?.order_no || 'LOADING...'}
           </div>
         </div>
       </div>

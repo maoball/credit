@@ -20,9 +20,9 @@ import services from "@/lib/services"
 import type { TransferRequest } from "@/lib/services"
 
 /**
- * 转账组件
+ * 积分转移组件
  * 
- * 提供用户之间的转账功能 (弹窗式)
+ * 提供用户之间的积分转移功能 (弹窗式)
  */
 export function Transfer() {
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -44,29 +44,29 @@ export function Transfer() {
   /* 处理表单提交（第一步）*/
   const handleFormSubmit = () => {
     if (!recipientUsername.trim()) {
-      toast.error("请输入收款人账户")
+      toast.error("请输入接收方账户")
       return
     }
 
     if (!recipientId.trim()) {
-      toast.error("请输入收款人 ID")
+      toast.error("请输入接收方 ID")
       return
     }
 
     /* 验证ID是否为有效数字*/
     const idNum = parseInt(recipientId)
     if (isNaN(idNum) || idNum <= 0) {
-      toast.error("收款人 ID 格式不正确")
+      toast.error("接收方 ID 格式不正确")
       return
     }
 
     if (!amount.trim()) {
-      toast.error("请输入转账金额")
+      toast.error("请输入要转移的积分数量")
       return
     }
 
     if (!validateAmount(amount)) {
-      toast.error("金额格式不正确，必须大于0且最多2位小数")
+      toast.error("积分数量格式不正确，必须大于0且最多2位小数")
       return
     }
 
@@ -94,7 +94,7 @@ export function Transfer() {
 
       await services.transaction.transfer(transferData)
 
-      toast.success("转账成功！资金已实时到账。")
+      toast.success("积分转移成功！积分已实时到账。")
 
       /* 重置所有状态*/
       setRecipientUsername("")
@@ -103,12 +103,12 @@ export function Transfer() {
       setRemark("")
       setIsPasswordOpen(false)
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : '转账失败'
-      toast.error('转账失败', {
+      const errorMessage = error instanceof Error ? error.message : '转移失败'
+      toast.error('转移失败', {
         description: errorMessage
       })
 
-      toast.error('转账失败', {
+      toast.error('转移失败', {
         description: errorMessage
       })
     } finally {
@@ -120,15 +120,15 @@ export function Transfer() {
     <div className="space-y-4">
       <div className="bg-muted/50 rounded-lg px-6 py-8">
         <div className="max-w-2xl">
-          <h2 className="text-3xl font-bold mb-4 text-foreground">开始转账</h2>
+          <h2 className="text-3xl font-bold mb-4 text-foreground">开始转移</h2>
           <p className="text-muted-foreground mb-6 leading-relaxed">
-            快速、安全地将资金转账给其他用户。支持实时到账，资金即刻可用。
+            快速、安全地将积分转移给其他用户，支持实时到账，积分即刻可用。
           </p>
           <Button
             onClick={() => setIsFormOpen(true)}
             className="bg-primary hover:bg-primary/90 font-medium px-6 rounded-md shadow-sm"
           >
-            开始使用
+            开始转移
           </Button>
         </div>
       </div>
@@ -136,9 +136,9 @@ export function Transfer() {
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>填写转账信息</DialogTitle>
+            <DialogTitle>积分转移</DialogTitle>
             <DialogDescription>
-              请仔细核对收款人信息和金额
+              请仔细填写并核对接收方的信息和要转移的积分数量
             </DialogDescription>
           </DialogHeader>
 
@@ -146,7 +146,7 @@ export function Transfer() {
             <div className="grid gap-2">
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="recipient">收款人账户 <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="recipient">接收方账户 <span className="text-red-500">*</span></Label>
                   <Input
                     id="recipient"
                     type="text"
@@ -155,27 +155,27 @@ export function Transfer() {
                     onChange={(e) => setRecipientUsername(e.target.value)}
                     disabled={loading}
                   />
-                  <p className="text-xs text-muted-foreground">请输入收款人的账户</p>
+                  <p className="text-xs text-muted-foreground">请输入接收方的账户</p>
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="recipientId">收款人 ID <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="recipientId">接收方 ID <span className="text-red-500">*</span></Label>
                   <Input
                     id="recipientId"
                     type="text"
                     value={recipientId}
                     onChange={(e) => setRecipientId(e.target.value)}
-                    placeholder="输入收款人 ID"
+                    placeholder="输入接收方 ID"
                     className="font-mono"
                     disabled={loading}
                   />
-                  <p className="text-xs text-muted-foreground">请输入收款人的用户 ID</p>
+                  <p className="text-xs text-muted-foreground">请输入接收方的用户 ID</p>
                 </div>
               </div>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="amount">转账金额 <span className="text-red-500">*</span></Label>
+              <Label htmlFor="amount">积分数量 <span className="text-red-500">*</span></Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">LDC</span>
                 <Input
@@ -188,14 +188,14 @@ export function Transfer() {
                   disabled={loading}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">请输入转账金额，支持最多两位小数</p>
+              <p className="text-xs text-muted-foreground">请输入要转移的积分数量，支持最多两位小数</p>
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="remark">备注信息</Label>
               <Textarea
                 id="remark"
-                placeholder="添加转账备注（可选）"
+                placeholder="添加备注（可选）"
                 value={remark}
                 onChange={(e) => setRemark(e.target.value)}
                 maxLength={200}
@@ -203,7 +203,7 @@ export function Transfer() {
                 className="resize-none"
                 disabled={loading}
               />
-              <p className="text-xs text-muted-foreground">最多 200 个字符，用于记录转账用途，可选</p>
+              <p className="text-xs text-muted-foreground">最多 200 个字符，用于记录用途，可选</p>
             </div>
           </div>
 
@@ -235,8 +235,8 @@ export function Transfer() {
         }}
         onConfirm={handleConfirmTransfer}
         loading={loading}
-        title="支付密码"
-        description={`正在向 ${ recipientUsername } 转账 ${ amount } LDC`}
+        title="密码验证"
+        description={`正在向 ${ recipientUsername } 转移 ${ amount } LDC`}
       />
     </div>
   )

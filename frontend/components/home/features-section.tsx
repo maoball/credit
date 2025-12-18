@@ -6,26 +6,26 @@ import { Globe, Zap, Shield, Code, Activity, Headphones, ArrowRight } from "luci
 const features = [
   {
     icon: Zap,
-    title: "极速支付",
-    description: "支付快速响应，无需繁琐流程，资金秒级到账。",
+    title: "极速流通",
+    description: "流通快速响应，无需繁琐流程，积分秒级到账。",
     className: "lg:col-span-2 lg:row-span-1"
   },
   {
     icon: Globe,
-    title: "全球支付网络",
-    description: "覆盖全球国家和地区，高效支付。",
+    title: "全球网络",
+    description: "覆盖全球国家和地区，高效流通。",
     className: "lg:col-span-1 lg:row-span-1"
   },
   {
     icon: Shield,
     title: "安全防护",
-    description: "多重防护措施，全方位保障资金安全。",
+    description: "多重防护措施，全方位保障积分安全。",
     className: "lg:col-span-1 lg:row-span-1"
   },
   {
     icon: Activity,
     title: "实时监控",
-    description: "多维度可视化数据看板，实时监控交易状态。",
+    description: "多维度可视化数据看板，实时监控活动状态。",
     className: "lg:col-span-1 lg:row-span-1"
   },
   {
@@ -62,10 +62,10 @@ export const FeaturesSection = React.memo(function FeaturesSection({ className }
           className="text-center mb-6 lg:mb-10 flex-shrink-0"
         >
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
-            为什么选择 <span className="text-primary">LINUX DO PAY</span>?
+            为什么选择 <span className="text-primary">LINUX DO Credit</span>?
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
-            不仅仅是支付，更是您业务全球化的助推器。
+            不仅仅是积分流转，更是您社区积分生态的助推器。
           </p>
         </motion.div>
 

@@ -28,8 +28,8 @@ interface MerchantDialogProps {
 }
 
 /**
- * 商户对话框组件
- * 负责创建和更新应用的表单和验证逻辑
+ * 集市中心应用对话框组件
+ * 负责创建和更新集市中心应用的表单和验证逻辑
  */
 export function MerchantDialog({
   mode,
@@ -214,7 +214,7 @@ export function MerchantDialog({
         <DialogHeader>
           <DialogTitle>{mode === 'create' ? '创建应用' : '更新应用信息'}</DialogTitle>
           <DialogDescription>
-            {mode === 'create' ? '创建一个应用来接入支付功能，请仔细填写以下信息' : '修改应用的基本信息和配置'}
+            {mode === 'create' ? '您可以创建一个集市中心应用来接入积分服务，请仔细填写以下信息' : '修改集市中心应用的基本信息和配置'}
           </DialogDescription>
         </DialogHeader>
 
@@ -270,7 +270,7 @@ export function MerchantDialog({
               onChange={(e) => setFormData({ ...formData, redirect_uri: e.target.value })}
               disabled={processing}
             />
-            <p className="text-xs text-muted-foreground">URL 必须为包含 http:// 或 https:// ，用于接收支付完成后的回调</p>
+            <p className="text-xs text-muted-foreground">URL 必须为包含 http:// 或 https:// ，用于接收积分服务完成后的回调</p>
           </div>
 
           <div className="grid gap-2">
@@ -284,7 +284,7 @@ export function MerchantDialog({
               onChange={(e) => setFormData({ ...formData, notify_url: e.target.value })}
               disabled={processing}
             />
-            <p className="text-xs text-muted-foreground">URL 必须为包含 http:// 或 https:// ，用于接收支付成功的异步通知</p>
+            <p className="text-xs text-muted-foreground">URL 必须为包含 http:// 或 https:// ，用于接收积分服务成功的异步通知</p>
           </div>
         </div>
 

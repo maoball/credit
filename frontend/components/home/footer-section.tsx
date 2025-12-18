@@ -25,10 +25,10 @@ export const FooterSection = React.memo(function FooterSection({ className }: Fo
               <div className="w-10 h-10 p-2 rounded bg-primary text-primary-foreground flex items-center justify-center font-bold">
                 LDP
               </div>
-              <span className="text-2xl font-bold tracking-tight text-foreground">LINUX DO PAY</span>
+              <span className="text-2xl font-bold tracking-tight text-foreground">LINUX DO Credit</span>
             </Link>
             <p className="text-muted-foreground text-base leading-relaxed max-w-sm">
-              为社区开发者打造的支付基础设施。简单、安全、高效，致力于连接全球价值，赋能每一位社区开发者。
+              为社区开发者打造的积分处理与委托认证平台。简单、安全、高效，致力于连接全球价值，赋能每一位社区开发者。
             </p>
             <div className="flex gap-4 pt-2">
               <SocialLink icon={Github} href="#" />
@@ -79,7 +79,7 @@ export const FooterSection = React.memo(function FooterSection({ className }: Fo
         </div>
 
         <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>© 2025 LINUX DO PAY. All rights reserved. Made With AI By @Chenyme</p>
+          <p>© 2025 LINUX DO Credit. All rights reserved. Made With AI By @Chenyme</p>
           <div className="flex gap-8">
             <Link href="/privacy-policy" className="hover:text-foreground transition-colors">隐私政策</Link>
             <Link href="/terms-of-service" className="hover:text-foreground transition-colors">服务条款</Link>
@@ -91,7 +91,7 @@ export const FooterSection = React.memo(function FooterSection({ className }: Fo
 
       <div className="absolute bottom-0 left-0 w-full overflow-hidden pointer-events-none opacity-[0.02]">
         <div className="text-[15vw] font-black leading-none text-foreground whitespace-nowrap select-none text-center transform translate-y-1/3">
-          LINUX DO PAY
+          LINUX DO Credit
         </div>
       </div>
     </footer>

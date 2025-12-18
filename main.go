@@ -18,7 +18,7 @@ package main
 
 import "github.com/linux-do/pay/internal/cmd"
 
-// @title LINUX DO PAY
+// @title LINUX DO Credit
 // @version 0.1.0
 func main() {
 	cmd.Execute()

@@ -364,7 +364,7 @@ definitions:
     type: object
 info:
   contact: {}
-  title: LINUX DO PAY
+  title: LINUX DO Credit
   version: 0.1.0
 paths:
   /api.php:

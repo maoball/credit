@@ -15,8 +15,8 @@ import { type MerchantAPIKey } from "@/lib/services"
 import { useMerchant } from "@/contexts/merchant-context"
 
 /**
- * 商户主页面组件
- * 负责组装商户中心的各个子组件
+ * 集市中心主页面组件
+ * 负责组装集市中心的各个子组件
  */
 export function MerchantMain() {
   const { apiKeys, loading, error, loadAPIKeys, createAPIKey, updateAPIKey, deleteAPIKey } = useMerchant()
@@ -60,13 +60,13 @@ export function MerchantMain() {
 
   /* 正在加载中 */
   if (loading) {
-    return <LoadingPage text="商户中心" badgeText="商户" />
+    return <LoadingPage text="集市中心" badgeText="集市" />
   }
 
   return (
     <div className="py-6">
       <div className="flex items-center justify-between border-b border-border pb-2 mb-4">
-        <h1 className="text-2xl font-semibold">商户中心</h1>
+        <h1 className="text-2xl font-semibold">集市中心</h1>
         <div className="flex items-center gap-3">
           {apiKeys.length > 0 && (
             <MerchantSelector
@@ -107,8 +107,8 @@ export function MerchantMain() {
           className="flex items-center justify-center min-h-[60vh]"
         >
           <EmptyState
-            title="商户应用列表为空"
-            description="请创建您的第一个商户应用，以便开始接入支付功能"
+            title="应用列表为空"
+            description="请创建您的第一个集市应用，开始您的积分服务"
           />
         </motion.div>
       ) : (

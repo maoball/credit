@@ -27,7 +27,7 @@ const ROW_HEIGHT = 36
 /**
  * 虚拟化交易数据表格组件
  * 使用 @tanstack/react-virtual 实现大数据量高性能渲染
- */
+ */ 
 export const TransactionDataTable = React.memo(function TransactionDataTable({
   transactions
 }: {
@@ -50,13 +50,13 @@ export const TransactionDataTable = React.memo(function TransactionDataTable({
             <TableHeader>
               <TableRow className="border-b border-dashed">
                 <TableHead className="whitespace-nowrap w-[120px]">名称</TableHead>
-                <TableHead className="whitespace-nowrap text-center min-w-[60px]">金额</TableHead>
+                <TableHead className="whitespace-nowrap text-center min-w-[60px]">积分</TableHead>
                 <TableHead className="whitespace-nowrap text-center min-w-[50px]">类型</TableHead>
                 <TableHead className="whitespace-nowrap text-center min-w-[50px]">状态</TableHead>
-                <TableHead className="whitespace-nowrap text-center min-w-[80px]">资金流</TableHead>
-                <TableHead className="whitespace-nowrap text-center min-w-[80px]">商户名</TableHead>
-                <TableHead className="whitespace-nowrap text-left min-w-[120px]">订单号</TableHead>
-                <TableHead className="whitespace-nowrap text-left min-w-[120px]">商户订单号</TableHead>
+                <TableHead className="whitespace-nowrap text-center min-w-[80px]">积分动向</TableHead>
+                <TableHead className="whitespace-nowrap text-center min-w-[80px]">应用名</TableHead>
+                <TableHead className="whitespace-nowrap text-left min-w-[120px]">编号</TableHead>
+                <TableHead className="whitespace-nowrap text-left min-w-[120px]">业务单号</TableHead>
                 <TableHead className="whitespace-nowrap text-left w-[120px]">创建时间</TableHead>
                 <TableHead className="whitespace-nowrap text-left w-[120px]">交易时间</TableHead>
                 <TableHead className="whitespace-nowrap text-left w-[120px]">订单过期时间</TableHead>
@@ -65,7 +65,6 @@ export const TransactionDataTable = React.memo(function TransactionDataTable({
             </TableHeader>
           </table>
 
-          {/* 虚拟滚动容器 */}
           <div
             ref={parentRef}
             className="overflow-auto max-h-[600px]"
@@ -181,12 +180,12 @@ const TransactionTableRow = React.memo(function TransactionTableRow({
               <TooltipContent side="top" className="p-3">
                 <div className="space-y-2">
                   <div>
-                    <p className="text-xs font-semibold">付款方</p>
+                    <p className="text-xs font-semibold">消费方</p>
                     <p className="text-xs">ID: {order.payer_user_id}</p>
                     <p className="text-xs">账户: {order.payer_username}</p>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold">收款方</p>
+                    <p className="text-xs font-semibold">服务方</p>
                     <p className="text-xs">ID: {order.payee_user_id}</p>
                     <p className="text-xs">账户: {order.payee_username}</p>
                   </div>
@@ -275,7 +274,7 @@ export const TransactionTableList = React.memo(function TransactionTableList({
   onRetry,
   onLoadMore,
   emptyIcon = Layers,
-  emptyDescription = "未发现活动"
+  emptyDescription = "未发现积分活动"
 }: TransactionTableListProps) {
   if (loading && transactions.length === 0) {
     return (

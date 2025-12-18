@@ -128,7 +128,7 @@ function MembershipCard({
           </div>
 
           <div className="space-y-1">
-            <div className="text-[10px] opacity-70 tracking-wide">支付积分</div>
+            <div className="text-[10px] opacity-70 tracking-wide">平台分数</div>
             <div className="text-2xl font-bold tracking-tight tabular-nums">
               {score.toLocaleString()}
             </div>
@@ -136,10 +136,10 @@ function MembershipCard({
 
           <div className="flex items-end justify-between">
             <div className="text-[10px] opacity-70">
-              LINUX DO <span className="italic font-serif">PAY</span>
+              LINUX DO <span className="italic font-serif">Credit</span>
             </div>
             <div className="text-right">
-              <div className="text-[10px] opacity-70">等级范围</div>
+              <div className="text-[10px] opacity-70">分数范围</div>
               <div className="text-[10px] font-medium tabular-nums">
                 {config.minScore.toLocaleString()} - {config.maxScore?.toLocaleString() || "∞"}
               </div>
@@ -316,12 +316,12 @@ export function ProfileMain() {
               </div>
 
               <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">支付等级</div>
+                <div className="text-xs text-muted-foreground">平台等级</div>
                 <div className="text-sm font-medium">{getPayLevelLabel(user.pay_level)}</div>
               </div>
 
               <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">支付积分</div>
+                <div className="text-xs text-muted-foreground">平台分数</div>
                 <div className="text-sm font-medium">{user.pay_score.toLocaleString()}</div>
               </div>
             </div>

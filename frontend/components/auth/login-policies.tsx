@@ -19,7 +19,7 @@ export const termsSections: PolicySection[] = [
     title: "1. 缔约申明与服务综述",
     content: (
       <div className="space-y-4 text-sm leading-relaxed">
-        <p><strong>1.1 缔约主体：</strong>本《服务协议》（以下简称“本协议”）是您（以下亦称“用户”、“开发者”或“商户”）与 LINUX DO Pay 平台运营团队（以下简称“平台”、“我们”）之间关于使用平台服务所订立的具有法律约束力的契约。</p>
+        <p><strong>1.1 缔约主体：</strong>本《服务协议》（以下简称“本协议”）是您（以下亦称“社区用户”、“开发者”、“消费方”或“服务方”）与 LINUX DO Credit 平台运营团队（以下简称“平台”、“我们”）之间关于使用平台服务所订立的具有法律约束力的契约。</p>
         <p><strong>1.2 审慎阅读：</strong>请您务必审慎阅读、充分理解各条款内容，特别是<strong>免除或者限制责任的条款、争议解决和法律适用条款</strong>。各免责或限责条款将以粗体标识，您应重点阅读。如您不同意本协议的任何内容，请立即停止注册或使用本服务。</p>
         <p><strong>1.3 协议构成：</strong>本协议内容包括协议正文及所有我们已经发布或将来可能发布的各类规则、声明、说明。所有规则为本协议不可分割的组成部分，与协议正文具有同等法律效力。</p>
       </div>
@@ -30,11 +30,14 @@ export const termsSections: PolicySection[] = [
     title: "2. 服务定义与性质界定",
     content: (
       <div className="space-y-4 text-sm leading-relaxed">
-        <p><strong>2.1 社区技术服务：</strong>LINUX DO Pay 是基于 LINUX DO 社区生态构建的独立价值交换协议与技术系统。我们仅提供 API 接口调用、数据路由、账单管理等<strong>纯技术服务</strong>。</p>
+        <p><strong>2.1 社区技术服务：</strong>LINUX DO Credit 是基于 LINUX DO 社区生态构建的独立价值交换协议与技术系统。我们仅提供 API 接口调用、数据路由、账单管理等<strong>纯技术服务</strong>。</p>
         <p><strong>2.2 非金融机构申明：</strong></p>
         <ul className="list-disc pl-5 space-y-2">
           <li><strong>非银行机构：</strong>我们不是商业银行、持牌支付机构（如支付宝、微信支付、银联）或清算机构。</li>
           <li><strong>不提供资金沉淀：</strong>平台不设立资金池，不提供真实法币存取款、转账汇款或支付结算服务。所有涉及资金流转的行为均发生于社区用户与社区支付渠道之间，不涉及真实货币。</li>
+          <li><strong>不提供金融服务：</strong>平台不提供任何金融服务，包括但不限于贷款、融资、投资、理财、保险等金融服务。</li>
+          <li><strong>不提供积分兑现：</strong>平台不提供任何积分兑换服务，包括但不限于积分兑换为真实货币、积分兑换为实物商品、积分兑换为服务等。</li>
+          <li><strong>不提供真实货币交易：</strong>平台不提供任何真实货币交易服务，包括但不限于真实货币交易为积分、真实货币交易为虚拟资产、真实货币交易为服务等。</li>
         </ul>
         <p><strong>2.3 服务限定：</strong>本平台建议用于仅支持虚拟商品、软件授权、技术咨询、会员订阅等<strong>无实物交付</strong>的场景。关于实物电商、物流发货或涉及线下履约的商业场景造成的任何后果我们概不负责，请妥善保管好自己的个人财产，谨防上当受骗。</p>
       </div>

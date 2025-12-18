@@ -8,9 +8,9 @@ import { BalanceTable } from "@/components/common/balance/balance-table"
 import { useUser } from "@/contexts/user-context"
 
 /**
- * 余额主页面组件
+ * 积分余额主页面组件
  * 
- * 负责组装余额页面的各个子组件,包括余额总览、余额摘要、近期活动和报告侧边栏
+ * 负责组装积分余额页面的各个子组件,包括积分余额总览、积分余额摘要、近期活动和报告侧边栏
  */
 export function BalanceMain() {
   const { user, loading } = useUser()
@@ -24,7 +24,7 @@ export function BalanceMain() {
     <div className="py-6">
       <div className="flex items-center gap-2  pb-2">
         <h1 className="text-3xl">
-          <span className="font-semibold">余额</span>
+          <span className="font-semibold">积分</span>
           <span className="pl-2">LDC</span>
           <span className="pl-2">
             {loading ? "-" : <CountingNumber number={totalBalance} decimalPlaces={2} />}
@@ -35,7 +35,7 @@ export function BalanceMain() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 pt-4">
         <div className="lg:col-span-2 space-y-12">
           <section>
-            <div className="font-semibold mb-4">余额摘要</div>
+            <div className="font-semibold mb-4">积分摘要</div>
             <BalanceSummary />
           </section>
 

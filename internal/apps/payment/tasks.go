@@ -113,7 +113,7 @@ func sendCallbackRequest(ctx context.Context, callbackURL string, params map[str
 	targetURL := callbackURL + separator + vals.Encode()
 
 	headers := map[string]string{
-		"User-Agent": "LinuxDo-Pay/1.0",
+		"User-Agent": "LinuxDo-Credit/1.0",
 	}
 
 	resp, err := util.Request(ctx, http.MethodGet, targetURL, nil, headers, nil)

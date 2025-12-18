@@ -39,7 +39,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import {
-  BarChart3,
   Home,
   CreditCard,
   Settings,
@@ -62,21 +61,20 @@ import { useUser } from "@/contexts/user-context"
 const data = {
   navMain: [
     { title: "首页", url: "/home", icon: Home },
-    { title: "商户", url: "/merchant", icon: Store },
-    { title: "余额", url: "/balance", icon: Wallet },
-    { title: "交易", url: "/trade", icon: CircleDollarSign },
+    { title: "集市", url: "/merchant", icon: Store },
+    { title: "积分", url: "/balance", icon: Wallet },
+    { title: "活动", url: "/trade", icon: CircleDollarSign },
   ],
   admin: [
     { title: "系统配置", url: "/admin/system", icon: ShieldCheck },
-    { title: "支付配置", url: "/admin/user_pay", icon: Settings },
+    { title: "积分配置", url: "/admin/user_pay", icon: Settings },
   ],
   document: [
     { title: "接口文档", url: "/docs/api", icon: CreditCard },
     { title: "使用文档", url: "/docs/how-to-use", icon: FileText },
   ],
   products: [
-    { title: "我的报表", url: "#", icon: BarChart3 },
-    { title: "在线商品", url: "/merchant/online-paying", icon: Globe },
+    { title: "在线流转", url: "/merchant/online-paying", icon: Globe },
   ],
 }
 
@@ -174,7 +172,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <span>设置</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator className="my-2" />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/docs/how-to-use")}>
                 <FileQuestionMark className="mr-2 size-4" />
                 <span>使用帮助</span>
               </DropdownMenuItem>
@@ -258,7 +256,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
           <SidebarGroup className="py-0 pt-4">
             <SidebarGroupLabel className="text-xs font-normal text-muted-foreground">
-              产品
+              服务
             </SidebarGroupLabel>
             <SidebarGroupContent className="py-1">
               <SidebarMenu className="gap-1">

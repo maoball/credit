@@ -22,5 +22,5 @@ const (
 	NotOrderMerchant         = "您不是该订单的商家"
 	ReasonRequiredForRefusal = "拒绝退款时必须提供理由"
 	DisputeTimeWindowExpired = "订单已交易完成,超过争议时间窗口,无法发起争议"
-	DuplicateDispute         = "无法重复发起争议，如仍有疑问请联系商家或LINUX DO PAY 团队"
+	DuplicateDispute         = "无法重复发起争议，如仍有疑问请联系商家或LINUX DO Credit 团队"
 )

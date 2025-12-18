@@ -33,18 +33,18 @@ function FeatureCard({ title, description, linkText, href }: { title: string, de
 }
 
 /**
- * 收款组件
+ * 积分收益组件
  * 
- * 显示收款功能和规则
+ * 显示积分收益功能和规则
  */
 export function Receive() {
   return (
     <div className="space-y-4">
       <div className="bg-muted/50 rounded-lg px-6 py-8">
         <div className="max-w-2xl">
-          <h2 className="text-3xl font-bold mb-4 text-foreground">开始收款</h2>
+          <h2 className="text-2xl font-bold mb-4 text-foreground">获得积分收益</h2>
           <p className="text-muted-foreground mb-6 leading-relaxed">
-            通过无代码选项快速开始使用或探索与我们的 API 集成的可自定义账户界面。
+            通过无代码选项快速开始探索或使用与我们的 API 集成的可自定义积分服务。
           </p>
           <Button className="bg-primary hover:bg-primary/90 font-medium px-6 rounded-md shadow-sm">
             开始使用
@@ -54,20 +54,20 @@ export function Receive() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <FeatureCard
-          title="接入官方订单支付接口"
-          description="使用官方 API 接口（兼容易支付），快速接入订单支付功能，支持异步通知和同步跳转。"
-          linkText="查看接口文档"
+          title="接入官方 API 接口"
+          description="使用官方 API 接口（兼容易支付），快速接入积分服务，支持异步通知和同步跳转。"
+          linkText="查看文档"
           href="/docs/api"
         />
         <FeatureCard
-          title="创建自定义在线支付表单"
-          description="通过我们提供的支付链接，快速创建支付表单，无需编写代码即可开始收款。"
-          linkText="前往商户创建"
+          title="创建在线积分服务"
+          description="通过我们提供的在线积分服务页面，快速创建，无需编写代码即可开始进行积分流转。"
+          linkText="前往集市"
           href="/merchant"
         />
         <FeatureCard
-          title="面对面向客户收款"
-          description="通过 LINUX DO PAY 提供的线下收款功能，扩展您的收款渠道，处理面对面交易场景。"
+          title="面对面服务"
+          description="通过 LINUX DO Credit 提供的面对面服务功能，扩展您的积分收益渠道，处理面对面服务场景。"
           linkText="功能开发中，敬请期待"
         />
       </div>
