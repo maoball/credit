@@ -1,6 +1,8 @@
 # LINUX DO Credit
 
-🚀 Linux Do 社区 Credit 积分服务平台
+🚀 Linux Do Community Credit Service Platform
+
+[中文](./README_zh.md)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go Version](https://img.shields.io/badge/Go-1.24-blue.svg)](https://golang.org/)
@@ -20,18 +22,19 @@
 [![CodeQL](https://github.com/linux-do/credit/actions/workflows/codeql.yml/badge.svg)](https://github.com/linux-do/credit/actions/workflows/codeql.yml)
 [![ESLint](https://github.com/linux-do/credit/actions/workflows/eslint.yml/badge.svg)](https://github.com/linux-do/credit/actions/workflows/eslint.yml)
 
-## 📖 项目简介
+## 📖 Introduction
 
-LINUX DO Credit 是一个为 Linux Do 社区打造的积分服务平台，旨在提供一系列积分相关服务，为社区开发者提供积分流转基础框架。
-### ✨ 主要特性
+LINUX DO Credit is a credit service platform built for the Linux Do community, aimed at providing a series of credit-related services and offering a foundational framework for credit circulation for community developers.
 
-- 🔐 **OAuth2 认证** - 集成 Linux Do 社区账号系统
-- 🛡️ **风险控制** - 完善的信任等级和风险评估系统
-- 📊 **实时监控** - 详细的分发统计和用户行为分析
-- 🎨 **现代化界面** - 基于 Next.js 16 和 React 19 的响应式设计
-- ⚡ **高性能** - Go 后端 + Redis 缓存 + PostgreSQL 数据库
+### ✨ Key Features
 
-## 🏗️ 架构概览
+- 🔐 **OAuth2 Authentication** - Integrated with Linux Do community account system
+- 🛡️ **Risk Control** - Comprehensive trust level and risk assessment system
+- 📊 **Real-time Monitoring** - Detailed distribution statistics and user behavior analysis
+- 🎨 **Modern Interface** - Responsive design based on Next.js 16 and React 19
+- ⚡ **High Performance** - Go Backend + Redis Cache + PostgreSQL Database
+
+## 🏗️ Architecture Overview
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -40,247 +43,248 @@ LINUX DO Credit 是一个为 Linux Do 社区打造的积分服务平台，旨在
 │                 │    │                 │    │                 │
 │ • React 19      │    │ • Gin Framework │    │ • PostgreSQL    │
 │ • TypeScript    │    │ • OAuth2        │    │ • Redis Cache   │
-│ • Tailwind CSS  │    │ • OpenTelemetry │    │ • Session Store │
-│ • Shadcn UI     │    │ • Swagger API   │    │                 │
+│ • Tailwind CSS  │    │ • Session Store │    │                 │
+│ • Shadcn UI     │    │ • OpenTelemetry │    │                 │
+│                 │    │ • Swagger API   │    │                 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## 🛠️ 技术栈
+## 🛠️ Tech Stack
 
-### 后端
-- **[Go 1.25.4](https://go.dev/doc)** - 主要开发语言
-- **[GIN](https://github.com/gin-gonic/gin)** - Web 框架
-- **[GORM](https://github.com/go-gorm/gorm)** - ORM 框架
-- **[Redis](https://github.com/redis/redis)** - 缓存和会话存储
-- **[PostgreSQL](https://www.postgresql.org)** - 主数据库
-- **[OpenTelemetry](https://opentelemetry.io)** - 可观测性
-- **[Swagger](https://github.com/swaggo/swag)** - API 文档
+### Backend
+- **[Go 1.25.4](https://go.dev/doc)** - Primary development language
+- **[GIN](https://github.com/gin-gonic/gin)** - Web Framework
+- **[GORM](https://github.com/go-gorm/gorm)** - ORM Framework
+- **[Redis](https://github.com/redis/redis)** - Cache and session store
+- **[PostgreSQL]** - Primary Database
+- **[OpenTelemetry](https://opentelemetry.io)** - Observability
+- **[Swagger](https://github.com/swaggo/swag)** - API Documentation
 
-### 前端
-- **[Next.js 16](https://github.com/vercel/next.js)** - React 框架
-- **[React 19](https://github.com/facebook/react)** - UI 库
-- **[TypeScript](https://github.com/microsoft/TypeScript)** - 类型安全
-- **[Tailwind CSS 4](https://github.com/tailwindlabs/tailwindcss)** - 样式框架
-- **[Shadcn UI](https://github.com/shadcn-ui/ui)** - 组件库
-- **[Lucide Icons](https://github.com/lucide-icons/lucide)** - 图标库
+### Frontend
+- **[Next.js 16](https://github.com/vercel/next.js)** - React Framework
+- **[React 19](https://github.com/facebook/react)** - UI Library
+- **[TypeScript](https://github.com/microsoft/TypeScript)** - Type Safety
+- **[Tailwind CSS 4](https://github.com/tailwindlabs/tailwindcss)** - Styling Framework
+- **[Shadcn UI](https://github.com/shadcn-ui/ui)** - Component Library
+- **[Lucide Icons](https://github.com/lucide-icons/lucide)** - Icon Library
 
-## 📋 环境要求
+## 📋 Requirements
 
 - **Go** >= 1.25.4
 - **Node.js** >= 18.0
 - **PostgreSQL** >= 18
 - **Redis** >= 6.0
-- **pnpm** >= 8.0 (推荐)
+- **pnpm** >= 8.0 (Recommended)
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 1. 克隆项目
+### 1. Clone the Project
 
 ```bash
 git clone https://github.com/linux-do/credit.git
 cd credit
 ```
 
-### 2. 配置环境
+### 2. Configure Environment
 
-复制配置文件并编辑：
+Copy the configuration file and edit it:
 
 ```bash
 cp config.example.yaml config.yaml
 ```
 
-编辑 `config.yaml` 文件，配置数据库连接、Redis、OAuth2 等信息。
+Edit `config.yaml` to configure database connections, Redis, OAuth2, etc.
 
-### 3. 初始化数据库
+### 3. Initialize Database
 
 ```bash
-# 创建数据库
-createdb -h <主机> -p 5432 -U postgres linux_do_credit
+# Create database
+createdb -h <host> -p 5432 -U postgres linux_do_credit
 
-# 如果需要指定字符集，可使用
-# psql -h <主机> -p 5432 -U postgres -c "CREATE DATABASE linux_do_credit WITH ENCODING 'UTF8' LC_COLLATE='zh_CN.UTF-8' LC_CTYPE='zh_CN.UTF-8' TEMPLATE template0;"
+# If you need to specify encoding, use:
+# psql -h <host> -p 5432 -U postgres -c "CREATE DATABASE linux_do_credit WITH ENCODING 'UTF8' LC_COLLATE='zh_CN.UTF-8' LC_CTYPE='zh_CN.UTF-8' TEMPLATE template0;"
 
-# 运行迁移（启动后端时会自动执行）
+# Run migrations (automatically executed when starting the backend)
 ```
 
-### 4. 启动后端
+### 4. Start Backend
 
 ```bash
-# 安装 Go 依赖
+# Install Go dependencies
 go mod tidy
 
-# 生成 API 文档
+# Generate API documentation
 make swagger
 
-# 启动后端服务
+# Start backend service
 go run main.go api
 ```
 
-### 5. 启动前端
+### 5. Start Frontend
 
 ```bash
 cd frontend
 
-# 安装依赖
+# Install dependencies
 pnpm install
 
-# 启动开发服务器
+# Start development server
 pnpm dev
 ```
 
-### 6. 访问应用
+### 6. Access Application
 
-- **前端界面**: http://localhost:3000
-- **API 文档**: http://localhost:8000/swagger/index.html
-- **健康检查**: http://localhost:8000/api/health
+- **Frontend Interface**: http://localhost:3000
+- **API Documentation**: http://localhost:8000/swagger/index.html
+- **Health Check**: http://localhost:8000/api/health
 
-## ⚙️ 配置说明
+## ⚙️ Configuration
 
-### 主要配置项
+### Main Configuration Options
 
-| 配置项 | 说明 | 示例 |
-|--------|------|------|
-| `app.addr` | 后端服务监听地址 | `:8000` |
-| `oauth2.client_id` | OAuth2 客户端 ID | `your_client_id` |
-| `database.host` | PostgreSQL 数据库地址 | `127.0.0.1` |
-| `database.port` | PostgreSQL 数据库端口 | `5432` |
-| `database.username` | PostgreSQL 数据库用户名 | `postgres` |
-| `database.password` | PostgreSQL 数据库密码 | `password` |
-| `database.database` | PostgreSQL 数据库名称 | `linux_do_credit` |
-| `database.ssl_mode` | PostgreSQL SSL 模式 | `disable` |
-| `database.application_name` | PostgreSQL 应用标识 | `credit-server` |
-| `database.search_path` | PostgreSQL 搜索路径 | `public` |
-| `database.default_query_exec_mode` | SQL 缓存模式 | `cache_statement` |
-| `redis.host` | Redis 服务器地址 | `127.0.0.1` |
+| Option | Description | Example |
+|--------|-------------|---------|
+| `app.addr` | Backend service listening address | `:8000` |
+| `oauth2.client_id` | OAuth2 Client ID | `your_client_id` |
+| `database.host` | PostgreSQL database host | `127.0.0.1` |
+| `database.port` | PostgreSQL database port | `5432` |
+| `database.username` | PostgreSQL database username | `postgres` |
+| `database.password` | PostgreSQL database password | `password` |
+| `database.database` | PostgreSQL database name | `linux_do_credit` |
+| `database.ssl_mode` | PostgreSQL SSL mode | `disable` |
+| `database.application_name` | PostgreSQL application name | `credit-server` |
+| `database.search_path` | PostgreSQL search path | `public` |
+| `database.default_query_exec_mode` | SQL cache mode | `cache_statement` |
+| `redis.host` | Redis server address | `127.0.0.1` |
 
-详细配置说明请参考 `config.example.yaml` 文件。
+For detailed configuration instructions, please refer to the `config.example.yaml` file.
 
-## 🔧 开发指南
+## 🔧 Development Guide
 
-### 后端开发
+### Backend Development
 
 ```bash
-# 运行 API 服务器
+# Run API server
 go run main.go api
 
-# 运行任务调度器
+# Run task scheduler
 go run main.go scheduler
 
-# 运行工作队列
+# Run worker queue
 go run main.go worker
 
-# 生成 Swagger 文档
+# Generate Swagger documentation
 make swagger
 
-# 代码格式化和检查
+# Format and check code
 make tidy
 ```
 
-### 前端开发
+### Frontend Development
 
 ```bash
 cd frontend
 
-# 开发模式（使用 Turbopack）
+# Development mode (using Turbopack)
 pnpm dev
 
-# 构建生产版本
+# Build production version
 pnpm build
 
-# 启动生产服务
+# Start production service
 pnpm start
 
-# 代码检查和格式化
+# Lint and format code
 pnpm lint
 pnpm format
 ```
 
-## 📚 API 文档
+## 📚 API Documentation
 
-API 文档通过 Swagger 自动生成，启动后端服务后可访问：
+API documentation is automatically generated by Swagger and can be accessed after starting the backend service:
 
 ```
 http://localhost:8000/swagger/index.html
 ```
 
-### 主要 API 端点
+### Main API Endpoints
 
-- `GET /api/health` - 健康检查
-- `GET /api/oauth2/login` - OAuth2 登录
-- `GET /api/projects` - 获取项目列表
-- `POST /api/projects` - 创建新项目
+- `GET /api/health` - Health Check
+- `GET /api/oauth2/login` - OAuth2 Login
+- `GET /api/projects` - Get Project List
+- `POST /api/projects` - Create New Project
 
-## 🧪 测试
+## 🧪 Testing
 
 ```bash
-# 后端测试
+# Backend testing
 go test ./...
 
-# 前端测试
+# Frontend testing
 cd frontend
 pnpm test
 ```
 
-## 🚀 部署
+## 🚀 Deployment
 
-### Docker 部署
+### Docker Deployment
 
 ```bash
-# 构建镜像
+# Build image
 docker build -t linux-do-credit .
 
-# 运行容器
+# Run container
 docker run -d -p 8000:8000 linux-do-credit
 ```
 
-### 生产环境部署
+### Production Environment Deployment
 
-1. 构建前端资源：
+1. Build frontend resources:
    ```bash
    cd frontend && pnpm build
    ```
 
-2. 编译后端程序：
+2. Compile backend program:
    ```bash
    go build -o credit main.go
    ```
 
-3. 配置生产环境的 `config.yaml`
+3. Configure `config.yaml` for production
 
-4. 启动服务：
+4. Start service:
    ```bash
    ./credit api
    ```
 
-## 🤝 贡献指南
+## 🤝 Contribution Guidelines
 
-我们欢迎社区贡献！请在提交代码前阅读：
+We welcome community contributions! Please read the following before submitting code:
 
-- [贡献指南](CONTRIBUTING.md)
-- [行为准则](CODE_OF_CONDUCT.md)
-- [贡献者许可协议](CLA.md)
+- [Contribution Guidelines](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Contributor License Agreement](CLA.md)
 
-### 提交流程
+### Submission Process
 
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/your-feature`)
-3. 提交更改 (`git commit -am 'Add your feature'`)
-4. 推送到分支 (`git push origin feature/your-feature`)
-5. 创建 Pull Request
+1. Fork this repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit changes (`git commit -am 'Add your feature'`)
+4. Push to branch (`git push origin feature/your-feature`)
+5. Create Pull Request
 
-## 📄 许可证
+## 📄 License
 
-本项目基于 [Apache2.0 许可证](LICENSE) 开源。
+This project is open source under the [Apache2.0 License](LICENSE).
 
-## 🔗 相关链接
+## 🔗 Related Links
 
-- [Linux Do 社区](https://linux.do)
-- [问题反馈](https://github.com/linux-do/credit/issues)
-- [功能请求](https://github.com/linux-do/credit/issues/new?template=feature_request.md)
+- [Linux Do Community](https://linux.do)
+- [Issue Reporting](https://github.com/linux-do/credit/issues)
+- [Feature Request](https://github.com/linux-do/credit/issues/new?template=feature_request.md)
 
-## ❤️ 致谢
+## ❤️ Acknowledgements
 
-感谢所有为本项目做出贡献的开发者和 Linux Do 社区的支持！
+Thanks to all developers who contributed to this project and the support of the Linux Do Community!
 
 ## 📈 Star History
 

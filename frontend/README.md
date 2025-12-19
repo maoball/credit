@@ -2,6 +2,8 @@
 
 Modern frontend application for the Linux Do Credit system.
 
+[中文](./README_zh.md) | English
+
 ## Tech Stack
 
 - **Framework**: [Next.js 16](https://nextjs.org/)
