@@ -19,13 +19,13 @@ package admin
 import (
 	"net/http"
 
-	"github.com/linux-do/pay/internal/logger"
-	"github.com/linux-do/pay/internal/model"
-	"github.com/linux-do/pay/internal/otel_trace"
-	"github.com/linux-do/pay/internal/util"
+	"github.com/linux-do/credit/internal/logger"
+	"github.com/linux-do/credit/internal/model"
+	"github.com/linux-do/credit/internal/otel_trace"
+	"github.com/linux-do/credit/internal/util"
 
 	"github.com/gin-gonic/gin"
-	"github.com/linux-do/pay/internal/apps/oauth"
+	"github.com/linux-do/credit/internal/apps/oauth"
 )
 
 func LoginAdminRequired() gin.HandlerFunc {

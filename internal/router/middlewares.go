@@ -21,8 +21,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/linux-do/pay/internal/logger"
-	"github.com/linux-do/pay/internal/otel_trace"
+	"github.com/linux-do/credit/internal/logger"
+	"github.com/linux-do/credit/internal/otel_trace"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 )

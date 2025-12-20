@@ -22,10 +22,10 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/linux-do/pay/internal/common"
-	"github.com/linux-do/pay/internal/db"
-	"github.com/linux-do/pay/internal/model"
-	"github.com/linux-do/pay/internal/util"
+	"github.com/linux-do/credit/internal/common"
+	"github.com/linux-do/credit/internal/db"
+	"github.com/linux-do/credit/internal/model"
+	"github.com/linux-do/credit/internal/util"
 	"github.com/shopspring/decimal"
 )
 

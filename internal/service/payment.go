@@ -20,8 +20,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/linux-do/pay/internal/common"
-	"github.com/linux-do/pay/internal/model"
+	"github.com/linux-do/credit/internal/common"
+	"github.com/linux-do/credit/internal/model"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )

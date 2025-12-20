@@ -18,11 +18,12 @@ package worker
 
 import (
 	"context"
-	"github.com/linux-do/pay/internal/logger"
 	"time"
 
+	"github.com/linux-do/credit/internal/logger"
+
 	"github.com/hibiken/asynq"
-	"github.com/linux-do/pay/internal/otel_trace"
+	"github.com/linux-do/credit/internal/otel_trace"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 )

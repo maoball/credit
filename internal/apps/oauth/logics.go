@@ -25,12 +25,12 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/linux-do/pay/internal/common"
-	"github.com/linux-do/pay/internal/config"
-	"github.com/linux-do/pay/internal/db"
-	"github.com/linux-do/pay/internal/model"
-	"github.com/linux-do/pay/internal/otel_trace"
-	"github.com/linux-do/pay/internal/util"
+	"github.com/linux-do/credit/internal/common"
+	"github.com/linux-do/credit/internal/config"
+	"github.com/linux-do/credit/internal/db"
+	"github.com/linux-do/credit/internal/model"
+	"github.com/linux-do/credit/internal/otel_trace"
+	"github.com/linux-do/credit/internal/util"
 	"go.opentelemetry.io/otel/codes"
 	"gorm.io/gorm"
 )

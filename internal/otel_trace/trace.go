@@ -40,7 +40,7 @@ func init() {
 	otel.SetTracerProvider(tracerProvider)
 
 	// 初始化 Tracer
-	Tracer = tracerProvider.Tracer("github.com/linux-do/pay")
+	Tracer = tracerProvider.Tracer("github.com/linux-do/credit")
 }
 
 func Shutdown(ctx context.Context) {

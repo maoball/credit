@@ -17,7 +17,7 @@ limitations under the License.
 package oauth
 
 import (
-	"github.com/linux-do/pay/internal/config"
+	"github.com/linux-do/credit/internal/config"
 	"golang.org/x/oauth2"
 )
 

@@ -17,15 +17,16 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/linux-do/pay/internal/task/worker"
 	"log"
+
+	"github.com/linux-do/credit/internal/task/worker"
 
 	"github.com/spf13/cobra"
 )
 
 var workerCmd = &cobra.Command{
 	Use:   "worker",
-	Short: "CDK Worker",
+	Short: "credit Worker",
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("[Worker] 启动任务处理服务")
 		if err := worker.StartWorker(); err != nil {

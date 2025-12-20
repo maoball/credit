@@ -24,7 +24,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/linux-do/pay/internal/config"
+	"github.com/linux-do/credit/internal/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

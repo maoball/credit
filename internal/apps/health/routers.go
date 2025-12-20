@@ -20,7 +20,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/linux-do/pay/internal/util"
+	"github.com/linux-do/credit/internal/util"
 )
 
 // Health godoc

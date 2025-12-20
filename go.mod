@@ -1,4 +1,4 @@
-module github.com/linux-do/pay
+module github.com/linux-do/credit
 
 go 1.25.5
 

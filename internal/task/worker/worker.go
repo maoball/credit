@@ -20,11 +20,11 @@ import (
 	"time"
 
 	"github.com/hibiken/asynq"
-	"github.com/linux-do/pay/internal/apps/dispute"
-	"github.com/linux-do/pay/internal/apps/payment"
-	"github.com/linux-do/pay/internal/apps/user"
-	"github.com/linux-do/pay/internal/config"
-	"github.com/linux-do/pay/internal/task"
+	"github.com/linux-do/credit/internal/apps/dispute"
+	"github.com/linux-do/credit/internal/apps/payment"
+	"github.com/linux-do/credit/internal/apps/user"
+	"github.com/linux-do/credit/internal/config"
+	"github.com/linux-do/credit/internal/task"
 )
 
 // StartWorker 启动任务处理服务器

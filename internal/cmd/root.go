@@ -17,13 +17,14 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/linux-do/pay/internal/db/migrator"
-	"github.com/spf13/cobra"
 	"log"
+
+	"github.com/linux-do/credit/internal/db/migrator"
+	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
-	Use: "linux-do-cdk",
+	Use: "linux-do-credit",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		migrator.Migrate()
 	},

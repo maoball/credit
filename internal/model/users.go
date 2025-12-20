@@ -27,12 +27,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
-	"github.com/linux-do/pay/internal/common"
-	"github.com/linux-do/pay/internal/db"
-	"github.com/linux-do/pay/internal/logger"
-	"github.com/linux-do/pay/internal/task"
-	"github.com/linux-do/pay/internal/task/schedule"
-	"github.com/linux-do/pay/internal/util"
+	"github.com/linux-do/credit/internal/common"
+	"github.com/linux-do/credit/internal/db"
+	"github.com/linux-do/credit/internal/logger"
+	"github.com/linux-do/credit/internal/task"
+	"github.com/linux-do/credit/internal/task/schedule"
+	"github.com/linux-do/credit/internal/util"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )

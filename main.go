@@ -16,7 +16,7 @@ limitations under the License.
 
 package main
 
-import "github.com/linux-do/pay/internal/cmd"
+import "github.com/linux-do/credit/internal/cmd"
 
 // @title LINUX DO Credit
 // @version 0.1.0

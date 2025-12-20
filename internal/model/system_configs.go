@@ -25,7 +25,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/linux-do/pay/internal/db"
+	"github.com/linux-do/credit/internal/db"
 )
 
 // 配置键常量 - 所有系统配置的 key 定义

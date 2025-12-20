@@ -23,7 +23,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/linux-do/pay/internal/config"
+	"github.com/linux-do/credit/internal/config"
 	"github.com/redis/go-redis/extra/redisotel/v9"
 	"github.com/redis/go-redis/v9"
 )

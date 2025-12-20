@@ -20,10 +20,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/linux-do/pay/internal/apps/merchant"
-	"github.com/linux-do/pay/internal/db"
-	"github.com/linux-do/pay/internal/model"
-	"github.com/linux-do/pay/internal/util"
+	"github.com/linux-do/credit/internal/apps/merchant"
+	"github.com/linux-do/credit/internal/db"
+	"github.com/linux-do/credit/internal/model"
+	"github.com/linux-do/credit/internal/util"
 )
 
 // RequirePaymentLink 根据 Token 查询支付链接并保存到上下文

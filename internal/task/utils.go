@@ -18,7 +18,7 @@ package task
 
 import (
 	"github.com/hibiken/asynq"
-	"github.com/linux-do/pay/internal/config"
+	"github.com/linux-do/credit/internal/config"
 )
 
 // RedisOpt asynq Redis 连接配置（兼容 Standalone/Sentinel/Cluster）

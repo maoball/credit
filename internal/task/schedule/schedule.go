@@ -21,8 +21,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/linux-do/pay/internal/config"
-	"github.com/linux-do/pay/internal/task"
+	"github.com/linux-do/credit/internal/config"
+	"github.com/linux-do/credit/internal/task"
 
 	"github.com/hibiken/asynq"
 )

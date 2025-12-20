@@ -19,7 +19,7 @@ package otel_trace
 import (
 	"context"
 
-	"github.com/linux-do/pay/internal/config"
+	"github.com/linux-do/credit/internal/config"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
