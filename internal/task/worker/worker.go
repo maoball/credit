@@ -21,6 +21,7 @@ import (
 
 	"github.com/hibiken/asynq"
 	"github.com/linux-do/credit/internal/apps/dispute"
+	"github.com/linux-do/credit/internal/apps/order"
 	"github.com/linux-do/credit/internal/apps/payment"
 	"github.com/linux-do/credit/internal/apps/user"
 	"github.com/linux-do/credit/internal/config"
@@ -47,6 +48,7 @@ func StartWorker() error {
 	mux.HandleFunc(task.AutoRefundExpiredDisputesTask, dispute.HandleAutoRefundExpiredDisputes)
 	mux.HandleFunc(task.AutoRefundSingleDisputeTask, dispute.HandleAutoRefundSingleDispute)
 	mux.HandleFunc(task.MerchantPaymentNotifyTask, payment.HandleMerchantPaymentNotify)
+	mux.HandleFunc(task.SyncOrdersToClickHouseTask, order.HandleSyncOrdersToClickHouse)
 	// 启动服务器
 	return asynqServer.Run(mux)
 }

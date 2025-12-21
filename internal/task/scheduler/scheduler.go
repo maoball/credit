@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package schedule
+package scheduler
 
 import (
 	"fmt"
@@ -55,8 +55,9 @@ func StartScheduler() error {
 
 		// 用户积分更新任务
 		if _, err = scheduler.Register(
-			config.Config.Schedule.UpdateUserGamificationScoresTaskCron,
+			config.Config.Scheduler.UpdateUserGamificationScoresTaskCron,
 			asynq.NewTask(task.UpdateUserGamificationScoresTask, nil),
+			asynq.MaxRetry(5),
 			asynq.Unique(23*time.Hour),
 		); err != nil {
 			return
@@ -64,8 +65,19 @@ func StartScheduler() error {
 
 		// 争议自动退款任务
 		if _, err = scheduler.Register(
-			config.Config.Schedule.AutoRefundExpiredDisputesTaskCron,
+			config.Config.Scheduler.AutoRefundExpiredDisputesTaskCron,
 			asynq.NewTask(task.AutoRefundExpiredDisputesTask, nil),
+			asynq.MaxRetry(5),
+			asynq.Unique(23*time.Hour),
+		); err != nil {
+			return
+		}
+
+		// 订单同步任务
+		if _, err = scheduler.Register(
+			config.Config.Scheduler.SyncOrdersToClickHouseTaskCron,
+			asynq.NewTask(task.SyncOrdersToClickHouseTask, nil),
+			asynq.MaxRetry(10),
 			asynq.Unique(23*time.Hour),
 		); err != nil {
 			return

@@ -19,7 +19,7 @@ package cmd
 import (
 	"log"
 
-	"github.com/linux-do/credit/internal/task/schedule"
+    "github.com/linux-do/credit/internal/task/scheduler"
 
 	"github.com/spf13/cobra"
 )
@@ -29,7 +29,7 @@ var schedulerCmd = &cobra.Command{
 	Short: "credit Scheduler",
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("[Scheduler] 启动定时任务调度服务")
-		if err := schedule.StartScheduler(); err != nil {
+		if err := scheduler.StartScheduler(); err != nil {
 			log.Fatalf("[调度器] 启动失败: %v", err)
 		}
 	},
