@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { TransactionService, DisputeService } from "@/lib/services"
+import { DisputeService } from "@/lib/services"
 import { toast } from "sonner"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { usePublicConfig } from "@/hooks/use-public-config"
@@ -196,7 +196,7 @@ export function CreateDisputeDialog({ order, onSuccess }: { order: Order; onSucc
 
     try {
       setLoading(true)
-      await TransactionService.createDispute({ order_id: order.id, reason: reason.trim() })
+      await DisputeService.createDispute({ order_id: order.id, reason: reason.trim() })
       toast.success('争议已发起', { description: '请等待服务方处理' })
       updateOrderStatus(order.id, { status: 'disputing' })
       setOpen(false)

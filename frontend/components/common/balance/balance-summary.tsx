@@ -25,6 +25,13 @@ function calculatePercentages(available: number, total: number) {
 }
 
 /**
+ * 安全转换数字，避免 NaN
+ */
+function safeNumber(value: number): number {
+  return typeof value === 'number' && !isNaN(value) ? value : 0
+}
+
+/**
  * 积分余额摘要组件
  * 
  * 显示积分余额的可视化摘要,包括可视化进度条和详细的积分余额分类列表
@@ -78,7 +85,7 @@ export function BalanceSummary() {
           <span className="font-semibold">
             {loading ? "-" : (
               <CountingNumber
-                number={typeof available === 'number' && !isNaN(available) ? available : 0}
+                number={safeNumber(available)}
                 decimalPlaces={2}
                 initiallyStable={true}
                 inView={true}
@@ -96,7 +103,7 @@ export function BalanceSummary() {
           <span className="font-semibold">
             {loading ? "-" : (
               <CountingNumber
-                number={typeof pending === 'number' && !isNaN(pending) ? pending : 0}
+                number={safeNumber(pending)}
                 decimalPlaces={2}
                 initiallyStable={true}
                 inView={true}

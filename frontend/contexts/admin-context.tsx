@@ -3,24 +3,13 @@
 import * as React from "react"
 import { createContext, useContext, useState, useRef, useCallback } from "react"
 
-import services, { isCancelError } from "@/lib/services"
+import services from "@/lib/services"
 import type { UpdateUserPayConfigRequest } from "@/lib/services/admin/types"
 import type { UserPayConfig, SystemConfig, UpdateSystemConfigRequest } from "@/lib/services"
+import { handleContextError } from "@/lib/utils/error-handling"
 
 
-
-
-/**
- * Admin 上下文状态接口
- * 用于统一管理 admin 相关的数据状态
- * 
- * @example
- * ```tsx
- * <AdminProvider>
- *   <div>内容</div>
- * </AdminProvider>
- * ```
- */
+/** Admin 上下文状态接口 */
 export interface AdminContextState {
   userPayConfigs: UserPayConfig[]
   userPayConfigsLoading: boolean
@@ -63,7 +52,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const userPayRequestIdRef = useRef(0)
   const systemRequestIdRef = useRef(0)
 
-  /* 获取用户支付配置列表 */
+  /** 获取用户支付配置列表 */
   const refetchUserPayConfigs = useCallback(async () => {
     const requestId = ++userPayRequestIdRef.current
 
@@ -83,35 +72,31 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         return
       }
 
-      if (!isCancelError(error)) {
-        console.error('加载支付配置失败:', error)
-        setUserPayConfigsError(error instanceof Error ? error : new Error('加载支付配置失败'))
-      }
+      const errorObject = handleContextError(error, '加载支付配置失败', { logError: true })
+      setUserPayConfigsError(errorObject)
       setUserPayConfigsLoading(false)
     }
   }, [])
 
 
-  /* 更新用户支付配置 */
+  /** 更新用户支付配置 */
   const updateUserPayConfig = useCallback(async (id: number, data: UpdateUserPayConfigRequest) => {
     try {
       await services.admin.updateUserPayConfig(id, data)
       await refetchUserPayConfigs()
     } catch (error) {
-      if (isCancelError(error)) {
-        return
-      }
+      handleContextError(error, '更新支付配置失败')
       throw error
     }
   }, [refetchUserPayConfigs])
 
-  /* 删除用户支付配置 */
+  /** 删除用户支付配置 */
   const deleteUserPayConfig = useCallback(async (id: number) => {
     await services.admin.deleteUserPayConfig(id)
     await refetchUserPayConfigs()
   }, [refetchUserPayConfigs])
 
-  /* 获取系统配置列表 */
+  /** 获取系统配置列表 */
   const refetchSystemConfigs = useCallback(async () => {
     const requestId = ++systemRequestIdRef.current
 
@@ -131,28 +116,24 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         return
       }
 
-      if (!isCancelError(error)) {
-        console.error('加载系统配置失败:', error)
-        setSystemConfigsError(error instanceof Error ? error : new Error('加载系统配置失败'))
-      }
+      const errorObject = handleContextError(error, '加载系统配置失败', { logError: true })
+      setSystemConfigsError(errorObject)
       setSystemConfigsLoading(false)
     }
   }, [])
 
-  /* 更新系统配置 */
+  /** 更新系统配置 */
   const updateSystemConfig = useCallback(async (key: string, data: UpdateSystemConfigRequest) => {
     try {
       await services.admin.updateSystemConfig(key, data)
       await refetchSystemConfigs()
     } catch (error) {
-      if (isCancelError(error)) {
-        return
-      }
+      handleContextError(error, '更新系统配置失败')
       throw error
     }
   }, [refetchSystemConfigs])
 
-  /* 删除系统配置 */
+  /** 删除系统配置 */
   const deleteSystemConfig = useCallback(async (key: string) => {
     await services.admin.deleteSystemConfig(key)
     await refetchSystemConfigs()

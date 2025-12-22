@@ -66,15 +66,11 @@ export function BalanceTable() {
 
   const timeRange = getTimeRange()
 
-  const handleTabChange = React.useCallback((value: string) => {
-    setActiveTab(value as OrderType | "all")
-  }, [])
-
   return (
     <div>
       <Tabs
         value={activeTab}
-        onValueChange={handleTabChange}
+        onValueChange={(value) => setActiveTab(value as OrderType | "all")}
         className="w-full"
       >
         <TabsList className="flex p-0 gap-4 rounded-none w-full bg-transparent justify-start border-b border-border">
@@ -112,7 +108,7 @@ export function BalanceTable() {
  * 
  * 负责获取和显示积分余额活动数据
  */
-function TransactionList({ type }: { type?: OrderType }) {
+const TransactionList = React.memo(function TransactionList({ type }: { type?: OrderType }) {
   const {
     transactions,
     total,
@@ -136,16 +132,6 @@ function TransactionList({ type }: { type?: OrderType }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type])
 
-  /** 处理加载更多积分余额活动数据 */
-  const handleLoadMore = React.useCallback(() => {
-    loadMore()
-  }, [loadMore])
-
-  /** 处理重试加载积分余额活动数据 */
-  const handleRetry = React.useCallback(() => {
-    fetchTransactions({ page: 1 })
-  }, [fetchTransactions])
-
   return (
     <TransactionTableList
       loading={loading}
@@ -154,8 +140,8 @@ function TransactionList({ type }: { type?: OrderType }) {
       total={total}
       currentPage={currentPage}
       totalPages={totalPages}
-      onRetry={handleRetry}
-      onLoadMore={handleLoadMore}
+      onRetry={() => fetchTransactions({ page: 1 })}
+      onLoadMore={loadMore}
     />
   )
-}
+})

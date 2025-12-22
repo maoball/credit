@@ -1,5 +1,4 @@
 import { BaseService } from '../core/base.service';
-import type { UpdatePayKeyRequest } from './types';
 
 /**
  * 用户服务
@@ -25,8 +24,7 @@ export class UserService extends BaseService {
    * - 只能更新当前登录用户的支付密钥
    */
   static async updatePayKey(payKey: string): Promise<void> {
-    const request: UpdatePayKeyRequest = { pay_key: payKey };
-    return this.put<void>('/pay-key', request);
+    return this.put<void>('/pay-key', { pay_key: payKey });
   }
 }
 

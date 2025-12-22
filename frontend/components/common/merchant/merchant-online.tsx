@@ -22,6 +22,31 @@ import { MerchantSelector } from "@/components/common/merchant/merchant-selector
 import { LoadingPage } from "@/components/layout/loading"
 import { TransactionTableList } from "@/components/common/general/table-data"
 
+/** 设备预览配置 */
+const DEVICE_CONFIG = {
+  mobile: {
+    width: 375,
+    height: 812,
+    borderRadius: 50,
+    borderWidth: 14,
+    scale: 0.6
+  },
+  tablet: {
+    width: 768,
+    height: 1024,
+    borderRadius: 32,
+    borderWidth: 18,
+    scale: 0.45
+  },
+  desktop: {
+    width: 1200,
+    height: 750,
+    borderRadius: 16,
+    borderWidth: 8,
+    scale: 0.35
+  }
+} as const
+
 export function MerchantOnline() {
   const searchParams = useSearchParams()
   const { apiKeys, loading: loadingKeys, loadAPIKeys } = useMerchant()
@@ -35,7 +60,7 @@ export function MerchantOnline() {
   if (apiKeys.length === 0) {
     return (
       <div className="flex flex-col gap-6 py-6 box-border h-[calc(100vh-60px)]">
-        <div className="flex items-center justify-between border-b border-border pb-2 shrink-0">
+        <div className="flex items-center justify-between border-b pb-2 shrink-0">
           <h1 className="text-2xl font-semibold">在线流转</h1>
         </div>
         <div className="flex flex-col items-center justify-center p-8 text-center border border-dashed rounded-lg flex-1">
@@ -62,17 +87,16 @@ export function MerchantOnline() {
         client_id: selectedKey?.client_id
       }}
     >
-      <MerchantOnlineContent apiKeys={apiKeys} loadAPIKeys={loadAPIKeys} />
+      <MerchantOnlineContent apiKeys={apiKeys} />
     </TransactionProvider>
   )
 }
 
 interface MerchantOnlineContentProps {
   apiKeys: MerchantAPIKey[]
-  loadAPIKeys: () => Promise<void>
 }
 
-function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentProps) {
+function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const {
@@ -86,12 +110,6 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
     loadMore,
     refresh
   } = useTransaction()
-
-  /* 加载 API Keys */
-  useEffect(() => {
-    loadAPIKeys()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   /* 派生 selectedKey */
   const apiKeyId = searchParams.get("apiKeyId")
@@ -282,7 +300,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
 
   return (
     <div className="flex flex-col gap-6 py-6 box-border h-[calc(100vh-60px)]">
-      <div className="flex items-center justify-between border-b border-border pb-2 shrink-0">
+      <div className="flex items-center justify-between border-b pb-2 shrink-0">
         <h1 className="text-2xl font-semibold">在线流转</h1>
         <div className="flex items-center gap-3">
           {apiKeys.length > 0 && (
@@ -293,7 +311,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
             />
           )}
           <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleBack}>
-            <ArrowLeft className="h-3 w-3" /> 返回
+            <ArrowLeft className="size-3" /> 返回
           </Button>
         </div>
       </div>
@@ -334,7 +352,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
                   className="rounded-lg p-4 border border-dashed hover:border-primary/50 shadow-none transition-all text-left group bg-background min-h-[100px] w-[180px] shrink-0 flex flex-col items-center justify-center gap-2"
                 >
                   <div className="rounded-lg p-2 bg-purple-50 dark:bg-purple-950/20">
-                    <Plus className="h-4 w-4 text-purple-600" />
+                    <Plus className="size-4 text-purple-600" />
                   </div>
                   <div className="text-center">
                     <h3 className="font-medium text-sm group-hover:text-foreground">创建服务</h3>
@@ -375,7 +393,7 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
                         <p className="text-xs text-muted-foreground truncate">{link.remark || "无备注"}</p>
                       </div>
                       <div className="rounded-lg p-1.5 bg-green-50 dark:bg-green-950/20 shrink-0">
-                        <CreditCard className="h-3 w-3 text-green-600" />
+                        <CreditCard className="size-3 text-green-600" />
                       </div>
                     </div>
                     <div className="flex items-baseline gap-1 mt-2">
@@ -445,11 +463,11 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
                     layout
                     initial={false}
                     animate={{
-                      width: previewDevice === 'mobile' ? 375 : previewDevice === 'tablet' ? 768 : 1200,
-                      height: previewDevice === 'mobile' ? 812 : previewDevice === 'tablet' ? 1024 : 750,
-                      borderRadius: previewDevice === 'mobile' ? 50 : previewDevice === 'tablet' ? 32 : 16,
-                      borderWidth: previewDevice === 'mobile' ? 14 : previewDevice === 'tablet' ? 18 : 8,
-                      scale: previewDevice === 'mobile' ? 0.6 : previewDevice === 'tablet' ? 0.45 : 0.35,
+                      width: DEVICE_CONFIG[previewDevice].width,
+                      height: DEVICE_CONFIG[previewDevice].height,
+                      borderRadius: DEVICE_CONFIG[previewDevice].borderRadius,
+                      borderWidth: DEVICE_CONFIG[previewDevice].borderWidth,
+                      scale: DEVICE_CONFIG[previewDevice].scale,
                     }}
                     transition={{ type: "spring", stiffness: 200, damping: 25 }}
                     className="shrink-0 overflow-hidden shadow-2xl bg-black relative border-[#1f1f1f] origin-center rounded-[50px]"
@@ -536,8 +554,8 @@ function MerchantOnlineContent({ apiKeys, loadAPIKeys }: MerchantOnlineContentPr
 
                   <SheetFooter className="flex flex-row justify-end items-center gap-2">
                     <Button variant="ghost" onClick={() => setIsCreating(false)} className="h-8 text-xs">取消</Button>
-                    <Button onClick={handleCreate} disabled={loading} className="bg-primary hover:bg-primary/90 h-8 text-xs">
-                      {loading && <Spinner className="mr-1 h-3 w-3" />} 创建
+                    <Button onClick={handleCreate} disabled={loading} className="h-8 text-xs">
+                      {loading && <Spinner className="mr-1 size-3" />} 创建
                     </Button>
                   </SheetFooter>
                 </div>

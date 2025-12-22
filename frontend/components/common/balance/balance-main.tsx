@@ -34,18 +34,18 @@ export function BalanceMain() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 pt-4">
         <div className="lg:col-span-2 space-y-12">
-          <section>
-            <div className="font-semibold mb-4">积分摘要</div>
+          <section aria-labelledby="balance-summary-title">
+            <h2 id="balance-summary-title" className="font-semibold mb-4">积分摘要</h2>
             <BalanceSummary />
           </section>
 
-          <section>
-            <div className="font-semibold mb-2">近期活动</div>
+          <section aria-labelledby="recent-activity-title">
+            <h2 id="recent-activity-title" className="font-semibold mb-2">近期活动</h2>
             <BalanceTable />
           </section>
         </div>
 
-        <aside className="lg:col-span-1">
+        <aside className="lg:col-span-1" aria-labelledby="reports-title">
           <BalanceReport />
         </aside>
       </div>

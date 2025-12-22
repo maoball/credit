@@ -35,8 +35,17 @@ const TAB_TRIGGER_STYLES =
   "transition-colors " +
   "flex-none"
 
-/** 标签值类型 */
 type TabValue = OrderType | 'all'
+
+/** 页面组件映射表 */
+const PAGE_COMPONENTS: Record<TabValue, React.ComponentType> = {
+  receive: Receive,
+  payment: Payment,
+  transfer: Transfer,
+  community: Community,
+  online: Online,
+  all: AllActivity,
+}
 
 /**
  * 活动交易主页面组件
@@ -54,22 +63,8 @@ export function TradeMain() {
 
   /* 渲染活动页面内容 */
   const renderPageContent = () => {
-    switch (activeTab) {
-      case 'receive':
-        return <Receive />
-      case 'payment':
-        return <Payment />
-      case 'transfer':
-        return <Transfer />
-      case 'community':
-        return <Community />
-      case 'online':
-        return <Online />
-      case 'all':
-        return <AllActivity />
-      default:
-        return null
-    }
+    const Component = PAGE_COMPONENTS[activeTab]
+    return Component ? <Component /> : null
   }
 
   return (
@@ -97,7 +92,7 @@ export function TradeMain() {
             {renderPageContent()}
 
             <div className="space-y-4">
-              <div className="font-semibold">活动记录</div>
+              <h2 className="font-semibold">活动记录</h2>
               <TradeTable type={getOrderType(activeTab)} />
             </div>
           </div>

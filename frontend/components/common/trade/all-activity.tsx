@@ -4,6 +4,13 @@ import { CountingNumber } from "@/components/animate-ui/primitives/texts/countin
 import { useUser } from "@/contexts/user-context"
 
 /**
+ * 安全转换数字，避免 NaN
+ */
+function safeNumber(value: number): number {
+  return typeof value === 'number' && !isNaN(value) ? value : 0
+}
+
+/**
  * 所有活动组件
  * 显示用户的所有活动统计数据
  */
@@ -52,7 +59,7 @@ export function AllActivity() {
 
   return (
     <div className="space-y-4">
-      <div className="font-semibold">数据概览</div>
+      <h2 className="font-semibold">数据概览</h2>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((card) => {
           const IconComponent = card.icon
@@ -69,7 +76,7 @@ export function AllActivity() {
               <div className="text-xl md:text-2xl font-bold mt-2">
                 {loading ? '-' : (
                   <CountingNumber
-                    number={typeof card.value === 'number' && !isNaN(card.value) ? card.value : 0}
+                    number={safeNumber(card.value)}
                     decimalPlaces={2}
                     initiallyStable={true}
                     inView={true}

@@ -1,34 +1,50 @@
 import { useState, useEffect } from 'react'
 import { ConfigService, PublicConfigResponse } from '@/lib/services'
 
+// 全局缓存
+let cachedConfig: PublicConfigResponse | null = null
+let cachePromise: Promise<PublicConfigResponse> | null = null
+let cacheTime = 0
+const CACHE_DURATION = 5 * 60 * 1000 // 5分钟
+
 /**
- * 使用公共配置 Hook
- * 自动获取并缓存公共配置，避免重复请求
- *
- * @returns 公共配置数据、加载状态和错误信息
- *
+ * 获取公共配置（带缓存）
+ * 
  * @example
  * ```tsx
  * const { config, loading, error } = usePublicConfig()
- *
- * if (loading) return <Spinner />
- * if (error) return <Error message={error.message} />
- *
- * console.log('争议时间窗口:', config.dispute_time_window_hours)
  * ```
  */
 export function usePublicConfig() {
-  const [config, setConfig] = useState<PublicConfigResponse | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [config, setConfig] = useState<PublicConfigResponse | null>(cachedConfig)
+  const [loading, setLoading] = useState(!cachedConfig)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
     let mounted = true
 
     const fetchConfig = async () => {
-      try {
-        const data = await ConfigService.getPublicConfig()
+      const now = Date.now()
+
+      // 使用有效缓存
+      if (cachedConfig && (now - cacheTime) < CACHE_DURATION) {
         if (mounted) {
+          setConfig(cachedConfig)
+          setLoading(false)
+        }
+        return
+      }
+
+      // 共享同一个请求（请求去重）
+      if (!cachePromise) {
+        cachePromise = ConfigService.getPublicConfig()
+      }
+
+      try {
+        const data = await cachePromise
+        if (mounted) {
+          cachedConfig = data
+          cacheTime = now
           setConfig(data)
           setError(null)
         }
@@ -37,6 +53,7 @@ export function usePublicConfig() {
           setError(err instanceof Error ? err : new Error('获取配置失败'))
         }
       } finally {
+        cachePromise = null
         if (mounted) {
           setLoading(false)
         }

@@ -88,3 +88,13 @@ export interface CloseDisputeRequest {
   /** 争议 ID */
   dispute_id: number;
 }
+
+/**
+ * 创建争议请求
+ */
+export interface CreateDisputeRequest {
+  /** 订单 ID */
+  order_id: number;
+  /** 争议原因（最大 100 字符） */
+  reason: string;
+}

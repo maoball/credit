@@ -8,7 +8,7 @@ import type { Order, TransactionQueryParams } from "@/lib/services"
 import { generateTransactionCacheKey } from "@/lib/utils"
 
 
-/* 交易上下文状态接口 */
+/** 交易上下文状态接口 */
 interface TransactionContextState {
   transactions: Order[]
   total: number
@@ -28,10 +28,10 @@ interface TransactionContextState {
 const MAX_CACHE_SIZE = 50
 const CACHE_DURATION = 5 * 60 * 1000 // 5分钟
 
-/* 交易上下文 */
+/** 交易上下文 */
 const TransactionContext = createContext<TransactionContextState | null>(null)
 
-/* 交易 Provider Props 接口 */
+/** 交易 Provider Props 接口 */
 interface TransactionProviderProps {
   children: React.ReactNode
   defaultParams?: Partial<TransactionQueryParams>
@@ -59,7 +59,7 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
   const [error, setError] = useState<Error | null>(null)
   const [lastParams, setLastParams] = useState<Partial<TransactionQueryParams>>(defaultParams)
 
-  /* 使用 useRef 存储缓存 */
+  /** 使用 useRef 存储缓存 */
   const cacheRef = useRef<Record<string, { data: Order[], total: number, timestamp: number }>>({})
   const latestRequestIdRef = useRef(0)
 
@@ -85,7 +85,7 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
     cacheRef.current[key] = value
   }, [])
 
-  /* 获取交易列表 */
+  /** 获取交易列表 */
   const fetchTransactions = useCallback(async (params: Partial<TransactionQueryParams>) => {
     const queryParams: TransactionQueryParams = {
       page: params.page || 1,
@@ -93,10 +93,10 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
       ...params,
     }
 
-    /* 生成唯一的请求 ID */
+    /** 生成唯一的请求 ID */
     const requestId = ++latestRequestIdRef.current
 
-    /* 生成缓存key */
+    /** 生成缓存key */
     const cacheKey = generateTransactionCacheKey(queryParams)
 
     const cached = cacheRef.current[cacheKey]
@@ -107,7 +107,7 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
         return
       }
 
-      /* 使用缓存数据，同步更新状态 */
+      /** 使用缓存数据，同步更新状态 */
       setTransactions(cached.data)
       setTotal(cached.total)
       setCurrentPage(queryParams.page)
@@ -118,7 +118,7 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
       return
     }
 
-    /* 发起API请求 */
+    /** 发起API请求 */
     setLoading(true)
     setError(null)
     if (queryParams.page === 1) {
@@ -167,7 +167,7 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
     }
   }, [pageSize, addToCache, cleanExpiredCache])
 
-  /* 加载更多 */
+  /** 加载更多 */
   const loadMore = useCallback(async () => {
     if (loading) return
 
@@ -178,7 +178,7 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
     })
   }, [currentPage, fetchTransactions, lastParams, loading])
 
-  /* 刷新当前页 */
+  /** 刷新当前页 */
   const refresh = useCallback(async () => {
     const cacheKey = generateTransactionCacheKey({ ...lastParams, page: 1, page_size: pageSize })
     delete cacheRef.current[cacheKey]
@@ -189,7 +189,7 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
     })
   }, [fetchTransactions, lastParams, pageSize])
 
-  /* 乐观更新订单状态 */
+  /** 乐观更新订单状态 */
   const updateOrderStatus = useCallback((orderId: number, updates: Partial<Pick<Order, 'status' | 'dispute_id'>>) => {
     setTransactions(prev =>
       prev.map(order =>
@@ -202,7 +202,7 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
     cacheRef.current = {}
   }, [])
 
-  /* 重置状态 */
+  /** 重置状态 */
   const reset = useCallback(() => {
     setTransactions([])
     setTotal(0)

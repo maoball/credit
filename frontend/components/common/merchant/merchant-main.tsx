@@ -65,7 +65,7 @@ export function MerchantMain() {
 
   return (
     <div className="py-6">
-      <div className="flex items-center justify-between border-b border-border pb-2 mb-4">
+      <div className="flex items-center justify-between border-b pb-2 mb-4">
         <h1 className="text-2xl font-semibold">集市中心</h1>
         <div className="flex items-center gap-3">
           {apiKeys.length > 0 && (

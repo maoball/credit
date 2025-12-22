@@ -29,16 +29,20 @@ export function MerchantSelector({
       onValueChange={(value) => onSelect(Number(value))}
       disabled={loading || apiKeys.length === 0}
     >
-      <SelectTrigger className="w-fit text-xs shadow-none h-8" size="sm">
+      <SelectTrigger className="w-fit h-8 text-xs" size="sm">
         <SelectValue placeholder="请选择应用" />
       </SelectTrigger>
       <SelectContent>
         {apiKeys.map((apiKey) => (
-          <SelectItem key={apiKey.id} value={apiKey.id.toString()}>
+          <SelectItem
+            key={apiKey.id}
+            value={apiKey.id.toString()}
+            title={apiKey.app_description ? `${ apiKey.app_name } - ${ apiKey.app_description }` : apiKey.app_name}
+          >
             <div className="flex items-center gap-2 text-xs">
               <span className="font-medium">{apiKey.app_name}</span>
               {apiKey.app_description && (
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-muted-foreground truncate">
                   - {apiKey.app_description}
                 </span>
               )}

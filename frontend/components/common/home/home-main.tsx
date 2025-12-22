@@ -11,15 +11,14 @@ export function HomeMain() {
     <TransactionProvider>
       <div className="py-6 space-y-12">
         <div>
-          <h1 className="pb-2 text-2xl font-semibold border-b border-border mb-6">今天</h1>
+          <h1 className="text-2xl font-semibold border-b pb-2 mb-6">今天</h1>
           <DataPanel />
         </div>
 
         <div>
-          <h1 className="pb-2 text-2xl font-semibold border-b border-border">近期概览</h1>
+          <h1 className="text-2xl font-semibold border-b pb-2">近期概览</h1>
           <OverviewPanel />
         </div>
-
       </div>
     </TransactionProvider>
   )

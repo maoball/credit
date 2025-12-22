@@ -30,7 +30,7 @@ export class BaseService {
    * @returns 完整路径
    */
   protected static getFullPath(path: string): string {
-    return `${this.basePath}${path}`;
+    return `${ this.basePath }${ path }`;
   }
 
   /**
@@ -142,6 +142,45 @@ export class BaseService {
       requestConfig,
     );
     return response.data.data;
+  }
+
+  /**
+   * 原始 GET 请求（用于特殊 API 端点）
+   * @template T - 响应数据类型
+   * @param url - 完整 URL
+   * @param params - 查询参数
+   * @returns 响应数据（不经过 response.data.data 解包）
+   * 
+   * @remarks
+   * 仅用于不遵循标准响应格式的特殊端点（如 /api.php）
+   */
+  protected static async rawGet<T>(
+    url: string,
+    params?: unknown,
+  ): Promise<T> {
+    const response = await apiClient.get<T>(
+      url,
+      { params } as InternalAxiosRequestConfig,
+    );
+    return response.data;
+  }
+
+  /**
+   * 原始 POST 请求（用于特殊 API 端点）
+   * @template T - 响应数据类型
+   * @param url - 完整 URL
+   * @param data - 请求数据
+   * @returns 响应数据（不经过 response.data.data 解包）
+   * 
+   * @remarks
+   * 仅用于不遵循标准响应格式的特殊端点（如 /api.php）
+   */
+  protected static async rawPost<T>(
+    url: string,
+    data?: unknown,
+  ): Promise<T> {
+    const response = await apiClient.post<T>(url, data);
+    return response.data;
   }
 }
 

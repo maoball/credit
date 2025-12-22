@@ -1,508 +1,524 @@
-# 服务层架构
+# 服务层架构文档
 
-服务层是前端与 API 交互的统一入口，基于以下原则：
+> **前端服务层** - 统一的 API 交互层，基于 TypeScript 和面向对象设计
 
-- **关注点分离** - 每个服务负责一个业务领域
-- **统一入口** - 通过 `services` 对象导出所有服务
-- **类型安全** - 所有请求和响应有明确类型定义
-- **错误分类** - 细粒度的错误类型
-- **可取消请求** - 支持请求取消机制
-- **环境配置** - 支持多环境配置
+## 架构设计
+
+### 设计理念
+
+服务层采用**分层架构**和**继承模式**，遵循以下核心原则：
+
+1. **单一职责** - 每个服务模块负责一个业务领域
+2. **类型安全** - 全量 TypeScript 类型定义，杜绝 `any`
+3. **统一规范** - 所有服务遵循相同的设计模式
+4. **错误分类** - 细粒度错误类型，便于精确处理
+5. **可扩展性** - 基于继承的设计，易于添加新服务
+
+---
+
+## 架构分层
+
+```mermaid
+graph TB
+    subgraph UI["业务组件层"]
+        Components["React Components<br/>Hooks & Contexts"]
+    end
+
+    subgraph Services["服务层 (Services Layer)"]
+        direction LR
+        Auth["AuthService<br/><small>认证服务</small>"]
+        Admin["AdminService<br/><small>管理员服务</small>"]
+        Merchant["MerchantService<br/><small>商户服务</small>"]
+        Transaction["TransactionService<br/><small>交易服务</small>"]
+        Dispute["DisputeService<br/><small>争议服务</small>"]
+        User["UserService<br/><small>用户服务</small>"]
+        Config["ConfigService<br/><small>配置服务</small>"]
+    end
+
+    subgraph BaseLayer["服务基类"]
+        BaseService["BaseService<br/><small>• get() post() put() delete()<br/>• rawGet() rawPost()</small>"]
+    end
+
+    subgraph Core["核心层 (Core Layer)"]
+        direction LR
+        ApiClient["api-client.ts<br/><small>• 请求/响应拦截<br/>• 错误处理<br/>• 请求去重<br/>• 401重定向</small>"]
+        Errors["errors.ts<br/><small>• ApiErrorBase<br/>• NetworkError<br/>• ValidationError<br/>• 等7种错误</small>"]
+        Types["types.ts<br/><small>• ApiResponse<br/>• PaginationParams<br/>• RequestConfig</small>"]
+        CoreConfig["config.ts<br/><small>• baseURL<br/>• timeout<br/>• credentials</small>"]
+    end
+
+    Backend["Backend API<br/><small>(Go + Gin)</small>"]
+
+    Components -->|调用| Auth
+    Components -->|调用| Admin
+    Components -->|调用| Merchant
+    Components -->|调用| Transaction
+    Components -->|调用| Dispute
+    Components -->|调用| User
+    Components -->|调用| Config
+
+    Auth -.->|继承| BaseService
+    Admin -.->|继承| BaseService
+    Merchant -.->|继承| BaseService
+    Transaction -.->|继承| BaseService
+    Dispute -.->|继承| BaseService
+    User -.->|继承| BaseService
+    Config -.->|继承| BaseService
+
+    BaseService -->|使用| ApiClient
+    BaseService -->|使用| Errors
+    BaseService -->|使用| Types
+    ApiClient -->|读取| CoreConfig
+
+    ApiClient ==>|HTTP 请求| Backend
+    
+    style UI fill:#e1f5ff
+    style Services fill:#fff9e6
+    style BaseLayer fill:#f0f0f0
+    style Core fill:#e8f5e9
+    style Backend fill:#ffebee
+```
+
+
+---
 
 ## 目录结构
 
 ```
 lib/services/
-├── core/                    # 核心服务层
-│   ├── api-client.ts       # Axios 客户端实例
-│   ├── base.service.ts     # 服务基类
-│   ├── config.ts           # API 配置
-│   ├── errors.ts           # 错误类型定义
-│   ├── types.ts            # 核心类型定义
-│   └── index.ts            # 导出核心模块
-├── admin/                  # 管理员服务
-│   ├── types.ts            # 管理员相关类型
-│   ├── admin.service.ts    # 管理员服务实现
-│   └── index.ts            # 导出管理员服务
-├── auth/                   # 认证服务
-│   ├── types.ts            # 认证相关类型
-│   ├── auth.service.ts     # 认证服务实现
-│   └── index.ts            # 导出认证服务
-├── merchant/               # 商户服务
-│   ├── types.ts            # 商户相关类型
-│   ├── merchant.service.ts # 商户服务实现
-│   └── index.ts            # 导出商户服务
-├── transaction/            # 交易服务
-│   ├── types.ts            # 交易相关类型
-│   ├── transaction.service.ts  # 交易服务实现
-│   └── index.ts            # 导出交易服务
-├── user/                   # 用户服务
-│   ├── types.ts            # 用户相关类型
-│   ├── user.service.ts     # 用户服务实现
-│   └── index.ts            # 导出用户服务
-├── index.ts                # 服务层统一入口
-└── README.md               # 文档
+├── core/                      # 核心基础设施层
+│   ├── api-client.ts          # HTTP 客户端（请求拦截、错误处理）
+│   ├── base.service.ts        # 服务基类（封装 CRUD 方法）
+│   ├── config.ts              # API 配置（环境变量、超时等）
+│   ├── errors.ts              # 错误类型定义（7种错误类型）
+│   ├── types.ts               # 核心类型（ApiResponse、分页等）
+│   └── index.ts               # 核心模块导出
+│
+├── auth/                      # 认证服务模块
+│   ├── auth.service.ts        # OAuth 认证、登录、登出
+│   ├── types.ts               # User、OAuthLoginUrlResponse 等
+│   └── index.ts               # 模块导出 + 文档
+│
+├── admin/                     # 管理员服务模块
+│   ├── admin.service.ts       # 系统配置、用户支付配置管理
+│   ├── types.ts               # SystemConfig、UserPayConfig 等
+│   └── index.ts               # 模块导出 + 文档
+│
+├── merchant/                  # 商户服务模块
+│   ├── merchant.service.ts    # API Key、支付链接、订单管理
+│   ├── types.ts               # MerchantAPIKey、PaymentLink 等
+│   └── index.ts               # 模块导出 + 文档
+│
+├── transaction/               # 交易服务模块
+│   ├── transaction.service.ts # 交易记录、转账
+│   ├── types.ts               # Order、TransactionQueryParams 等
+│   └── index.ts               # 模块导出 + 文档
+│
+├── dispute/                   # 争议服务模块
+│   ├── dispute.service.ts     # 创建争议、退款审核
+│   ├── types.ts               # Dispute、DisputeWithOrder 等
+│   └── index.ts               # 模块导出 + 文档
+│
+├── user/                      # 用户服务模块
+│   ├── user.service.ts        # 用户设置（支付密钥等）
+│   ├── types.ts               # UpdatePayKeyRequest 等
+│   └── index.ts               # 模块导出 + 文档
+│
+├── config/                    # 配置服务模块
+│   ├── config.service.ts      # 获取公共配置
+│   ├── types.ts               # PublicConfigResponse
+│   └── index.ts               # 模块导出 + 文档
+│
+├── index.ts                   # 统一导出入口
+└── README.md                  # 本文档
 ```
 
-## 核心模块
+---
 
-### config.ts
+## 核心模块详解
 
-提供 API 配置管理：
-- 环境变量支持（`NEXT_PUBLIC_API_URL`）
-- 统一的超时配置
-- 凭证配置
+### 1. BaseService - 服务基类
 
-### api-client.ts
+**职责**：为所有业务服务提供统一的 HTTP 方法封装
 
-提供统一的 HTTP 客户端，包含：
-- 请求/响应拦截器
-- 统一错误处理
-- 自动 401 重定向
-- 请求取消机制
-- 超时控制
-
-### base.service.ts
-
-提供服务基类，封装：
-- GET、POST、PUT、PATCH、DELETE 方法
-- 统一的路径处理
-- 类型安全的响应解析
-- 支持额外的请求配置
-
-### errors.ts
-
-定义错误类型层级：
-- `ApiErrorBase` - API 错误基类
-- `NetworkError` - 网络连接错误
-- `TimeoutError` - 请求超时错误
-- `UnauthorizedError` - 未授权错误 (401)
-- `ForbiddenError` - 权限不足错误 (403)
-- `NotFoundError` - 资源未找到错误 (404)
-- `ValidationError` - 参数验证错误 (400)
-- `ServerError` - 服务器错误 (5xx)
-
-### types.ts
-
-定义核心类型：
-- `ApiResponse<T>` - API 响应结构
-- `ApiError` - 错误响应结构
-- `PaginationParams` - 分页请求参数
-- `PaginationResponse<T>` - 分页响应结构
-
-## 使用方式
-
-### 1. 推荐：使用统一的 services 对象
-
+**关键设计**：
 ```typescript
-import services from '@/lib/services';
+export class BaseService {
+  protected static readonly basePath: string = '';
 
-// 调用认证服务
-const user = await services.auth.getUserInfo();
-await services.auth.logout();
-
-// 调用交易服务
-const transactions = await services.transaction.getTransactions({
-  page: 1,
-  page_size: 20,
-  type: 'receive'
-});
-
-// 调用商户服务
-const apiKeys = await services.merchant.listAPIKeys();
-const newKey = await services.merchant.createAPIKey({
-  app_name: '我的应用',
-  app_homepage_url: 'https://example.com',
-  redirect_uri: 'https://example.com/callback'
-});
-
-// 创建商户订单（需要商户凭证）
-const order = await services.merchant.createMerchantOrder(
-  {
-    order_name: '商品购买',
-    amount: 99.99,
-    remark: '订单备注'
-  },
-  'client_id',
-  'client_secret'
-);
-
-// 查询商户订单信息
-const orderInfo = await services.merchant.getMerchantOrder({ order_no: 'order_no_123' });
-console.log('订单信息:', orderInfo.order);
-console.log('支付配置:', orderInfo.user_pay_config);
-
-// 支付商户订单
-await services.merchant.payMerchantOrder({ order_no: 'order_no_123' });
-
-// 调用管理员服务（需要管理员权限）
-const systemConfigs = await services.admin.listSystemConfigs();
-const payConfigs = await services.admin.listUserPayConfigs();
-
-// 调用用户服务
-await services.user.updatePayKey('123456');
-```
-
-### 2. 按需导入：直接导入特定服务
-
-```typescript
-import { AdminService, UserService } from '@/lib/services';
-
-const configs = await AdminService.listSystemConfigs();
-await UserService.updatePayKey('123456');
-```
-
-### 3. 错误处理
-
-```typescript
-import services, { UnauthorizedError, ValidationError } from '@/lib/services';
-
-try {
-  const user = await services.auth.login({ username, password });
-  console.log('登录成功', user);
-} catch (error) {
-  if (error instanceof UnauthorizedError) {
-    console.error('登录失败：用户名或密码错误');
-  } else if (error instanceof ValidationError) {
-    console.error('登录失败：参数验证失败', error.details);
-  } else {
-    console.error('登录失败：', error.message);
-  }
-}
-```
-
-### 4. 取消请求
-
-```typescript
-import { cancelRequest, cancelAllRequests } from '@/lib/services';
-
-// 取消特定请求
-cancelRequest('GET', '/api/v1/users');
-
-// 取消所有请求（例如在组件卸载时）
-useEffect(() => {
-  return () => {
-    cancelAllRequests();
-  };
-}, []);
-```
-
-### 5. 使用核心模块
-
-```typescript
-import { apiClient, BaseService } from '@/lib/services/core';
-
-// 直接使用 apiClient
-const response = await apiClient.get('/api/v1/users');
-
-// 继承 BaseService 创建新服务
-class UserService extends BaseService {
-  protected static readonly basePath = '/api/v1/users';
+  // 标准 RESTful 方法
+  protected static async get<T>(path: string, params?: Record<string, unknown>): Promise<T>
+  protected static async post<T>(path: string, data?: unknown): Promise<T>
+  protected static async put<T>(path: string, data?: unknown): Promise<T>
+  protected static async patch<T>(path: string, data?: unknown): Promise<T>
+  protected static async delete<T>(path: string, params?: Record<string, unknown>): Promise<T>
   
-  static async getAll() {
-    return this.get('/');
+  // 特殊端点支持（不遵循标准响应格式）
+  protected static async rawGet<T>(url: string, params?: unknown): Promise<T>
+  protected static async rawPost<T>(url: string, data?: unknown): Promise<T>
+}
+```
+
+**设计优势**：
+- ✅ 子类只需设置 `basePath`，无需重复实现 HTTP 逻辑
+- ✅ 统一的响应解包（`response.data.data`）
+- ✅ 类型安全的泛型设计
+- ✅ 支持特殊端点（如 `/api.php`）
+
+---
+
+### 2. API Client - HTTP 客户端
+
+**职责**：提供全局唯一的 Axios 实例，处理所有 HTTP 请求
+
+**核心功能**：
+
+#### 请求拦截器
+- 自动添加 Cancel Token（支持请求取消）
+- 请求去重（避免重复请求）
+
+#### 响应拦截器
+- **401 自动重定向** - 未授权时自动跳转登录页
+- **错误分类** - 将 HTTP 状态码映射为具体错误类型
+- **统一响应格式** - 解析 `ApiResponse<T>` 结构
+
+#### 错误处理映射
+| HTTP 状态码 | 错误类型 | 说明 |
+|------------|---------|------|
+| 400 | `ValidationError` | 参数验证失败 |
+| 401 | 自动重定向 | 跳转到登录页 |
+| 403 | `ForbiddenError` | 权限不足 |
+| 404 | `NotFoundError` | 资源不存在 |
+| 5xx | `ServerError` | 服务器错误 |
+| 超时 | `TimeoutError` | 请求超时 |
+| 网络 | `NetworkError` | 网络连接失败 |
+
+---
+
+### 3. 错误类型层级
+
+```
+ApiErrorBase (基类)
+├── NetworkError          (网络连接错误)
+├── TimeoutError          (请求超时)
+├── UnauthorizedError     (401 - 未授权)
+├── ForbiddenError        (403 - 权限不足)
+├── NotFoundError         (404 - 资源不存在)
+├── ValidationError       (400 - 参数验证失败)
+└── ServerError           (5xx - 服务器错误)
+```
+
+**设计优势**：
+- 支持 `instanceof` 类型判断
+- 携带详细错误信息（`error_code`、`details`）
+- 便于前端精确处理不同错误场景
+
+---
+
+## 开发规范
+
+### 1. 服务类规范
+
+#### 必须遵循
+```typescript
+export class SomeService extends BaseService {
+  // 1. 必须继承 BaseService
+  // 2. basePath 必须是 protected static readonly
+  protected static readonly basePath = '/api/v1/resource';
+  
+  // 3. 方法必须是 static async
+  // 4. 返回类型必须明确（禁止 any）
+  static async getAll(): Promise<Resource[]> {
+    return this.get<Resource[]>('/');
+  }
+  
+  // 5. 参数类型必须明确定义在 types.ts
+  static async create(request: CreateResourceRequest): Promise<Resource> {
+    return this.post<Resource>('/', request);
   }
 }
 ```
 
-## 服务模块说明
+#### 方法命名规范
+| 操作 | 命名 | 示例 |
+|------|------|------|
+| 获取列表 | `list*` 或 `getAll` | `listAPIKeys()` |
+| 获取单个 | `get*` 或 `getById` | `getAPIKey(id)` |
+| 创建 | `create*` | `createAPIKey(request)` |
+| 更新 | `update*` | `updateAPIKey(id, request)` |
+| 删除 | `delete*` | `deleteAPIKey(id)` |
+| 特殊操作 | 动词开头 | `payMerchantOrder()` |
 
-### AdminService - 管理员服务
-
-处理系统配置和用户支付配置管理相关的 API 请求。
-
-**主要接口：**
-- 系统配置 CRUD 操作
-- 用户支付配置 CRUD 操作
-
-**权限要求：** 需要管理员权限
-
-**使用示例：**
+#### 方法排序规范
 ```typescript
-import services from '@/lib/services';
-
-// 获取系统配置列表
-const configs = await services.admin.listSystemConfigs();
-
-// 创建系统配置
-await services.admin.createSystemConfig({
-  key: 'app.version',
-  value: '1.0.0',
-  description: '应用版本'
-});
-
-// 更新系统配置
-await services.admin.updateSystemConfig('app.version', {
-  value: '1.1.0',
-  description: '更新版本'
-});
-
-// 删除系统配置
-await services.admin.deleteSystemConfig('app.version');
-
-// 用户支付配置管理
-const payConfigs = await services.admin.listUserPayConfigs();
-const newConfig = await services.admin.createUserPayConfig({
-  level: PayLevel.Premium,
-  min_score: 1000,
-  max_score: null,
-  daily_limit: 100000,
-  fee_rate: 0.01
-});
+export class SomeService extends BaseService {
+  protected static readonly basePath = '/api/v1/resource';
+  
+  // 1. CRUD 操作（按 Create → Read → Update → Delete）
+  static async create() { }
+  static async list() { }
+  static async get() { }
+  static async update() { }
+  static async delete() { }
+  
+  // 2. 其他业务方法（按业务逻辑分组）
+  static async someAction() { }
+}
 ```
 
-### UserService - 用户服务
+---
 
-处理用户个人设置相关的 API 请求。
+### 2. 类型定义规范
 
-**主要接口：**
-- 更新用户支付密钥
-
-**权限要求：** 需要登录
-
-**使用示例：**
+#### types.ts 文件结构
 ```typescript
-import services from '@/lib/services';
+// 1. 类型别名（Type Aliases）
+export type ResourceStatus = 'active' | 'inactive' | 'pending';
 
-// 更新支付密钥（6位数字）
-await services.user.updatePayKey('123456');
+// 2. 枚举（Enums） - 使用 const enum 提升性能
+export const enum ResourceLevel {
+  Basic = 1,
+  Premium = 2,
+  Enterprise = 3,
+}
+
+// 3. 接口（Interfaces） - 按业务逻辑分组
+/**
+ * 资源信息
+ */
+export interface Resource {
+  /** 资源 ID */
+  id: number;
+  /** 资源名称 */
+  name: string;
+  /** 状态 */
+  status: ResourceStatus;
+  /** 创建时间 */
+  created_at: string;
+}
+
+/**
+ * 创建资源请求
+ */
+export interface CreateResourceRequest {
+  /** 资源名称（最大 50 字符） */
+  name: string;
+  /** 描述（可选，最大 200 字符） */
+  description?: string;
+}
 ```
 
-## 创建新服务
+#### 注释规范
+- ✅ 所有 interface 必须有 JSDoc 描述
+- ✅ 所有字段必须有行内注释
+- ✅ 包含约束信息（长度、范围、格式等）
+- ✅ 可选字段使用 `?` 标记
 
-### 1. 创建目录结构
+---
 
+### 3. JSDoc 注释规范
+
+**标准模板**：
+```typescript
+/**
+ * [一句话描述方法功能]
+ * 
+ * @param paramName - 参数说明
+ * @returns 返回值说明
+ * @throws {ErrorType} 错误条件说明
+ * 
+ * @example
+ * ```typescript
+ * // 使用示例
+ * const result = await Service.method({ param: 'value' });
+ * ```
+ * 
+ * @remarks [可选]
+ * - 业务规则或注意事项
+ */
+```
+
+**示例**：
+```typescript
+/**
+ * 创建商户 API Key
+ * 
+ * @param request - API Key 配置
+ * @returns 创建的 API Key 信息
+ * @throws {UnauthorizedError} 当未登录时
+ * @throws {ValidationError} 当参数验证失败时
+ * 
+ * @example
+ * ```typescript
+ * const apiKey = await MerchantService.createAPIKey({
+ *   app_name: '我的应用',
+ *   app_homepage_url: 'https://example.com'
+ * });
+ * ```
+ * 
+ * @remarks
+ * - app_name 最大 20 字符
+ * - 需要登录权限
+ */
+static async createAPIKey(request: CreateAPIKeyRequest): Promise<MerchantAPIKey>
+```
+
+---
+
+### 4. 模块 index.ts 规范
+
+**标准格式**：
+```typescript
+/**
+ * [模块名] 服务模块
+ * 
+ * @description
+ * 提供 [业务领域] 相关的功能，包括：
+ * - 功能点1
+ * - 功能点2
+ * - 功能点3
+ * 
+ * @example
+ * ```typescript
+ * import { ServiceName } from '@/lib/services';
+ * 
+ * // 使用示例（展示最常用的1-2个方法）
+ * const result = await ServiceName.commonMethod();
+ * ```
+ * 
+ * @remarks [可选]
+ * - 特殊说明（如权限要求等）
+ */
+
+export { ServiceName } from './service-name.service';
+export type * from './types';
+// 或明确导出
+export type {
+  Type1,
+  Type2,
+} from './types';
+```
+
+---
+
+## 创建新服务指南
+
+### Step 1: 创建目录和文件
 ```bash
-lib/services/新服务名/
-  ├── types.ts           # 类型定义
-  ├── 服务名.service.ts   # 服务实现
-  └── index.ts           # 导出服务
+mkdir lib/services/resource
+touch lib/services/resource/types.ts
+touch lib/services/resource/resource.service.ts
+touch lib/services/resource/index.ts
 ```
 
-### 2. 定义类型（types.ts）
-
+### Step 2: 定义类型（types.ts）
 ```typescript
-/**
- * 用户信息
- */
-export interface User {
-  id: string;
+export interface Resource {
+  id: number;
   name: string;
-  email: string;
 }
 
-/**
- * 创建用户请求
- */
-export interface CreateUserRequest {
+export interface CreateResourceRequest {
   name: string;
-  email: string;
 }
 ```
 
-### 3. 实现服务类（服务名.service.ts）
-
+### Step 3: 实现服务（resource.service.ts）
 ```typescript
 import { BaseService } from '../core/base.service';
-import type { User, CreateUserRequest } from './types';
+import type { Resource, CreateResourceRequest } from './types';
 
-/**
- * 用户服务
- * 处理用户相关的 API 请求
- */
-export class UserService extends BaseService {
-  protected static readonly basePath = '/api/v1/users';
+export class ResourceService extends BaseService {
+  protected static readonly basePath = '/api/v1/resources';
 
-  /**
-   * 获取用户列表
-   * @returns 用户列表
-   */
-  static async getAll(): Promise<User[]> {
-    return this.get<User[]>('/');
+  static async list(): Promise<Resource[]> {
+    return this.get<Resource[]>('/');
   }
 
-  /**
-   * 获取单个用户
-   * @param id - 用户 ID
-   * @returns 用户信息
-   */
-  static async getById(id: string): Promise<User> {
-    return this.get<User>(`/${id}`);
-  }
-
-  /**
-   * 创建用户
-   * @param request - 创建请求
-   * @returns 创建的用户
-   */
-  static async create(request: CreateUserRequest): Promise<User> {
-    return this.post<User>('/', request);
-  }
-
-  /**
-   * 更新用户
-   * @param id - 用户 ID
-   * @param request - 更新请求
-   * @returns 更新后的用户
-   */
-  static async update(id: string, request: Partial<CreateUserRequest>): Promise<User> {
-    return this.put<User>(`/${id}`, request);
-  }
-
-  /**
-   * 删除用户
-   * @param id - 用户 ID
-   */
-  static async delete(id: string): Promise<void> {
-    return this.delete<void>(`/${id}`);
+  static async create(request: CreateResourceRequest): Promise<Resource> {
+    return this.post<Resource>('/', request);
   }
 }
 ```
 
-### 4. 导出服务（index.ts）
-
+### Step 4: 导出模块（index.ts）
 ```typescript
 /**
- * 用户服务模块
+ * 资源服务模块
+ * 
+ * @description
+ * 提供资源管理相关的功能，包括：
+ * - 资源列表查询
+ * - 资源创建
  */
 
-export { UserService } from './user.service';
-export type { User, CreateUserRequest } from './types';
+export { ResourceService } from './resource.service';
+export type * from './types';
 ```
 
-### 5. 注册到服务层（services/index.ts）
-
+### Step 5: 注册到统一入口（services/index.ts）
 ```typescript
-import { AuthService } from './auth';
-import { UserService } from './user';  // 新增
+import { ResourceService } from './resource';
 
 const services = {
-  auth: AuthService,
-  user: UserService,  // 新增
+  // ... existing services
+  resource: ResourceService,  // 新增
 };
 
 export default services;
-
-// 导出新服务
-export { UserService } from './user';
-export type { User, CreateUserRequest } from './user';
+export { ResourceService } from './resource';
+export type * from './resource';
 ```
 
-## 最佳实践
+---
 
-### 1. 类型安全
+## 使用示例
 
-✅ **推荐**：明确类型定义
-```typescript
-static async getUser(id: string): Promise<User> {
-  return this.get<User>(`/${id}`);
-}
-```
-
-❌ **避免**：使用 `any` 类型
-```typescript
-static async getUser(id: string): Promise<any> {
-  return this.get(`/${id}`);
-}
-```
-
-### 2. 错误处理
-
-✅ **推荐**：使用类型化错误处理
-```typescript
-import { UnauthorizedError, ValidationError, NetworkError } from '@/lib/services';
-
-try {
-  const user = await services.auth.getCurrentUser();
-  setUser(user);
-} catch (error) {
-  if (error instanceof UnauthorizedError) {
-    router.push('/login');
-  } else if (error instanceof NetworkError) {
-    toast.error('网络连接失败，请检查您的网络');
-  } else if (error instanceof ValidationError) {
-    toast.error(error.message);
-    console.log('验证错误详情:', error.details);
-  } else {
-    toast.error('操作失败，请稍后重试');
-  }
-}
-```
-
-### 3. 请求取消
-
-✅ **推荐**：在组件卸载时取消请求
-```typescript
-import { useEffect } from 'react';
-import { cancelAllRequests } from '@/lib/services';
-
-function MyComponent() {
-  useEffect(() => {
-    // 组件卸载时取消所有请求
-    return () => {
-      cancelAllRequests();
-    };
-  }, []);
-}
-```
-
-### 4. 参数校验
-
-✅ **推荐**：使用 ValidationError 返回详细信息
-```typescript
-static async createUser(data: CreateUserRequest): Promise<User> {
-  if (!data.email) {
-    throw new ValidationError('邮箱不能为空', { field: 'email' });
-  }
-  return this.post<User>('/', data);
-}
-```
-
-### 5. 文档注释
-
-✅ **推荐**：使用 JSDoc 注释
-```typescript
-/**
- * 获取用户信息
- * @param id - 用户 ID
- * @returns 用户信息
- * @throws {NotFoundError} 当用户不存在时
- * @throws {UnauthorizedError} 当未登录时
- */
-static async getUser(id: string): Promise<User> {
-  return this.get<User>(`/${id}`);
-}
-```
-
-### 6. 使用统一的 services 对象
-
-✅ **推荐**：统一风格
 ```typescript
 import services from '@/lib/services';
 
-// 所有服务调用都通过 services 对象
-const user = await services.auth.getCurrentUser();
-const orders = await services.order.getAll();
+// 调用服务
+const user = await services.auth.getUserInfo();
+const transactions = await services.transaction.getTransactions({
+  page: 1,
+  page_size: 20
+});
+
+// 错误处理
+import { UnauthorizedError, ValidationError } from '@/lib/services';
+
+try {
+  await services.merchant.createAPIKey(request);
+} catch (error) {
+  if (error instanceof UnauthorizedError) {
+    router.push('/login');
+  } else if (error instanceof ValidationError) {
+    toast.error(error.message);
+  }
+}
 ```
 
-❌ **避免**：混用两种方式
-```typescript
-import services, { AdminService } from '@/lib/services';
-
-// 不要混用
-const configs = await services.admin.listSystemConfigs();
-const profile = await AdminService.getSystemConfig('app.name'); // 不推荐
-```
+---
 
 ## 注意事项
 
-1. **禁止使用 `any` 类型** - 所有类型必须明确定义
-2. **使用 `unknown` 必须断言** - 需要类型断言或类型守卫
-3. **继承 BaseService** - 新服务必须继承 `BaseService` 类
-4. **设置 basePath** - 每个服务必须使用 `readonly` 设置 `basePath`
-5. **导出类型** - 在 `index.ts` 中导出所有类型定义
-6. **统一错误处理** - 使用 `errors.ts` 中定义的错误类型
-7. **环境变量** - 使用 `NEXT_PUBLIC_API_URL` 配置 API 地址
-8. **请求取消** - 在适当的时机取消不需要的请求
-9. **服务完整性** - 前端服务层已完整实现所有业务接口
-   - `GET /api/v1/health` - 健康检查（通常不需要前端调用）
+### 禁止事项
+- ❌ 使用 `any` 类型
+- ❌ 直接使用 `apiClient`（除非在 `BaseService` 内部）
+- ❌ 绕过 BaseService 实现 HTTP 请求
+- ❌ 在业务组件中直接导入 axios
+
+### 必须遵循
+- ✅ 所有服务继承 `BaseService`
+- ✅ 使用 `protected static readonly basePath`
+- ✅ 方法必须有完整的 JSDoc 注释
+- ✅ 类型定义必须在 `types.ts` 中
+- ✅ 通过 `services` 对象调用服务
+
+---
+
+## 相关文档
+
+- [TypeScript 官方文档](https://www.typescriptlang.org/)
+- [Axios 文档](https://axios-http.com/)
+- [JSDoc 规范](https://jsdoc.app/)

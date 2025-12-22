@@ -50,16 +50,13 @@ const createDisputeOrder = (dispute: DisputeWithOrder, type: 'receive' | 'paymen
 const DisputeListSkeleton = () => (
   <div className="space-y-1">
     {Array.from({ length: 5 }).map((_, index) => (
-      <div
-        key={`skeleton-${ index }`}
-        className="flex items-center justify-between py-2 px-3 rounded-md bg-muted/50"
-      >
+      <div key={`skeleton-${ index }`} className="flex items-center justify-between py-1 px-2 rounded-md bg-muted/50">
         <div className="flex-1 min-w-0">
           <Skeleton className="h-3 w-32 mb-1" />
           <Skeleton className="h-2.5 w-20" />
         </div>
-        <div className="flex items-center gap-1 ml-2">
-          <Skeleton className="h-5 w-5 p-1 rounded-full bg-muted" />
+        <div className="ml-2">
+          <Skeleton className="size-5 rounded-full" />
         </div>
       </div>
     ))}
@@ -72,15 +69,12 @@ const DisputeListSkeleton = () => (
 const PaymentListSkeleton = () => (
   <div className="space-y-1">
     {Array.from({ length: 5 }).map((_, index) => (
-      <div
-        key={`payment-skeleton-${ index }`}
-        className="flex items-center justify-between py-2 px-3 rounded-md bg-muted/50"
-      >
+      <div key={`payment-skeleton-${ index }`} className="flex items-center justify-between py-1 px-2 rounded-md bg-muted/50">
         <div className="flex-1 min-w-0">
           <Skeleton className="h-3 w-32 mb-1" />
           <Skeleton className="h-2.5 w-20" />
         </div>
-        <div className="flex items-center gap-1 ml-2">
+        <div className="ml-2">
           <Skeleton className="h-5 w-16 rounded" />
         </div>
       </div>
@@ -155,33 +149,20 @@ function PaymentCard({ onViewAll }: { onViewAll: () => void }) {
     fetchPayments()
   }, [fetchPayments])
 
-  const handleRefresh = () => {
-    fetchPayments()
-  }
-
   return (
     <Card className="bg-background border-0 shadow-none rounded-lg min-h-[200px] flex flex-col h-full">
       <CardHeader>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <CardTitle className="text-sm font-medium">活动</CardTitle>
             <p className="font-semibold">{loading ? '-' : <CountingNumber number={total} decimalPlaces={0} />}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-4 w-4 p-0"
-              onClick={() => setIsHidden(!isHidden)}
-            >
-              {isHidden ? (
-                <EyeOff className="h-3 w-3 text-muted-foreground" />
-              ) : (
-                <Eye className="h-3 w-3 text-muted-foreground" />
-              )}
+            <Button variant="ghost" size="icon" className="size-4" onClick={() => setIsHidden(!isHidden)}>
+              {isHidden ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
             </Button>
-            <Button variant="ghost" size="icon" className="h-4 w-4 p-0" onClick={handleRefresh}>
-              <RefreshCcw className="size-4 text-muted-foreground" />
+            <Button variant="ghost" size="icon" className="size-4" onClick={fetchPayments}>
+              <RefreshCcw className="size-4" />
             </Button>
           </div>
         </div>
@@ -193,23 +174,14 @@ function PaymentCard({ onViewAll }: { onViewAll: () => void }) {
           ) : payments.length > 0 ? (
             <div className="space-y-1">
               {payments.map((payment) => (
-                <div
-                  key={`payment-${ payment.id }`}
-                  className="flex items-center justify-between py-1 px-2 rounded-md bg-muted/50"
-                >
+                <div key={`payment-${ payment.id }`} className="flex items-center justify-between py-1 px-2 rounded-md bg-muted/50">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate leading-tight">
-                      {payment.order_name}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground leading-tight">
-                      LDC {payment.amount}
-                    </p>
+                    <p className="text-xs font-medium truncate leading-tight">{payment.order_name}</p>
+                    <p className="text-[10px] text-muted-foreground leading-tight">LDC {payment.amount}</p>
                   </div>
-                  <div className="flex items-center gap-1 ml-2">
-                    <Badge variant={getStatusVariant(payment.status)} className="text-[10px] px-1.5 py-0">
-                      {getStatusText(payment.status)}
-                    </Badge>
-                  </div>
+                  <Badge variant={getStatusVariant(payment.status)} className="text-[10px] px-1.5 py-0 ml-2">
+                    {getStatusText(payment.status)}
+                  </Badge>
                 </div>
               ))}
             </div>
@@ -226,15 +198,10 @@ function PaymentCard({ onViewAll }: { onViewAll: () => void }) {
           </div>
         )}
       </CardContent>
-      <CardFooter className="h-8 items-end">
-        <div className="flex border-t pt-4 items-center justify-between text-xs text-muted-foreground w-full">
+      <CardFooter className="border-t h-8">
+        <div className="flex items-center justify-between text-xs text-muted-foreground w-full">
           <span>更新时间：{new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
-          <Button
-            variant="link"
-            className="px-0 h-4 text-xs text-blue-600"
-            disabled={loading}
-            onClick={onViewAll}
-          >
+          <Button variant="link" className="h-4 px-0 text-xs text-blue-600" disabled={loading} onClick={onViewAll}>
             查看全部
           </Button>
         </div>
@@ -256,17 +223,9 @@ function TotalCard() {
   const fetchTotal = React.useCallback(async () => {
     try {
       setLoading(true)
-      const response = await TransactionService.getTransactions({
-        page: 1,
-        page_size: 100,
-        status: 'success'
-      })
-
-      const totalAmount = response.orders.reduce((sum, order) => {
-        return sum + parseFloat(order.amount || '0')
-      }, 0)
-
-      setTotal(totalAmount)
+      const response = await TransactionService.getTransactions({ page: 1, page_size: 100, status: 'success' })
+      const total = response.orders.reduce((sum, order) => sum + parseFloat(order.amount || '0'), 0)
+      setTotal(total)
     } catch (error) {
       console.error('Failed to fetch total:', error)
     } finally {
@@ -278,27 +237,21 @@ function TotalCard() {
     fetchTotal()
   }, [fetchTotal])
 
-  const handleRefresh = () => {
-    fetchTotal()
-  }
-
   return (
     <Card className="bg-background border-0 shadow-none rounded-lg min-h-[200px] flex flex-col h-full">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium">积分</CardTitle>
-          <Button variant="ghost" size="icon" className="h-4 w-4 p-0" onClick={handleRefresh}>
-            <RefreshCcw className="size-4 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="size-4" onClick={fetchTotal}>
+            <RefreshCcw className="size-4" />
           </Button>
         </div>
-        <div>
-          <div className="text-xl font-semibold">
-            {loading ? (
-              <Skeleton className="h-6 w-24" />
-            ) : (
-              <>LDC <CountingNumber number={total} decimalPlaces={2} /></>
-            )}
-          </div>
+        <div className="text-xl font-semibold">
+          {loading ? (
+            <Skeleton className="h-6 w-24" />
+          ) : (
+            <>LDC <CountingNumber number={total} decimalPlaces={2} /></>
+          )}
         </div>
       </CardHeader>
       <CardContent className="flex-1">
@@ -306,10 +259,10 @@ function TotalCard() {
           <p className="text-xs text-muted-foreground">图表暂时不可用</p>
         </div>
       </CardContent>
-      <CardFooter className="border-t h-8 items-end">
-        <div className="flex items-center justify-between text-xs text-muted-foreground w-full">
-          <span>更新时间：{new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
-        </div>
+      <CardFooter className="border-t h-8">
+        <span className="text-xs text-muted-foreground">
+          更新时间：{new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+        </span>
       </CardFooter>
     </Card>
   )
@@ -328,32 +281,12 @@ function NetVolumeCard() {
   const fetchNetVolume = React.useCallback(async () => {
     try {
       setLoading(true)
-
-      /* 获取积分收益总额 */
-      const receiveResponse = await TransactionService.getTransactions({
-        page: 1,
-        page_size: 100,
-        type: 'receive',
-        status: 'success'
-      })
-
-      const receiveTotal = receiveResponse.orders.reduce((sum, order) => {
-        return sum + parseFloat(order.amount || '0')
-      }, 0)
-
-      /* 获取积分消耗总额 */
-      const paymentResponse = await TransactionService.getTransactions({
-        page: 1,
-        page_size: 100,
-        type: 'payment',
-        status: 'success'
-      })
-
-      const paymentTotal = paymentResponse.orders.reduce((sum, order) => {
-        return sum + parseFloat(order.amount || '0')
-      }, 0)
-
-      /* 计算净积分值 */
+      const [receiveResponse, paymentResponse] = await Promise.all([
+        TransactionService.getTransactions({ page: 1, page_size: 100, type: 'receive', status: 'success' }),
+        TransactionService.getTransactions({ page: 1, page_size: 100, type: 'payment', status: 'success' })
+      ])
+      const receiveTotal = receiveResponse.orders.reduce((sum, order) => sum + parseFloat(order.amount || '0'), 0)
+      const paymentTotal = paymentResponse.orders.reduce((sum, order) => sum + parseFloat(order.amount || '0'), 0)
       setNetAmount(receiveTotal - paymentTotal)
     } catch (error) {
       console.error('Failed to fetch net volume:', error)
@@ -366,30 +299,24 @@ function NetVolumeCard() {
     fetchNetVolume()
   }, [fetchNetVolume])
 
-  const handleRefresh = () => {
-    fetchNetVolume()
-  }
-
   return (
     <Card className="bg-background border-0 shadow-none rounded-lg min-h-[200px] flex flex-col h-full">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium">净积分值</CardTitle>
-          <Button variant="ghost" size="icon" className="h-4 w-4 p-0" onClick={handleRefresh}>
-            <RefreshCcw className="size-4 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="size-4" onClick={fetchNetVolume}>
+            <RefreshCcw className="size-4" />
           </Button>
         </div>
-        <div>
-          <div className="text-xl font-semibold">
-            {loading ? (
-              <Skeleton className="h-6 w-24" />
-            ) : (
-              <>
-                LDC <CountingNumber number={Math.abs(netAmount)} decimalPlaces={2} />
-                {netAmount < 0 && <span className="text-destructive ml-1">(赤字)</span>}
-              </>
-            )}
-          </div>
+        <div className="text-xl font-semibold">
+          {loading ? (
+            <Skeleton className="h-6 w-24" />
+          ) : (
+            <>
+              LDC <CountingNumber number={Math.abs(netAmount)} decimalPlaces={2} />
+              {netAmount < 0 && <span className="text-destructive ml-1">(赤字)</span>}
+            </>
+          )}
         </div>
       </CardHeader>
       <CardContent className="flex-1">
@@ -397,10 +324,10 @@ function NetVolumeCard() {
           <p className="text-xs text-muted-foreground">图表暂时不可用</p>
         </div>
       </CardContent>
-      <CardFooter className="border-t h-8 items-end">
-        <div className="flex items-center justify-between text-xs text-muted-foreground w-full">
-          <span>更新时间：{new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
-        </div>
+      <CardFooter className="border-t h-8">
+        <span className="text-xs text-muted-foreground">
+          更新时间：{new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+        </span>
       </CardFooter>
     </Card>
   )
@@ -418,8 +345,8 @@ function TopCustomersCard() {
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
           <CardTitle className="text-sm font-medium">积分收益排行</CardTitle>
-          <Button variant="ghost" size="icon" className="h-4 w-4 p-0">
-            <RefreshCcw className="size-4 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="size-4">
+            <RefreshCcw className="size-4" />
           </Button>
         </div>
       </CardHeader>
@@ -430,10 +357,8 @@ function TopCustomersCard() {
           <Skeleton className="h-12 w-full" />
         </div>
       </CardContent>
-      <CardFooter className="border-t h-8 items-end">
-        <div className="flex items-center justify-between text-xs text-muted-foreground w-full">
-          <span>更新时间：上午12:29</span>
-        </div>
+      <CardFooter className="border-t h-8">
+        <span className="text-xs text-muted-foreground">更新时间：上午12:29</span>
       </CardFooter>
     </Card>
   )
@@ -453,13 +378,13 @@ function PendingDisputesCard({ onViewAll }: { onViewAll: () => void }) {
   return (
     <Card className="bg-background border-0 shadow-none rounded-lg min-h-[200px] flex flex-col h-full">
       <CardHeader>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <CardTitle className="text-sm font-medium">待处理的争议</CardTitle>
             <p className="font-semibold">{loading ? '-' : <CountingNumber number={disputes.count} decimalPlaces={0} />}</p>
           </div>
-          <Button variant="ghost" size="icon" className="h-4 w-4 p-0" onClick={handleRefresh}>
-            <RefreshCcw className="size-4 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="size-4" onClick={handleRefresh}>
+            <RefreshCcw className="size-4" />
           </Button>
         </div>
       </CardHeader>
@@ -470,23 +395,13 @@ function PendingDisputesCard({ onViewAll }: { onViewAll: () => void }) {
           ) : disputes.list.length > 0 ? (
             <div className="space-y-1">
               {disputes.list.map((dispute) => (
-                <div
-                  key={`merchant-${ dispute.id }`}
-                  className="flex items-center justify-between py-1 px-2 rounded-md bg-muted/50"
-                >
+                <div key={`merchant-${ dispute.id }`} className="flex items-center justify-between py-1 px-2 rounded-md bg-muted/50">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate leading-tight">
-                      {dispute.order_name}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground leading-tight">
-                      {dispute.payee_username}
-                    </p>
+                    <p className="text-xs font-medium truncate leading-tight">{dispute.order_name}</p>
+                    <p className="text-[10px] text-muted-foreground leading-tight">{dispute.payee_username}</p>
                   </div>
-                  <div className="flex items-center gap-1 ml-2">
-                    <RefundReviewDialog
-                      order={createDisputeOrder(dispute, 'receive')}
-                      onSuccess={refetchData}
-                    />
+                  <div className="ml-2">
+                    <RefundReviewDialog order={createDisputeOrder(dispute, 'receive')} onSuccess={refetchData} />
                   </div>
                 </div>
               ))}
@@ -498,15 +413,10 @@ function PendingDisputesCard({ onViewAll }: { onViewAll: () => void }) {
           )}
         </ScrollArea>
       </CardContent>
-      <CardFooter className="h-8 items-end">
-        <div className="flex border-t pt-4 items-center justify-between text-xs text-muted-foreground w-full">
+      <CardFooter className="border-t h-8">
+        <div className="flex items-center justify-between text-xs text-muted-foreground w-full">
           <span>更新时间：{new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
-          <Button
-            variant="link"
-            className="px-0 h-4 text-xs text-blue-600"
-            disabled={loading}
-            onClick={onViewAll}
-          >
+          <Button variant="link" className="h-4 px-0 text-xs text-blue-600" disabled={loading} onClick={onViewAll}>
             查看全部
           </Button>
         </div>
@@ -529,13 +439,13 @@ function MyDisputesCard({ onViewAll }: { onViewAll: () => void }) {
   return (
     <Card className="bg-background border-0 shadow-none rounded-lg min-h-[200px] flex flex-col h-full">
       <CardHeader>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <CardTitle className="text-sm font-medium">我发起的争议</CardTitle>
             <p className="font-semibold">{loading ? '-' : <CountingNumber number={disputes.count} decimalPlaces={0} />}</p>
           </div>
-          <Button variant="ghost" size="icon" className="h-4 w-4 p-0" onClick={handleRefresh}>
-            <RefreshCcw className="size-4 text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="size-4" onClick={handleRefresh}>
+            <RefreshCcw className="size-4" />
           </Button>
         </div>
       </CardHeader>
@@ -546,23 +456,13 @@ function MyDisputesCard({ onViewAll }: { onViewAll: () => void }) {
           ) : disputes.list.length > 0 ? (
             <div className="space-y-1">
               {disputes.list.map((dispute) => (
-                <div
-                  key={`user-${ dispute.id }`}
-                  className="flex items-center justify-between py-1 px-2 rounded-md bg-muted/50"
-                >
+                <div key={`user-${ dispute.id }`} className="flex items-center justify-between py-1 px-2 rounded-md bg-muted/50">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate leading-tight">
-                      {dispute.order_name}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground leading-tight">
-                      积分活动发起者正在处理争议
-                    </p>
+                    <p className="text-xs font-medium truncate leading-tight">{dispute.order_name}</p>
+                    <p className="text-[10px] text-muted-foreground leading-tight">积分活动发起者正在处理争议</p>
                   </div>
-                  <div className="flex items-center gap-1 ml-2">
-                    <CancelDisputeDialog
-                      order={createDisputeOrder(dispute, 'payment')}
-                      onSuccess={refetchData}
-                    />
+                  <div className="ml-2">
+                    <CancelDisputeDialog order={createDisputeOrder(dispute, 'payment')} onSuccess={refetchData} />
                   </div>
                 </div>
               ))}
@@ -574,15 +474,10 @@ function MyDisputesCard({ onViewAll }: { onViewAll: () => void }) {
           )}
         </ScrollArea>
       </CardContent>
-      <CardFooter className="h-8 items-end">
-        <div className="flex border-t pt-4 items-center justify-between text-xs text-muted-foreground w-full">
+      <CardFooter className="border-t h-8">
+        <div className="flex items-center justify-between text-xs text-muted-foreground w-full">
           <span>更新时间：{new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
-          <Button
-            variant="link"
-            className="px-0 h-4 text-xs text-blue-600"
-            disabled={loading}
-            onClick={onViewAll}
-          >
+          <Button variant="link" className="h-4 px-0 text-xs text-blue-600" disabled={loading} onClick={onViewAll}>
             查看全部
           </Button>
         </div>

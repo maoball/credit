@@ -20,7 +20,7 @@ import {
   CancelDisputeDialog,
   ViewDisputeHistoryDialog,
   RefundReviewDialog,
-} from "./dispute-dialogs"
+} from "./dispute-dialog"
 
 const ROW_HEIGHT = 36
 
@@ -325,4 +325,4 @@ export const TransactionTableList = React.memo(function TransactionTableList({
   )
 })
 
-export { RefundReviewDialog, CancelDisputeDialog } from "./dispute-dialogs"
+export { RefundReviewDialog, CancelDisputeDialog } from "./dispute-dialog"

@@ -56,31 +56,38 @@ export function MerchantDialog({
   }, [])
 
   /**
-   * 初始化表单数据
+   * 获取初始表单数据
    */
-  useEffect(() => {
+  const getInitialFormData = React.useCallback((): CreateAPIKeyRequest | UpdateAPIKeyRequest => {
     if (mode === 'update' && apiKey) {
-      setFormData({
+      return {
         app_name: apiKey.app_name,
         app_homepage_url: apiKey.app_homepage_url,
         app_description: apiKey.app_description,
         redirect_uri: apiKey.redirect_uri,
         notify_url: apiKey.notify_url,
-      })
-    } else {
-      setFormData({
-        app_name: '',
-        app_homepage_url: '',
-        app_description: '',
-        redirect_uri: '',
-        notify_url: '',
-      })
+      }
+    }
+    return {
+      app_name: '',
+      app_homepage_url: '',
+      app_description: '',
+      redirect_uri: '',
+      notify_url: '',
     }
   }, [mode, apiKey])
 
+  /**
+   * 初始化表单数据
+   */
+  useEffect(() => {
+    setFormData(getInitialFormData())
+  }, [getInitialFormData])
+
   const isValidUrl = (url: string): boolean => {
+    if (!url || url.trim() === '') return false
     try {
-      const urlObj = new URL(url)
+      const urlObj = new URL(url.trim())
       return urlObj.protocol === 'http:' || urlObj.protocol === 'https:'
     } catch {
       return false
@@ -88,23 +95,7 @@ export function MerchantDialog({
   }
 
   const resetForm = () => {
-    if (mode === 'update' && apiKey) {
-      setFormData({
-        app_name: apiKey.app_name,
-        app_homepage_url: apiKey.app_homepage_url,
-        app_description: apiKey.app_description,
-        redirect_uri: apiKey.redirect_uri,
-        notify_url: apiKey.notify_url,
-      })
-    } else {
-      setFormData({
-        app_name: '',
-        app_homepage_url: '',
-        app_description: '',
-        redirect_uri: '',
-        notify_url: '',
-      })
-    }
+    setFormData(getInitialFormData())
   }
 
   const validateForm = (): { valid: boolean; error?: string } => {
@@ -205,7 +196,7 @@ export function MerchantDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button className="bg-primary hover:bg-primary/90 h-8 text-xs">
+          <Button className="h-8 text-xs">
             {mode === 'create' ? '创建应用' : '更新应用'}
           </Button>
         )}
@@ -298,7 +289,7 @@ export function MerchantDialog({
               handleSubmit()
             }}
             disabled={processing}
-            className="bg-primary hover:bg-primary/90 h-8 text-xs"
+            className="h-8 text-xs"
           >
             {processing ? <><Spinner /> {mode === 'create' ? '创建中' : '更新中'}</> : (mode === 'create' ? '创建' : '更新')}
           </Button>

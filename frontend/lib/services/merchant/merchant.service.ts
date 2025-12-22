@@ -1,6 +1,4 @@
 import { BaseService } from '../core/base.service';
-import apiClient from '../core/api-client';
-import type { InternalAxiosRequestConfig } from 'axios';
 import type {
   MerchantAPIKey,
   CreateAPIKeyRequest,
@@ -362,12 +360,7 @@ export class MerchantService extends BaseService {
   static async queryMerchantOrder(
     params: QueryMerchantOrderRequest
   ): Promise<QueryMerchantOrderResponse> {
-    // 直接使用 apiClient，因为这个接口不在标准 RESTful 路径下
-    const response = await apiClient.get<QueryMerchantOrderResponse>(
-      '/epay/api.php',
-      { params } as InternalAxiosRequestConfig
-    );
-    return response.data;
+    return this.rawGet<QueryMerchantOrderResponse>('/epay/api.php', params);
   }
 
   /**
@@ -408,12 +401,7 @@ export class MerchantService extends BaseService {
   static async refundMerchantOrder(
     params: RefundMerchantOrderRequest
   ): Promise<RefundMerchantOrderResponse> {
-    // 直接使用 apiClient，因为这个接口不在标准 RESTful 路径下
-    const response = await apiClient.post<RefundMerchantOrderResponse>(
-      '/epay/api.php',
-      params
-    );
-    return response.data;
+    return this.rawPost<RefundMerchantOrderResponse>('/epay/api.php', params);
   }
 }
 

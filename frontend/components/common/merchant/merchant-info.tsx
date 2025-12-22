@@ -39,12 +39,30 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
   const [showClientSecret, setShowClientSecret] = useState(false)
 
   /* 复制到剪贴板 */
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text).then(() => {
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
       toast.success(`${ label } 已复制`)
-    }).catch(() => {
-      toast.error('复制失败')
-    })
+    } catch {
+      try {
+        const textArea = document.createElement('textarea')
+        textArea.value = text
+        textArea.style.position = 'fixed'
+        textArea.style.opacity = '0'
+        document.body.appendChild(textArea)
+        textArea.select()
+        const successful = document.execCommand('copy')
+        document.body.removeChild(textArea)
+
+        if (successful) {
+          toast.success(`${ label } 已复制`)
+        } else {
+          toast.error('复制失败')
+        }
+      } catch {
+        toast.error('复制失败')
+      }
+    }
   }
 
   const maskText = (text: string, showLength: number = 8) => {
@@ -84,7 +102,7 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
               <span className="truncate flex-1 min-w-0">
                 {apiKey.app_homepage_url}
               </span>
-              <ExternalLink className="h-3 w-3 flex-shrink-0 ml-1" />
+              <ExternalLink className="size-3 flex-shrink-0 ml-1" />
             </Link>
           </div>
 
@@ -99,7 +117,7 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
                 <span className="truncate flex-1 min-w-0">
                   {apiKey.redirect_uri}
                 </span>
-                <ExternalLink className="h-3 w-3 flex-shrink-0 ml-1" />
+                <ExternalLink className="size-3 flex-shrink-0 ml-1" />
               </Link>
             </div>
           )}
@@ -114,7 +132,7 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
               <span className="truncate flex-1 min-w-0">
                 {apiKey.notify_url}
               </span>
-              <ExternalLink className="h-3 w-3 flex-shrink-0 ml-1" />
+              <ExternalLink className="size-3 flex-shrink-0 ml-1" />
             </Link>
           </div>
         </div>
@@ -128,20 +146,20 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
               <label className="text-xs font-medium text-muted-foreground">Client ID</label>
               <span className="text-[10px] text-muted-foreground">客户端标识</span>
             </div>
-            <div className="flex items-center p-2 h-8 border border-dashed rounded-sm bg-background">
-              <code className="text-xs text-muted-foreground font-mono flex-1 overflow-x-auto leading-relaxed p-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex items-center p-2 h-8 border border-dashed rounded-sm">
+              <code className="text-xs text-muted-foreground font-mono flex-1 overflow-x-auto p-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {showClientId ? apiKey.client_id : maskText(apiKey.client_id, 8)}
               </code>
               <Button
                 variant="ghost"
-                className="p-1 w-6 h-6"
+                className="size-6 p-1"
                 onClick={() => setShowClientId(!showClientId)}
               >
                 {showClientId ? <EyeOff className="size-3 text-muted-foreground" /> : <Eye className="size-3 text-muted-foreground" />}
               </Button>
               <Button
                 variant="ghost"
-                className="p-1 w-6 h-6"
+                className="size-6 p-1"
                 onClick={() => copyToClipboard(apiKey.client_id, 'Client ID')}
               >
                 <Copy className="size-3 text-muted-foreground" />
@@ -154,13 +172,13 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
               <label className="text-xs font-medium text-muted-foreground">Client Secret</label>
               <span className="text-[10px] text-muted-foreground">客户端密钥</span>
             </div>
-            <div className="flex items-center p-2 h-8 border border-dashed rounded-sm bg-background">
+            <div className="flex items-center p-2 h-8 border border-dashed rounded-sm">
               <code className="text-xs text-muted-foreground font-mono flex-1 overflow-x-auto p-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {showClientSecret ? apiKey.client_secret : '•'.repeat(40)}
               </code>
               <Button
                 variant="ghost"
-                className="p-1 w-6 h-6"
+                className="size-6 p-1"
                 onClick={() => setShowClientSecret(!showClientSecret)}
               >
                 {showClientSecret ? <EyeOff className="size-3 text-muted-foreground" /> : <Eye className="size-3 text-muted-foreground" />}
@@ -168,7 +186,7 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
               <Button
                 variant="ghost"
                 onClick={() => copyToClipboard(apiKey.client_secret, 'Client Secret')}
-                className="p-1 w-6 h-6"
+                className="size-6 p-1"
               >
                 <Copy className="size-3" />
               </Button>

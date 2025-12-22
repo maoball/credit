@@ -1,23 +1,19 @@
 "use client"
 
 import { createContext, useContext, useState, useRef, useCallback, useEffect } from "react"
-import { toast } from "sonner"
 
-import services, { type MerchantAPIKey, type UpdateAPIKeyRequest, isCancelError } from "@/lib/services"
+import services, { type MerchantAPIKey, type UpdateAPIKeyRequest } from "@/lib/services"
+import { handleContextError } from "@/lib/utils/error-handling"
 
 
-/**
- * 商户数据状态接口
- */
+/** 商户数据状态接口 */
 interface MerchantDataState {
   apiKeys: MerchantAPIKey[]
   loading: boolean
   error: string | null
 }
 
-/**
- * 商户 Context 接口
- */
+/** 商户 Context 接口 */
 interface MerchantContextType extends MerchantDataState {
   loadAPIKeys: () => Promise<void>
   createAPIKey: (data: {
@@ -31,16 +27,10 @@ interface MerchantContextType extends MerchantDataState {
   refresh: () => Promise<void>
 }
 
-/**
- * 商户 Context
- * 提供全局商户数据状态管理，数据在页面切换间保持
- */
+/** 商户 Context（全局状态管理） */
 const MerchantContext = createContext<MerchantContextType | undefined>(undefined)
 
-/**
- * 商户 Provider Props
- * @param {React.ReactNode} children - 商户 Provider 的子元素
- */
+/** 商户 Provider */
 export function MerchantProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<MerchantDataState>({
     apiKeys: [],
@@ -48,15 +38,15 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
     error: null,
   })
 
-  /* 使用 ref 来标记是否已经加载过数据（全局级别） */
+  /** 使用 ref 来标记是否已经加载过数据（全局级别） */
   const hasLoadedRef = useRef(false)
   const isMountedRef = useRef(true)
   const apiKeysRef = useRef(state.apiKeys)
 
-  /* 同步更新 ref */
+  /** 同步更新 ref */
   apiKeysRef.current = state.apiKeys
 
-  /* 获取 API Keys */
+  /** 获取 API Keys */
   const loadAPIKeys = useCallback(async () => {
     if (hasLoadedRef.current && apiKeysRef.current.length > 0) {
       return
@@ -80,26 +70,22 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
 
       hasLoadedRef.current = true
     } catch (error) {
-      if (isCancelError(error)) {
+      const errorObject = handleContextError(error, '加载 API Keys 失败', { showToast: true })
+      if (errorObject.message === '请求已取消') {
         return
       }
 
       if (!isMountedRef.current) return
 
-      const errorMessage = (error as Error).message || '无法加载 API Keys'
       setState(prev => ({
         ...prev,
         loading: false,
-        error: errorMessage
+        error: errorObject.message
       }))
-
-      toast.error('加载失败', {
-        description: errorMessage
-      })
     }
   }, [])
 
-  /* 创建 API Key */
+  /** 创建 API Key */
   const createAPIKey = useCallback(async (data: {
     app_name: string
     app_homepage_url: string
@@ -118,13 +104,13 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
     return newKey
   }, [])
 
-  /* 更新 API Key */
+  /** 更新 API Key */
   const updateAPIKey = useCallback(async (id: number, data: UpdateAPIKeyRequest): Promise<void> => {
     await services.merchant.updateAPIKey(id, data)
 
     if (!isMountedRef.current) return
 
-    /* 更新本地状态中的API Key */
+    /** 更新本地状态中的API Key */
     setState(prev => ({
       ...prev,
       apiKeys: prev.apiKeys.map(key =>
@@ -133,7 +119,7 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
     }))
   }, [])
 
-  /* 删除 API Key */
+  /** 删除 API Key */
   const deleteAPIKey = useCallback(async (id: number) => {
     await services.merchant.deleteAPIKey(id)
 
@@ -145,7 +131,7 @@ export function MerchantProvider({ children }: { children: React.ReactNode }) {
     }))
   }, [])
 
-  /* 刷新数据 */
+  /** 刷新数据 */
   const refresh = useCallback(async () => {
     hasLoadedRef.current = false
     await loadAPIKeys()

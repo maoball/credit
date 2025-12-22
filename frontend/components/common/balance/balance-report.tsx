@@ -7,8 +7,8 @@ import * as React from "react"
  */
 export function BalanceReport() {
   return (
-    <section className="space-y-4">
-      <div className="font-semibold">报告</div>
+    <section className="space-y-4" aria-labelledby="reports-title">
+      <h2 id="reports-title" className="font-semibold">报告</h2>
       <div className="text-sm text-muted-foreground">暂无报告</div>
     </section>
   )

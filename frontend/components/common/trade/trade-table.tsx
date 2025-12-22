@@ -6,28 +6,28 @@ import type { OrderStatus, OrderType, TransactionQueryParams } from "@/lib/servi
 import { formatLocalDate } from "@/lib/utils"
 
 /**
+ * 获取默认日期范围（最近30天）
+ */
+function getDefaultDateRange() {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const from = new Date(today)
+  from.setDate(from.getDate() - 29)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  return { from, to: tomorrow }
+}
+
+/**
  * 活动表格组件
  * 
  * 支持类型、状态、时间范围筛选的活动记录显示（支持分页）
  */
 export function TradeTable({ type }: { type?: OrderType }) {
-  /* 计算最近一个月的时间范围 */
-  const getLastMonthRange = React.useCallback(() => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const start = new Date(today)
-    start.setDate(start.getDate() - 29)
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-
-    return {
-      startTime: formatLocalDate(start),
-      endTime: formatLocalDate(tomorrow)
-    }
-  }, [])
-
   /* 获取时间范围 */
-  const { startTime, endTime } = getLastMonthRange()
+  const { from, to: tomorrow } = getDefaultDateRange()
+  const startTime = formatLocalDate(from)
+  const endTime = formatLocalDate(tomorrow)
 
   return (
     <TransactionProvider defaultParams={{ page_size: 20, startTime, endTime }}>
@@ -53,30 +53,16 @@ function TransactionList({ initialType }: { initialType?: OrderType }) {
     loadMore,
   } = useTransaction()
 
-  /* 筛选状态 */
   const [selectedTypes, setSelectedTypes] = React.useState<OrderType[]>(initialType ? [initialType] : [])
   const [selectedStatuses, setSelectedStatuses] = React.useState<OrderStatus[]>([])
   const [selectedQuickSelection, setSelectedQuickSelection] = React.useState<string | null>("最近 1 个月")
-  const [dateRange, setDateRange] = React.useState<{ from: Date; to: Date } | null>(() => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const from = new Date(today)
-    from.setDate(from.getDate() - 29)
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    return { from, to: tomorrow }
-  })
+  const [dateRange, setDateRange] = React.useState<{ from: Date; to: Date } | null>(getDefaultDateRange)
 
   /* 清空所有筛选 */
-  const clearAllFilters = React.useCallback(() => {
+  const clearAllFilters = () => {
     setSelectedTypes(initialType ? [initialType] : [])
     setSelectedStatuses([])
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const from = new Date(today)
-    from.setDate(from.getDate() - 29)
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
+    const { from, to: tomorrow } = getDefaultDateRange()
     setDateRange({ from, to: tomorrow })
     setSelectedQuickSelection("最近 1 个月")
 
@@ -88,7 +74,7 @@ function TransactionList({ initialType }: { initialType?: OrderType }) {
       startTime: formatLocalDate(from),
       endTime: formatLocalDate(tomorrow),
     })
-  }, [initialType, fetchTransactions])
+  }
 
   /* 当筛选条件改变时，重新加载数据 */
   React.useEffect(() => {
@@ -117,11 +103,6 @@ function TransactionList({ initialType }: { initialType?: OrderType }) {
     }
   }, [initialType])
 
-  /* 加载更多 */
-  const handleLoadMore = React.useCallback(() => {
-    loadMore()
-  }, [loadMore])
-
   return (
     <div className="flex flex-col space-y-4">
       <TableFilter
@@ -149,7 +130,7 @@ function TransactionList({ initialType }: { initialType?: OrderType }) {
         currentPage={currentPage}
         totalPages={totalPages}
         onRetry={() => fetchTransactions({ page: 1 })}
-        onLoadMore={handleLoadMore}
+        onLoadMore={loadMore}
       />
     </div>
   )

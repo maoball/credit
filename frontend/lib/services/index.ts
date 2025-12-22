@@ -102,7 +102,6 @@ export type {
   OrderStatus,
   TransactionQueryParams,
   TransactionListResponse,
-  CreateDisputeRequest,
   TransferRequest,
   TransferResponse,
 } from './transaction';
@@ -118,6 +117,7 @@ export type {
   ListDisputesResponse,
   RefundReviewRequest,
   CloseDisputeRequest,
+  CreateDisputeRequest,
 } from './dispute';
 
 // 配置服务

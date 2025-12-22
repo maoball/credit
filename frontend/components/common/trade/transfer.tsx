@@ -107,10 +107,6 @@ export function Transfer() {
       toast.error('转移失败', {
         description: errorMessage
       })
-
-      toast.error('转移失败', {
-        description: errorMessage
-      })
     } finally {
       setLoading(false)
     }
