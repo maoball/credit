@@ -81,8 +81,8 @@ export const FooterSection = React.memo(function FooterSection({ className }: Fo
         <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
           <p>© 2025 LINUX DO Credit. All rights reserved. Made With AI By @Chenyme</p>
           <div className="flex gap-8">
-            <Link href="/privacy-policy" className="hover:text-foreground transition-colors">隐私政策</Link>
-            <Link href="/terms-of-service" className="hover:text-foreground transition-colors">服务条款</Link>
+            <Link href="/docs/privacy-policy" className="hover:text-foreground transition-colors">隐私政策</Link>
+            <Link href="/docs/terms-of-service" className="hover:text-foreground transition-colors">服务条款</Link>
             <Link href="#" className="hover:text-foreground transition-colors">Cookie设置</Link>
           </div>
         </div>

@@ -49,9 +49,9 @@ export const HeroSection = React.memo(function HeroSection({ className }: HeroSe
               transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               className="text-sm md:text-base text-muted-foreground max-w-xl leading-relaxed mb-10"
             >
-              专为社区开发者打造的积分流通基础设施
+              专为 LINUX DO 社区打造的积分流通基础设施
               <br className="hidden md:block" />
-              快速集成、全球覆盖、安全可靠，助您轻松使用积分流通。
+              快速集成、全球覆盖、安全可靠，助您轻松流通积分。
             </motion.p>
 
             <motion.div
