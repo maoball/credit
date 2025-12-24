@@ -9,7 +9,8 @@ import { PayingInfo } from "@/components/common/pay/paying/paying-info"
 import { useUser } from "@/contexts/user-context"
 
 import services from "@/lib/services"
-import type { PaymentLink, GetMerchantOrderResponse } from "@/lib/services"
+import { ConfigService } from "@/lib/services"
+import type { PaymentLink, GetMerchantOrderResponse, UserPayConfig } from "@/lib/services"
 
 
 /**
@@ -47,6 +48,21 @@ export function PayingOnline() {
     }
   }, [])
 
+  /* 获取用户支付配置 */
+  const [userPayConfigs, setUserPayConfigs] = useState<UserPayConfig[]>([])
+
+  useEffect(() => {
+    const loadConfigs = async () => {
+      try {
+        const configs = await ConfigService.getUserPayConfigs()
+        setUserPayConfigs(configs)
+      } catch (error) {
+        console.error("Failed to load user pay configs:", error)
+      }
+    }
+    loadConfigs()
+  }, [])
+
   /* 统一的服务错误处理函数 */
   const handleServiceError = (error: unknown, operation: string) => {
     console.error(`${ operation }失败:`, error)
@@ -82,7 +98,7 @@ export function PayingOnline() {
       setError(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token])
+  }, [token, userPayConfigs.length, user?.pay_level])
 
   /* 查询支付链接信息 */
   const handleQueryPaymentLink = async (queryToken?: string) => {
@@ -93,35 +109,51 @@ export function PayingOnline() {
     }
 
     setLoading(true)
+    setLoading(true)
     try {
       const data = await services.merchant.getPaymentLinkByToken(targetToken)
-      setPaymentLink(data.payment_link)
+      setPaymentLink(data)
 
       /* 将支付链接信息转换为订单信息格式，以复用PayingInfo和PayingNow组件 */
       const mockOrderInfo: GetMerchantOrderResponse = {
         merchant: {
-          app_name: data.merchant.app_name || "商户",
-          redirect_uri: data.merchant.redirect_uri || "",
+          app_name: data.app_name || "商户",
+          redirect_uri: "", // data.redirect_uri?
         },
         order: {
           id: 0,
-          order_no: `LINK-${ data.payment_link.id }`,
-          order_name: data.payment_link.product_name,
+          order_no: `LINK-${ data.id }`,
+          order_name: data.product_name,
           payer_username: user?.username || "",
           payee_username: "",
-          amount: data.payment_link.amount,
+          amount: data.amount,
           status: "pending",
           type: "payment",
           payment_type: "link",
-          remark: data.payment_link.remark || "",
+          remark: data.remark || "",
           client_id: "",
           return_url: "",
           notify_url: "",
           trade_time: null,
-          created_at: data.payment_link.created_at,
-          updated_at: data.payment_link.updated_at,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
         },
-        user_pay_config: data.user_pay_config,
+        user_pay_config: (() => {
+          const currentUserConfig = userPayConfigs.find(c => user?.pay_level !== undefined && c.level === user.pay_level)
+          return currentUserConfig ? {
+            ...currentUserConfig,
+            fee_rate: String(currentUserConfig.fee_rate)
+          } : {
+            id: 0,
+            level: user?.pay_level ?? 0,
+            min_score: 0,
+            max_score: null,
+            daily_limit: null,
+            fee_rate: "0.00",
+            created_at: "",
+            updated_at: ""
+          }
+        })(),
       }
 
       setOrderInfo(mockOrderInfo)
