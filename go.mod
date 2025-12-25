@@ -8,6 +8,7 @@ require (
 	github.com/coreos/go-oidc/v3 v3.17.0
 	github.com/gin-contrib/sessions v1.0.4
 	github.com/gin-gonic/gin v1.11.0
+	github.com/go-redis/redis_rate/v10 v10.0.1
 	github.com/google/uuid v1.6.0
 	github.com/hibiken/asynq v0.25.1
 	github.com/redis/go-redis/extra/redisotel/v9 v9.16.0

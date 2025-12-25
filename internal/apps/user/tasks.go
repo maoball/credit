@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-redis/redis_rate/v10"
 	"github.com/hibiken/asynq"
 	"github.com/linux-do/credit/internal/config"
 	"github.com/linux-do/credit/internal/db"
@@ -31,12 +32,41 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	linuxDoRateLimiter *redis_rate.Limiter
+	rateLimitKey       string
+)
+
+func init() {
+	linuxDoRateLimiter = redis_rate.NewLimiter(db.Redis)
+	rateLimitKey = db.PrefixedKey(linuxDoAPIRateLimitKey)
+}
+
+// waitForRateLimit 等待获取限流令牌（阻塞直到获取到令牌）
+func waitForRateLimit(ctx context.Context, key string, limit redis_rate.Limit) error {
+	for {
+		res, err := linuxDoRateLimiter.Allow(ctx, key, limit)
+		if err != nil {
+			return fmt.Errorf("redis 限流器错误: %w", err)
+		}
+		if res.Allowed > 0 {
+			return nil // 获取到令牌
+		}
+		// 未获取到令牌，等待后重试
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(res.RetryAfter):
+			// 继续重试
+		}
+	}
+}
+
 // HandleUpdateUserGamificationScores 处理所有用户积分更新任务
 func HandleUpdateUserGamificationScores(ctx context.Context, t *asynq.Task) error {
 	// 分页处理用户
 	pageSize := 1000
 	lastID := uint64(0)
-	currentDelay := 0 * time.Second
 
 	// 计算一周前日期
 	now := time.Now()
@@ -64,9 +94,19 @@ func HandleUpdateUserGamificationScores(ctx context.Context, t *asynq.Task) erro
 		}
 
 		for _, user := range users {
-			currentDelay += time.Duration(config.Config.Scheduler.UserGamificationScoreDispatchIntervalSeconds) * time.Second
+			interval := config.Config.Scheduler.UserGamificationScoreDispatchIntervalSeconds
+			limit := redis_rate.Limit{
+				Rate:   1,
+				Burst:  1,
+				Period: time.Duration(interval) * time.Second,
+			}
+			if err := waitForRateLimit(ctx, rateLimitKey, limit); err != nil {
+				logger.ErrorF(ctx, "速率限制等待失败: %v", err)
+				return err
+			}
 
-			if err := user.EnqueueBadgeScoreTask(ctx, currentDelay); err != nil {
+			logger.InfoF(ctx, "下发用户[%s]积分计算任务", user.Username)
+			if err := user.EnqueueBadgeScoreTask(ctx, 0); err != nil {
 				return err
 			}
 		}
