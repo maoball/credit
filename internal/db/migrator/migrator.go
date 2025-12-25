@@ -87,6 +87,11 @@ func initSystemConfigs() {
 			Value:       "0",
 			Description: "新用户注册初始积分",
 		},
+		{
+			Key:         model.ConfigKeyNewUserProtectionDays,
+			Value:       "30",
+			Description: "新用户保护期天数，期内积分下降不扣分",
+		},
 	}
 
 	if err := tx.Create(&defaultConfigs).Error; err != nil {
