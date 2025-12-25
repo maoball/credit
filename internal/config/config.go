@@ -17,6 +17,7 @@ limitations under the License.
 package config
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 
@@ -49,4 +50,17 @@ func init() {
 
 	// 设置全局配置
 	Config = &c
+
+	// 打印配置
+	printConfig(&c)
+}
+
+// printConfig 打印配置内容
+func printConfig(c *configModel) {
+	configJSON, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		log.Printf("[Config] failed to marshal config: %v\n", err)
+		return
+	}
+	log.Printf("[Config] loaded configuration:\n%s\n", string(configJSON))
 }

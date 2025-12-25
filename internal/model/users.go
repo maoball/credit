@@ -169,6 +169,7 @@ func (u *User) EnqueueBadgeScoreTask(ctx context.Context, delay time.Duration) e
 	opts := []asynq.Option{
 		asynq.Queue(task.QueueWhitelistOnly),
 		asynq.MaxRetry(5),
+		asynq.TaskID(fmt.Sprintf("user_gamification_score_%d", u.ID)),
 	}
 	if delay > 0 {
 		opts = append(opts, asynq.ProcessIn(delay))
@@ -178,7 +179,6 @@ func (u *User) EnqueueBadgeScoreTask(ctx context.Context, delay time.Duration) e
 		logger.ErrorF(ctx, "下发用户[%s]积分计算任务失败: %v", u.Username, err)
 		return err
 	}
-	logger.InfoF(ctx, "下发用户[%s]积分计算任务成功", u.Username)
 	return nil
 }
 
