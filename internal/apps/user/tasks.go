@@ -64,9 +64,13 @@ func waitForRateLimit(ctx context.Context, key string, limit redis_rate.Limit) e
 
 // HandleUpdateUserGamificationScores 处理所有用户积分更新任务
 func HandleUpdateUserGamificationScores(ctx context.Context, t *asynq.Task) error {
+	fmt.Println("handle user gamification scores")
+	logger.InfoF(ctx, "[调度] 开始处理用户积分更新主任务")
+
 	// 分页处理用户
 	pageSize := 1000
 	lastID := uint64(0)
+	totalUsers := 0
 
 	// 计算一周前日期
 	now := time.Now()
@@ -76,6 +80,7 @@ func HandleUpdateUserGamificationScores(ctx context.Context, t *asynq.Task) erro
 		sessionAgeDays = 7
 	}
 	oneWeekAgo := today.AddDate(0, 0, -sessionAgeDays)
+	logger.InfoF(ctx, "[调度] 查询条件: 最后登录 >= %s, sessionAgeDays=%d", oneWeekAgo.Format("2006-01-02"), sessionAgeDays)
 
 	for {
 		var users []model.User
@@ -87,6 +92,8 @@ func HandleUpdateUserGamificationScores(ctx context.Context, t *asynq.Task) erro
 			logger.ErrorF(ctx, "查询用户失败: %v", err)
 			return err
 		}
+
+		logger.InfoF(ctx, "[调度] 本批次查询到 %d 个用户, lastID=%d", len(users), lastID)
 
 		// 没有用户，退出循环
 		if len(users) == 0 {
@@ -100,12 +107,14 @@ func HandleUpdateUserGamificationScores(ctx context.Context, t *asynq.Task) erro
 				Burst:  1,
 				Period: time.Duration(interval) * time.Second,
 			}
+			logger.InfoF(ctx, "[调度] 等待限流令牌, interval=%ds", interval)
 			if err := waitForRateLimit(ctx, rateLimitKey, limit); err != nil {
 				logger.ErrorF(ctx, "速率限制等待失败: %v", err)
 				return err
 			}
 
-			logger.InfoF(ctx, "下发用户[%s]积分计算任务", user.Username)
+			totalUsers++
+			logger.InfoF(ctx, "[调度] 下发用户[%s]积分计算任务, 已下发=%d", user.Username, totalUsers)
 			if err := user.EnqueueBadgeScoreTask(ctx, 0); err != nil {
 				return err
 			}
@@ -113,6 +122,7 @@ func HandleUpdateUserGamificationScores(ctx context.Context, t *asynq.Task) erro
 
 		lastID = users[len(users)-1].ID
 	}
+	logger.InfoF(ctx, "[调度] 用户积分更新主任务完成, 共下发 %d 个任务", totalUsers)
 	return nil
 }
 
