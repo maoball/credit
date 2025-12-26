@@ -160,25 +160,8 @@ func batchUpdateUserScores(ctx context.Context, userScores []model.LeaderboardUs
 			}
 
 			newCommunityBalance := decimal.NewFromInt(newScore)
-
-			// 首次同步
-			if user.CommunityBalance.IsZero() && user.TotalCommunity.IsZero() {
-				if err = tx.Model(&user).UpdateColumns(map[string]interface{}{
-					"community_balance": newCommunityBalance,
-				}).Error; err != nil {
-					return fmt.Errorf("初始化用户[%s]社区积分失败: %w", user.Username, err)
-				}
-				logger.InfoF(ctx, "用户[%s]首次同步社区积分: %s", user.Username, newCommunityBalance.String())
-				continue
-			}
-
-			// 积分未变化，跳过
-			if newCommunityBalance.Equal(user.CommunityBalance) {
-				continue
-			}
-
-			diff := newCommunityBalance.Sub(user.CommunityBalance)
 			oldCommunityBalance := user.CommunityBalance
+			diff := newCommunityBalance.Sub(oldCommunityBalance)
 
 			createOrder := func(amount decimal.Decimal, remark string) error {
 				order := model.Order{
@@ -196,6 +179,25 @@ func batchUpdateUserScores(ctx context.Context, userScores []model.LeaderboardUs
 					return fmt.Errorf("创建用户[%s]订单失败: %w", user.Username, err)
 				}
 				return nil
+			}
+
+			if user.CommunityBalance.IsZero() && user.TotalCommunity.IsZero() {
+				if err = tx.Model(&user).UpdateColumns(map[string]interface{}{
+					"community_balance": newCommunityBalance,
+				}).Error; err != nil {
+					return fmt.Errorf("初始化用户[%s]社区积分失败: %w", user.Username, err)
+				}
+				logger.InfoF(ctx, "用户[%s]首次同步社区积分: %s", user.Username, newCommunityBalance.String())
+				continue
+			}
+
+			// 积分未变化
+			if diff.IsZero() {
+				remark := fmt.Sprintf("社区积分从 %s 更新到 %s，变化 %s", oldCommunityBalance.String(), newCommunityBalance.String(), diff.String())
+				if err = createOrder(decimal.Zero, remark); err != nil {
+					return err
+				}
+				continue
 			}
 
 			// 新用户保护期检查
