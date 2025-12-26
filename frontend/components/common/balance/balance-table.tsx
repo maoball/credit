@@ -70,7 +70,7 @@ export function BalanceTable() {
   }, [])
 
   if (!timeRange) {
-    return null // or a loading skeleton
+    return null
   }
 
   return (

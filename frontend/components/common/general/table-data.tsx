@@ -71,13 +71,14 @@ export const TransactionDataTable = React.memo(function TransactionDataTable({
               <TableHead className="whitespace-nowrap text-left w-[120px]">创建时间</TableHead>
               <TableHead className="whitespace-nowrap text-left w-[120px]">交易时间</TableHead>
               <TableHead className="whitespace-nowrap text-left w-[120px]">订单过期时间</TableHead>
+              <TableHead className="whitespace-nowrap text-left min-w-[100px]">备注</TableHead>
               <TableHead className="sticky right-0 whitespace-nowrap text-center bg-background shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] w-[150px] z-20">操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="animate-in fade-in duration-200">
             {paddingTop > 0 && (
               <tr style={{ height: `${ paddingTop }px` }}>
-                <td colSpan={12} />
+                <td colSpan={13} />
               </tr>
             )}
             {virtualItems.map((virtualRow) => {
@@ -93,7 +94,7 @@ export const TransactionDataTable = React.memo(function TransactionDataTable({
             })}
             {paddingBottom > 0 && (
               <tr style={{ height: `${ paddingBottom }px` }}>
-                <td colSpan={12} />
+                <td colSpan={13} />
               </tr>
             )}
           </TableBody>
@@ -213,6 +214,9 @@ const TransactionTableRow = React.memo(React.forwardRef<HTMLTableRowElement, {
       </TableCell>
       <TableCell className="text-[11px] font-medium text-left py-1">
         {formatDateTime(order.expires_at)}
+      </TableCell>
+      <TableCell className="text-[11px] font-medium text-left py-1 max-w-[150px] truncate" title={order.remark || ''}>
+        {order.remark || '-'}
       </TableCell>
       <TableCell className={`
         sticky right-0 whitespace-nowrap text-center shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] py-1 z-10
