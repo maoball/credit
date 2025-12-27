@@ -26,6 +26,7 @@ import { useTransaction } from "@/contexts/transaction-context"
 import { useUser } from "@/contexts/user-context"
 import { Textarea } from "@/components/ui/textarea"
 import { typeConfig } from "@/components/common/general/table-filter"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 
 /**
  * 活动详情弹窗
@@ -51,82 +52,71 @@ export function OrderDetailDialog({ order }: { order: Order }) {
         </TooltipContent>
       </Tooltip>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent showCloseButton={false}>
-          <DialogHeader>
-            <DialogTitle>积分流转详情</DialogTitle>
-          </DialogHeader>
+        <DialogContent showCloseButton={false} className="bg-transparent border-0 shadow-none p-0 w-100">
+          <VisuallyHidden>
+            <DialogHeader>
+              <DialogTitle>积分流转详情</DialogTitle>
+              <DialogDescription>查看积分活动的详细信息</DialogDescription>
+            </DialogHeader>
+          </VisuallyHidden>
+          <div className="p-5 space-y-5 bg-card border border-border/50 rounded-lg shadow-xl">
+            <div className="flex flex-col items-center space-y-2 pb-4 border-b-2 border-dashed border-border/50">
+              <h3 className="font-bold text-2xl tracking-wider uppercase">{order.app_name || 'RECEIPT'}</h3>
+              <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-widest">
+                {formatDateTime(order.created_at)}
+              </p>
+            </div>
 
-          <div className="relative bg-card rounded-lg shadow-xl overflow-hidden">
-            <div className="p-6 space-y-6 bg-card border border-border/50 rounded-lg">
-              <div className="flex flex-col items-center space-y-2 pb-4 border-b-2 border-dashed border-border/50">
-                <h3 className="font-bold text-2xl tracking-wider uppercase">{order.app_name || 'RECEIPT'}</h3>
-                <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-widest">
-                  {formatDateTime(order.created_at)}
-                </p>
-              </div>
-
-              <div className="text-center py-2">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Total Credits</p>
-                <div className="text-4xl font-black tracking-tighter flex items-start justify-center gap-1">
-                  {parseFloat(order.amount).toFixed(2)}
-                </div>
-              </div>
-
-              <div className="space-y-0 text-sm border-y-2 border-dashed border-border/50 py-4">
-                <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
-                  <span className="text-muted-foreground text-xs uppercase font-medium">编号</span>
-                  <span className="font-mono text-xs font-medium">{order.order_no}</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
-                  <span className="text-muted-foreground text-xs uppercase font-medium">类型</span>
-                  <span className="text-xs font-medium">{typeConfig[order.type]?.label || order.type}</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
-                  <span className="text-muted-foreground text-xs uppercase font-medium">消费方</span>
-                  <span className="text-xs font-medium">{order.payer_username}</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
-                  <span className="text-muted-foreground text-xs uppercase font-medium">服务方</span>
-                  <span className="text-xs font-medium">{order.payee_username}</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
-                  <span className="text-muted-foreground text-xs uppercase font-medium">备注</span>
-                  <span className="text-xs font-medium">{order.remark}</span>
-                </div>
-                {(order.status === 'success' || order.status === 'refund') && (
-                  <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
-                    <span className="text-muted-foreground text-xs uppercase font-medium">时间</span>
-                    <span className="font-mono text-xs">{formatDateTime(order.trade_time)}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-2 flex flex-col items-center space-y-3">
-                <div className="h-8 w-full max-w-[200px] flex items-end justify-between opacity-40">
-                  {[...Array(30)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="bg-foreground w-[2px]"
-                      style={{ height: `${ Math.max(40, Math.random() * 100) }%` }}
-                    />
-                  ))}
-                </div>
-                <p className="text-[10px] text-muted-foreground font-mono tracking-wider text-center">
-                  LINUX DO Credit
-                </p>
+            <div className="text-center py-2">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Total Credits</p>
+              <div className="text-4xl font-black tracking-tighter flex items-start justify-center gap-1">
+                {parseFloat(order.amount).toFixed(2)}
               </div>
             </div>
 
-            <div className="absolute bottom-0 left-0 right-0 h-2 bg-[radial-gradient(circle,transparent_50%,hsl(var(--card))_50%)] bg-[length:16px_16px] -mb-2" />
-          </div>
+            <div className="space-y-0 text-sm border-y-2 border-dashed border-border/50 py-4">
+              <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
+                <span className="text-muted-foreground text-xs uppercase font-medium">编号</span>
+                <span className="font-mono text-xs font-medium">{order.order_no}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
+                <span className="text-muted-foreground text-xs uppercase font-medium">类型</span>
+                <span className="text-xs font-medium">{typeConfig[order.type]?.label || order.type}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
+                <span className="text-muted-foreground text-xs uppercase font-medium">消费方</span>
+                <span className="text-xs font-medium">{order.payer_username}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
+                <span className="text-muted-foreground text-xs uppercase font-medium">服务方</span>
+                <span className="text-xs font-medium">{order.payee_username}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
+                <span className="text-muted-foreground text-xs uppercase font-medium">备注</span>
+                <span className="text-xs font-medium">{order.remark}</span>
+              </div>
+              {(order.status === 'success' || order.status === 'refund') && (
+                <div className="flex justify-between items-center py-2 border-b border-dashed border-border/30 last:border-0">
+                  <span className="text-muted-foreground text-xs uppercase font-medium">时间</span>
+                  <span className="font-mono text-xs">{formatDateTime(order.trade_time)}</span>
+                </div>
+              )}
+            </div>
 
-          <div className="mt-4 flex justify-center">
-            <DialogClose asChild>
-              <Button variant="secondary" size="icon" className="h-8 w-8 text-xs rounded-full border border-border">
-                <span className="sr-only">关闭</span>
-                <X className="size-3.5 stroke-2" />
-              </Button>
-            </DialogClose>
+            <div className="pt-2 flex flex-col items-center space-y-3">
+              <div className="h-8 w-full max-w-[200px] flex items-end justify-between opacity-40">
+                {[...Array(30)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-foreground w-[2px]"
+                    style={{ height: `${ Math.max(40, Math.random() * 100) }%` }}
+                  />
+                ))}
+              </div>
+              <p className="text-[10px] text-muted-foreground font-mono tracking-wider text-center">
+                LINUX DO Credit
+              </p>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

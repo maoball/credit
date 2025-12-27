@@ -54,6 +54,11 @@ const PAGE_COMPONENTS: Record<TabValue, React.ComponentType> = {
  */
 export function TradeMain() {
   const [activeTab, setActiveTab] = React.useState<TabValue>('receive')
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   /* 获取活动类型 */
   const getOrderType = (tab: TabValue): OrderType | undefined => {
@@ -65,6 +70,18 @@ export function TradeMain() {
   const renderPageContent = () => {
     const Component = PAGE_COMPONENTS[activeTab]
     return Component ? <Component /> : null
+  }
+
+  if (!mounted) {
+    return (
+      <div className="py-6">
+        <h1 className="text-2xl font-semibold mb-4">积分活动</h1>
+        <div className="animate-pulse space-y-4">
+          <div className="h-10 bg-muted rounded" />
+          <div className="h-64 bg-muted rounded" />
+        </div>
+      </div>
+    )
   }
 
   return (

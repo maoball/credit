@@ -8,9 +8,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Sheet, SheetTitle, SheetContent } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Layers, Search, UserX, UserCheck, Eye, Wallet, CreditCard, ShieldCheck, Filter, X, ChevronDown, ChevronLeft, ChevronRight, Users } from "lucide-react"
+import { Layers, Search, UserX, UserCheck, Eye, Wallet, CreditCard, ShieldCheck, Filter, X, ChevronDown, ChevronLeft, ChevronRight, Users, RefreshCcw } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-import { AdminUser } from "@/lib/services"
+import { AdminUser, AdminService, DispatchTaskRequest } from "@/lib/services"
+import { toast } from "sonner"
 import { formatDateTime } from "@/lib/utils"
 import { EmptyStateWithBorder } from "@/components/layout/empty"
 import { LoadingStateWithBorder } from "@/components/layout/loading"
@@ -39,6 +41,7 @@ export function UsersManager() {
 
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
+  const [updatingUserId, setUpdatingUserId] = useState<number | null>(null)
 
   useEffect(() => {
     fetchUsers()
@@ -55,6 +58,26 @@ export function UsersManager() {
   const handleShowDetail = (user: AdminUser) => {
     setSelectedUser(user)
     setDetailOpen(true)
+  }
+
+  const handleUpdateCredits = async (user: AdminUser) => {
+    try {
+      setUpdatingUserId(user.id)
+      const params: DispatchTaskRequest = {
+        task_type: 'user_gamification',
+        user_id: user.id
+      }
+      await AdminService.dispatchTask(params)
+      toast.success('积分更新任务已下发', {
+        description: `正在更新用户 ${ user.username } 的积分数据`
+      })
+    } catch (err) {
+      toast.error('任务下发失败', {
+        description: err instanceof Error ? err.message : '未知错误'
+      })
+    } finally {
+      setUpdatingUserId(null)
+    }
   }
 
   const totalPages = Math.ceil(total / pageSize)
@@ -308,16 +331,54 @@ export function UsersManager() {
                     {formatDateTime(user.updated_at)}
                   </TableCell>
                   <TableCell className="sticky right-0 text-center bg-background z-10 py-1" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center justify-center gap-1">
-                      <Switch
-                        checked={user.is_active}
-                        onCheckedChange={() => handleStatusToggle(user)}
-                        disabled={user.is_admin}
-                        className="scale-75 data-[state=checked]:bg-green-600 h-4 w-7"
-                      />
-                      <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" onClick={() => handleShowDetail(user)}>
-                        <Eye className="h-3 w-3" />
-                      </Button>
+                    <div className="flex items-center justify-center gap-0.5">
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div>
+                              <Switch
+                                checked={user.is_active}
+                                onCheckedChange={() => handleStatusToggle(user)}
+                                disabled={user.is_admin}
+                                className="scale-75 data-[state=checked]:bg-green-600 h-4 w-7"
+                              />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="text-xs">
+                            {user.is_admin ? '管理员账户' : user.is_active ? '禁用账户' : '启用账户'}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                              onClick={() => handleUpdateCredits(user)}
+                              disabled={updatingUserId === user.id}
+                            >
+                              <RefreshCcw className={cn("size-3", updatingUserId === user.id && "animate-spin")} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="text-xs">
+                            更新积分
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" onClick={() => handleShowDetail(user)}>
+                              <Eye className="size-3" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="text-xs">
+                            查看详情
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </TableCell>
                 </TableRow>

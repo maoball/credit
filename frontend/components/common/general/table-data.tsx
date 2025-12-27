@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { typeConfig, statusConfig } from "@/components/common/general/table-filter"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
+import { TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Spinner } from "@/components/ui/spinner"
 import { ErrorInline } from "@/components/layout/error"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
@@ -57,8 +57,8 @@ export const TransactionDataTable = React.memo(function TransactionDataTable({
         ref={scrollAreaRef}
         className="w-full h-[600px] whitespace-nowrap"
       >
-        <Table className="w-full caption-bottom text-sm min-w-full">
-          <TableHeader className="sticky top-0 z-20 bg-background">
+        <table className="w-full caption-bottom text-sm min-w-full">
+          <TableHeader className="sticky top-0 z-30 bg-background">
             <TableRow className="border-b border-dashed hover:bg-transparent">
               <TableHead className="whitespace-nowrap w-[120px]">名称</TableHead>
               <TableHead className="whitespace-nowrap text-center min-w-[60px]">积分</TableHead>
@@ -72,7 +72,7 @@ export const TransactionDataTable = React.memo(function TransactionDataTable({
               <TableHead className="whitespace-nowrap text-left w-[120px]">交易时间</TableHead>
               <TableHead className="whitespace-nowrap text-left w-[120px]">订单过期时间</TableHead>
               <TableHead className="whitespace-nowrap text-left min-w-[100px]">备注</TableHead>
-              <TableHead className="sticky right-0 whitespace-nowrap text-center bg-background shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] w-[150px] z-20">操作</TableHead>
+              <TableHead className="sticky right-0 whitespace-nowrap text-center bg-background shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] w-[150px] z-40">操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="animate-in fade-in duration-200">
@@ -98,7 +98,7 @@ export const TransactionDataTable = React.memo(function TransactionDataTable({
               </tr>
             )}
           </TableBody>
-        </Table>
+        </table>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </div>
@@ -215,11 +215,11 @@ const TransactionTableRow = React.memo(React.forwardRef<HTMLTableRowElement, {
       <TableCell className="text-[11px] font-medium text-left py-1">
         {formatDateTime(order.expires_at)}
       </TableCell>
-      <TableCell className="text-[11px] font-medium text-left py-1 max-w-[150px] truncate" title={order.remark || ''}>
+      <TableCell className="text-[11px] font-medium text-left py-1 max-w-[250px] truncate" title={order.remark || ''}>
         {order.remark || '-'}
       </TableCell>
       <TableCell className={`
-        sticky right-0 whitespace-nowrap text-center shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] py-1 z-10
+        sticky right-0 whitespace-nowrap text-center shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] py-1 z-20
         bg-background
         after:absolute after:inset-0 after:z-[-1] after:content-[''] after:pointer-events-none after:transition-colors
         ${ isDisputing
