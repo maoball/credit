@@ -141,12 +141,15 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
   const [selectedLink, setSelectedLink] = useState<PaymentLink | null>(null)
   const [previewLink, setPreviewLink] = useState<PaymentLink | null>(null)
   const [isCreating, setIsCreating] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  /* 创建表单状态 */
+  /* 创建/编辑表单状态 */
   const [productName, setProductName] = useState("")
   const [amount, setAmount] = useState("")
   const [remark, setRemark] = useState("")
+  const [totalLimit, setTotalLimit] = useState("")
+  const [userLimit, setUserLimit] = useState("")
 
   /* 设备预览状态 */
   const [previewDevice, setPreviewDevice] = useState<'mobile' | 'tablet' | 'desktop'>('mobile')
@@ -208,18 +211,32 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
       return
     }
 
+    // 验证限制字段
+    if (totalLimit && (isNaN(parseInt(totalLimit)) || parseInt(totalLimit) < 1)) {
+      toast.error("总数量限制必须是大于0的整数")
+      return
+    }
+    if (userLimit && (isNaN(parseInt(userLimit)) || parseInt(userLimit) < 1)) {
+      toast.error("单用户限制必须是大于0的整数")
+      return
+    }
+
     try {
       setLoading(true)
       const newLink = await MerchantService.createPaymentLink(selectedKey.id, {
         product_name: productName,
         amount: parseFloat(amount),
-        remark
+        remark,
+        ...(totalLimit && { total_limit: parseInt(totalLimit) }),
+        ...(userLimit && { user_limit: parseInt(userLimit) })
       })
       toast.success("在线积分流转服务创建成功")
       /* 重置表单 */
       setProductName("")
       setAmount("")
       setRemark("")
+      setTotalLimit("")
+      setUserLimit("")
 
       /* 更新UI */
       fetchLinks()
@@ -248,6 +265,61 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
       fetchLinks()
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "在线积分流转服务删除失败"
+      toast.error(message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  /* 处理编辑 */
+  const handleEdit = (link: PaymentLink) => {
+    setProductName(link.product_name)
+    setAmount(link.amount)
+    setRemark(link.remark || "")
+    setTotalLimit(link.total_limit?.toString() || "")
+    setUserLimit(link.user_limit?.toString() || "")
+    setIsEditing(true)
+  }
+
+  /* 处理更新 */
+  const handleUpdate = async () => {
+    if (!selectedKey || !selectedLink) return
+    if (!productName || !amount) {
+      toast.error("请填写在线积分流转服务的名称和数量")
+      return
+    }
+    if (isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+      toast.error("积分数量必须设置为大于0的数值")
+      return
+    }
+
+    // 验证限制字段
+    if (totalLimit && (isNaN(parseInt(totalLimit)) || parseInt(totalLimit) < 1)) {
+      toast.error("总数量限制必须是大于0的整数")
+      return
+    }
+    if (userLimit && (isNaN(parseInt(userLimit)) || parseInt(userLimit) < 1)) {
+      toast.error("单用户限制必须是大于0的整数")
+      return
+    }
+
+    try {
+      setLoading(true)
+      await MerchantService.updatePaymentLink(selectedKey.id, selectedLink.id, {
+        product_name: productName,
+        amount: parseFloat(amount),
+        remark,
+        ...(totalLimit && { total_limit: parseInt(totalLimit) }),
+        ...(userLimit && { user_limit: parseInt(userLimit) })
+      })
+      toast.success("在线积分流转服务已更新")
+
+      /* 更新UI */
+      fetchLinks()
+      setIsEditing(false)
+      setSelectedLink(null)
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "在线积分流转服务更新失败"
       toast.error(message)
     } finally {
       setLoading(false)
@@ -359,6 +431,8 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
                     setProductName("")
                     setAmount("")
                     setRemark("")
+                    setTotalLimit("")
+                    setUserLimit("")
                   }}
                   className="rounded-lg p-4 border border-dashed hover:border-primary/50 shadow-none transition-all text-left group bg-background min-h-[100px] w-[180px] shrink-0 flex flex-col items-center justify-center gap-2"
                 >
@@ -554,6 +628,28 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
                       />
                     </div>
                     <div className="space-y-2">
+                      <Label className="text-xs font-medium text-muted-foreground">总次数限制 (可选)</Label>
+                      <Input
+                        type="number"
+                        placeholder="不限制"
+                        min="1"
+                        value={totalLimit}
+                        onChange={e => setTotalLimit(e.target.value)}
+                      />
+                      <p className="text-[10px] text-muted-foreground">设置该链接总共可以支付的次数</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium text-muted-foreground">单用户限制 (可选)</Label>
+                      <Input
+                        type="number"
+                        placeholder="不限制"
+                        min="1"
+                        value={userLimit}
+                        onChange={e => setUserLimit(e.target.value)}
+                      />
+                      <p className="text-[10px] text-muted-foreground">设置每个用户最多可以支付的次数</p>
+                    </div>
+                    <div className="space-y-2">
                       <Label className="text-xs font-medium text-muted-foreground">备注 (可选)</Label>
                       <Textarea
                         placeholder="服务备注信息..."
@@ -576,78 +672,173 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
                 <div className="space-y-6">
                   <SheetHeader className="px-0">
                     <SheetTitle>{selectedLink.product_name}</SheetTitle>
-                    <SheetDescription className="text-xs">在线积分流转服务内容详情，为了保障在线活动的安全性，不支持编辑</SheetDescription>
+                    <SheetDescription className="text-xs">
+                      {isEditing ? "编辑在线积分流转服务信息" : "在线积分流转服务内容详情"}
+                    </SheetDescription>
                   </SheetHeader>
 
-                  <div>
-                    <h2 className="text-sm font-semibold mb-4">服务信息</h2>
-                    <div className="border border-dashed rounded-lg">
-                      <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
-                        <label className="text-xs font-medium text-muted-foreground">服务名称</label>
-                        <p className="text-xs font-medium truncate text-right max-w-[70%]">{selectedLink.product_name}</p>
+                  {isEditing ? (
+                    /* 编辑模式 */
+                    <div className="space-y-6">
+                      <div className="border border-dashed rounded-lg p-4 space-y-4">
+                        <div className="space-y-2">
+                          <Label className="text-xs font-medium text-muted-foreground">服务名称 <span className="text-red-500">*</span></Label>
+                          <Input
+                            placeholder="例如：高级会员订阅服务"
+                            value={productName}
+                            onChange={e => setProductName(e.target.value)}
+                            maxLength={50}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-xs font-medium text-muted-foreground">积分 (LDC) <span className="text-red-500">*</span></Label>
+                          <Input
+                            type="number"
+                            placeholder="0.00"
+                            className="font-mono"
+                            value={amount}
+                            onChange={e => setAmount(e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-xs font-medium text-muted-foreground">总次数限制 (可选)</Label>
+                          <Input
+                            type="number"
+                            placeholder="不限制"
+                            min="1"
+                            value={totalLimit}
+                            onChange={e => setTotalLimit(e.target.value)}
+                          />
+                          <p className="text-[10px] text-muted-foreground">设置该链接总共可以支付的次数</p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-xs font-medium text-muted-foreground">单用户限制 (可选)</Label>
+                          <Input
+                            type="number"
+                            placeholder="不限制"
+                            min="1"
+                            value={userLimit}
+                            onChange={e => setUserLimit(e.target.value)}
+                          />
+                          <p className="text-[10px] text-muted-foreground">设置每个用户最多可以支付的次数</p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-xs font-medium text-muted-foreground">备注 (可选)</Label>
+                          <Textarea
+                            placeholder="服务备注信息..."
+                            className="resize-none h-20"
+                            value={remark}
+                            onChange={e => setRemark(e.target.value)}
+                            maxLength={200}
+                          />
+                        </div>
                       </div>
-                      <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
-                        <label className="text-xs font-medium text-muted-foreground">积分 (LDC)</label>
-                        <p className="text-sm font-mono font-bold text-primary">LDC {parseFloat(selectedLink.amount).toFixed(2)}</p>
-                      </div>
-                      <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
-                        <label className="text-xs font-medium text-muted-foreground">创建时间</label>
-                        <p className="text-xs text-muted-foreground">{new Date(selectedLink.created_at).toLocaleString()}</p>
-                      </div>
-                      <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
-                        <label className="text-xs font-medium text-muted-foreground">备注</label>
-                        <p className="text-xs text-muted-foreground truncate text-right max-w-[70%]">{selectedLink.remark || "无备注"}</p>
-                      </div>
-                      <div className="px-3 py-2 border-b border-dashed last:border-b-0">
-                        <div className="flex items-center justify-between">
-                          <label className="text-xs font-medium text-muted-foreground shrink-0">服务令牌</label>
-                          <div className="flex items-center p-1 h-7 border border-dashed rounded-sm bg-background max-w-[200px]">
-                            <code className="text-xs text-muted-foreground font-mono flex-1 overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] whitespace-nowrap">
-                              {showToken ? selectedLink.token : '•'.repeat(36)}
-                            </code>
-                            <Button
-                              variant="ghost"
-                              className="p-0.5 w-5 h-5 shrink-0"
-                              onClick={() => setShowToken(!showToken)}
-                            >
-                              {showToken ? <EyeOff className="size-2.5 text-muted-foreground" /> : <Eye className="size-2.5 text-muted-foreground" />}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              onClick={() => handleCopyLink(selectedLink.token)}
-                              className="p-0.5 w-5 h-5 shrink-0"
-                            >
-                              <Copy className="size-2.5" />
-                            </Button>
+
+                      <SheetFooter className="flex flex-row justify-end items-center gap-2">
+                        <Button variant="ghost" onClick={() => setIsEditing(false)} className="h-8 text-xs">取消</Button>
+                        <Button onClick={handleUpdate} disabled={loading} className="h-8 text-xs">
+                          {loading && <Spinner className="mr-1 size-3" />} 保存
+                        </Button>
+                      </SheetFooter>
+                    </div>
+                  ) : (
+                    /* 查看模式 */
+                    <>
+                      <div>
+                        <h2 className="text-sm font-semibold mb-4">服务信息</h2>
+                        <div className="border border-dashed rounded-lg">
+                          <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
+                            <label className="text-xs font-medium text-muted-foreground">服务名称</label>
+                            <p className="text-xs font-medium truncate text-right max-w-[70%]">{selectedLink.product_name}</p>
+                          </div>
+                          <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
+                            <label className="text-xs font-medium text-muted-foreground">积分数量</label>
+                            <p className="text-xs font-bold text-primary">LDC {parseFloat(selectedLink.amount).toFixed(2)}</p>
+                          </div>
+
+                          {(selectedLink.total_limit || selectedLink.user_limit) && (
+                            <>
+                              {selectedLink.total_limit && (
+                                <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
+                                  <label className="text-xs font-medium text-muted-foreground">总次数限制</label>
+                                  <p className="text-xs font-medium">{selectedLink.total_limit}</p>
+                                </div>
+                              )}
+                              {selectedLink.user_limit && (
+                                <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
+                                  <label className="text-xs font-medium text-muted-foreground">单用户限制</label>
+                                  <p className="text-xs font-medium">{selectedLink.user_limit}</p>
+                                </div>
+                              )}
+                            </>
+                          )}
+                          <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
+                            <label className="text-xs font-medium text-muted-foreground">服务备注</label>
+                            <p className="text-xs text-muted-foreground truncate text-right max-w-[70%]">{selectedLink.remark || "无备注"}</p>
+                          </div>
+                          <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
+                            <label className="text-xs font-medium text-muted-foreground">创建时间</label>
+                            <p className="text-xs text-muted-foreground">{new Date(selectedLink.created_at).toLocaleString()}</p>
+                          </div>
+                          <div className="px-3 py-2 border-b border-dashed last:border-b-0">
+                            <div className="flex items-center justify-between">
+                              <label className="text-xs font-medium text-muted-foreground shrink-0">服务令牌</label>
+                              <div className="flex items-center p-1 h-7 border border-dashed rounded-sm bg-background max-w-[200px]">
+                                <code className="text-xs text-muted-foreground font-mono flex-1 overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] whitespace-nowrap">
+                                  {showToken ? selectedLink.token : '•'.repeat(36)}
+                                </code>
+                                <Button
+                                  variant="ghost"
+                                  className="p-0.5 w-5 h-5 shrink-0"
+                                  onClick={() => setShowToken(!showToken)}
+                                >
+                                  {showToken ? <EyeOff className="size-2.5 text-muted-foreground" /> : <Eye className="size-2.5 text-muted-foreground" />}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  onClick={() => handleCopyLink(selectedLink.token)}
+                                  className="p-0.5 w-5 h-5 shrink-0"
+                                >
+                                  <Copy className="size-2.5" />
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div>
-                    <h2 className="text-sm font-semibold mb-4">流转服务管理</h2>
-                    <div className="flex gap-2 flex-wrap">
-                      <Button variant="outline" className="text-xs h-8 border-dashed border-green-500 hover:bg-green-50 shadow-none" onClick={() => handleCopyLink(selectedLink.token)}>
-                        <Copy className="size-3 mr-1" />
-                        复制链接
-                      </Button>
-                      <Button variant="outline" className="text-xs h-8 border-dashed border-green-500 hover:bg-green-50 shadow-none" onClick={() => window.open(`/paying/online?token=${ selectedLink.token }`, '_blank')}>
-                        <ExternalLink className="size-3 mr-1" />
-                        查看服务
-                      </Button>
-                      <Button variant="outline" className="text-xs text-destructive h-8 border-dashed border-destructive/50 hover:bg-destructive/5 shadow-none" onClick={() => handleDelete(selectedLink)}>
-                        <Trash2 className="size-3 mr-1" />
-                        删除服务
-                      </Button>
-                    </div>
-                  </div>
+                      <div>
+                        <h2 className="text-sm font-semibold mb-4">流转服务管理</h2>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button variant="outline" className="text-xs h-8 border-dashed border-green-500 hover:bg-green-50 shadow-none" onClick={() => handleCopyLink(selectedLink.token)}>
+                            <Copy className="size-3 mr-1" />
+                            复制链接
+                          </Button>
+                          <Button variant="outline" className="text-xs h-8 border-dashed border-green-500 hover:bg-green-50 shadow-none" onClick={() => window.open(`/paying/online?token=${ selectedLink.token }`, '_blank')}>
+                            <ExternalLink className="size-3 mr-1" />
+                            查看服务
+                          </Button>
+                          <Button variant="outline" className="text-xs h-8 border-dashed border-blue-500 hover:bg-blue-50 shadow-none" onClick={() => handleEdit(selectedLink)}>
+                            <svg className="size-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            编辑服务
+                          </Button>
+                          <Button variant="outline" className="text-xs text-destructive h-8 border-dashed border-destructive/50 hover:bg-destructive/5 shadow-none" onClick={() => handleDelete(selectedLink)}>
+                            <Trash2 className="size-3 mr-1" />
+                            删除服务
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               ) : null}
             </SheetContent>
           </Sheet>
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   )
 }

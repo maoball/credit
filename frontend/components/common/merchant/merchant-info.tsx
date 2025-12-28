@@ -205,7 +205,7 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
 
       <div>
         <h2 className="font-semibold mb-4">应用管理</h2>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <MerchantDialog
             mode="update"
             apiKey={apiKey}
@@ -213,7 +213,7 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
             onUpdate={onUpdate}
             updateAPIKey={updateAPIKey}
             trigger={
-              <Button variant="outline" className="text-xs text-primary h-8 border-dashed border-primary/50 hover:bg-primary/5">
+              <Button variant="outline" className="text-xs text-primary h-8 border-dashed border-primary/50 hover:bg-primary/5 w-full">
                 <Edit className="size-3 mr-1" />
                 编辑应用
               </Button>
@@ -222,7 +222,7 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="outline" className="text-xs text-destructive h-8 border-dashed border-destructive/50 hover:bg-destructive/5">
+              <Button variant="outline" className="text-xs text-destructive h-8 border-dashed border-destructive/50 hover:bg-destructive/5 w-full">
                 <Trash2 className="size-3 mr-1" />
                 删除应用
               </Button>
@@ -248,11 +248,13 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
             </AlertDialogContent>
           </AlertDialog>
 
-          <TestModeToggle
-            apiKey={apiKey}
-            onUpdate={onUpdate}
-            updateAPIKey={updateAPIKey}
-          />
+          <div className="col-span-2">
+            <TestModeToggle
+              apiKey={apiKey}
+              onUpdate={onUpdate}
+              updateAPIKey={updateAPIKey}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import type {
   GetMerchantOrderResponse,
   PaymentLink,
   CreatePaymentLinkRequest,
+  UpdatePaymentLinkRequest,
   PayByLinkRequest,
   QueryMerchantOrderRequest,
   QueryMerchantOrderResponse,
@@ -182,6 +183,37 @@ export class MerchantService extends BaseService {
   static async deletePaymentLink(apiKeyId: number, linkId: number): Promise<void> {
     return this.delete<void>(`/api-keys/${ apiKeyId }/payment-links/${ linkId }`);
   }
+
+  /**
+   * 更新支付链接
+   * @param apiKeyId - API Key ID
+   * @param linkId - 支付链接 ID
+   * @param request - 更新支付链接请求参数
+   * @returns void
+   * @throws {UnauthorizedError} 当未登录时
+   * @throws {NotFoundError} 当 API Key 或支付链接不存在时
+   * @throws {ForbiddenError} 当无权访问该 API Key 时
+   * @throws {ValidationError} 当参数验证失败时
+   * 
+   * @example
+   * ```typescript
+   * await MerchantService.updatePaymentLink(123, 456, {
+   *   product_name: '更新后的商品',
+   *   amount: 200,
+   *   remark: '新的备注',
+   *   total_limit: 100,
+   *   user_limit: 1
+   * });
+   * ```
+   */
+  static async updatePaymentLink(
+    apiKeyId: number,
+    linkId: number,
+    request: UpdatePaymentLinkRequest
+  ): Promise<void> {
+    return this.put<void>(`/api-keys/${ apiKeyId }/payment-links/${ linkId }`, request);
+  }
+
 
   /**
    * 通过 Token 获取支付链接信息

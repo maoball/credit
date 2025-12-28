@@ -86,7 +86,7 @@ export function TestModeToggle({ apiKey, onUpdate, updateAPIKey }: TestModeToggl
         <Button
           variant="outline"
           onClick={handleClick}
-          className={`h-8 text-xs border-dashed ${ apiKey.test_mode
+          className={`h-8 text-xs border-dashed w-full ${ apiKey.test_mode
             ? "text-orange-600 border-orange-500/50 hover:bg-orange-500/10"
             : "text-green-600 border-green-500/50 hover:bg-green-500/10"
             }`}

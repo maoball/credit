@@ -167,6 +167,10 @@ export interface PaymentLink {
   product_name: string;
   /** 备注 */
   remark: string;
+  /** 总支付次数限制（可选） */
+  total_limit?: number;
+  /** 单用户支付次数限制（可选） */
+  user_limit?: number;
   /** 创建时间 */
   created_at: string;
   /** 更新时间 */
@@ -187,7 +191,28 @@ export interface CreatePaymentLinkRequest {
   product_name: string;
   /** 备注（可选） */
   remark?: string;
+  /** 总支付次数限制（可选，最小值为1） */
+  total_limit?: number;
+  /** 单用户支付次数限制（可选，最小值为1） */
+  user_limit?: number;
 }
+
+/**
+ * 更新支付链接请求参数
+ */
+export interface UpdatePaymentLinkRequest {
+  /** 金额 */
+  amount: number | string;
+  /** 商品名称 */
+  product_name: string;
+  /** 备注（可选） */
+  remark?: string;
+  /** 总支付次数限制（可选，最小值为1） */
+  total_limit?: number;
+  /** 单用户支付次数限制（可选，最小值为1） */
+  user_limit?: number;
+}
+
 
 /**
  * 通过支付链接支付请求参数
