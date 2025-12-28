@@ -138,7 +138,7 @@ func GetPaymentLinkByToken(c *gin.Context) {
 	var paymentLink PaymentLinkDetail
 	if err := db.DB(c.Request.Context()).
 		Table("merchant_payment_links").
-		Select("merchant_payment_links.id, merchant_payment_links.token, merchant_payment_links.amount, merchant_payment_links.product_name, merchant_payment_links.remark, merchant_payment_links.created_at, merchant_api_keys.app_name").
+		Select("merchant_payment_links.id, merchant_payment_links.token, merchant_payment_links.amount, merchant_payment_links.product_name, merchant_payment_links.remark, merchant_payment_links.created_at, merchant_api_keys.app_name, merchant_api_keys.redirect_uri").
 		Joins("JOIN merchant_api_keys ON merchant_api_keys.id = merchant_payment_links.merchant_api_key_id").
 		Where("merchant_payment_links.token = ? AND merchant_payment_links.deleted_at IS NULL", c.Param("token")).
 		First(&paymentLink).Error; err != nil {
