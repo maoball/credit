@@ -525,12 +525,12 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
           </div>
 
           <Sheet open={isCreating || !!selectedLink} onOpenChange={(open) => { if (!open) { setIsCreating(false); setSelectedLink(null); } }}>
-            <SheetContent className="w-full sm:max-w-md overflow-y-auto custom-scrollbar px-6">
+            <SheetContent className="w-full sm:max-w-md overflow-y-auto custom-scrollbar px-4">
               {isCreating ? (
                 <div className="space-y-6">
-                  <SheetHeader>
+                  <SheetHeader className="px-0">
                     <SheetTitle>创建新服务</SheetTitle>
-                    <SheetDescription>创建一个在线积分流转服务。</SheetDescription>
+                    <SheetDescription className="text-xs">创建一个在线积分流转服务。</SheetDescription>
                   </SheetHeader>
 
                   <div className="border border-dashed rounded-lg p-4 space-y-4">
@@ -574,9 +574,9 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
                 </div>
               ) : selectedLink ? (
                 <div className="space-y-6">
-                  <SheetHeader>
+                  <SheetHeader className="px-0">
                     <SheetTitle>{selectedLink.product_name}</SheetTitle>
-                    <SheetDescription>服务管理</SheetDescription>
+                    <SheetDescription className="text-xs">在线积分流转服务内容详情，为了保障在线活动的安全性，不支持编辑</SheetDescription>
                   </SheetHeader>
 
                   <div>

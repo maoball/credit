@@ -16,6 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { MerchantDialog } from "@/components/common/merchant/merchant-dialog"
+import { TestModeToggle } from "@/components/common/merchant/merchant-test"
 import { formatDateTime } from "@/lib/utils"
 import { type UpdateAPIKeyRequest, type MerchantAPIKey } from "@/lib/services"
 
@@ -77,7 +78,14 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
         <div className="border border-dashed rounded-lg">
           <div className="px-3 py-2 flex items-center justify-between border-b border-dashed last:border-b-0">
             <label className="text-xs font-medium text-muted-foreground">应用名称</label>
-            <p className="text-xs font-medium truncate text-right max-w-[70%]">{apiKey.app_name}</p>
+            <div className="flex items-center gap-2 max-w-[70%]">
+              <p className="text-xs font-medium truncate">{apiKey.app_name}</p>
+              {apiKey.test_mode && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-orange-500/10 text-orange-600 border border-orange-500/20">
+                  测试
+                </span>
+              )}
+            </div>
           </div>
 
           {apiKey.app_description && (
@@ -239,6 +247,12 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete, updateAPIKey }: Merch
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          <TestModeToggle
+            apiKey={apiKey}
+            onUpdate={onUpdate}
+            updateAPIKey={updateAPIKey}
+          />
         </div>
       </div>
     </div>

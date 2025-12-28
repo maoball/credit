@@ -118,7 +118,7 @@ export function PayingOnline() {
       const mockOrderInfo: GetMerchantOrderResponse = {
         merchant: {
           app_name: data.app_name || "商户",
-          redirect_uri: "", // data.redirect_uri?
+          redirect_uri: data.redirect_uri || "",
         },
         order: {
           id: 0,

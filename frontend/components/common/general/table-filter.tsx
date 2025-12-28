@@ -23,7 +23,8 @@ export const typeConfig: Record<OrderType, { label: string; color: string }> = {
   payment: { label: '积分消耗', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' },
   transfer: { label: '积分转移', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' },
   community: { label: '社区划转', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300' },
-  online: { label: '在线活动', color: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300' }
+  online: { label: '在线活动', color: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300' },
+  test: { label: '测试', color: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300 font-bold' }
 }
 
 /* 状态标签配置 */

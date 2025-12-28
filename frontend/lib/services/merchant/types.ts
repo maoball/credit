@@ -20,6 +20,8 @@ export interface MerchantAPIKey {
   redirect_uri?: string;
   /** 通知 URL */
   notify_url: string;
+  /** 测试模式 */
+  test_mode: boolean;
   /** 创建时间 */
   created_at: string;
   /** 更新时间 */
@@ -42,6 +44,8 @@ export interface CreateAPIKeyRequest {
   redirect_uri?: string;
   /** 通知 URL（最大100字符，必须是有效的 URL） */
   notify_url: string;
+  /** 测试模式（可选，默认为 false） */
+  test_mode?: boolean;
 }
 
 /**
@@ -58,6 +62,8 @@ export interface UpdateAPIKeyRequest {
   redirect_uri?: string;
   /** 通知 URL（最大100字符，必须是有效的 URL，可选） */
   notify_url?: string;
+  /** 测试模式（可选） */
+  test_mode?: boolean;
 }
 
 /**
@@ -167,6 +173,8 @@ export interface PaymentLink {
   updated_at: string;
   /** 应用名称 */
   app_name: string;
+  /** 重定向 URI */
+  redirect_uri: string;
 }
 
 /**

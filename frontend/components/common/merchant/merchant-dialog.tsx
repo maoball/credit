@@ -49,6 +49,7 @@ export function MerchantDialog({
     app_description: '',
     redirect_uri: '',
     notify_url: '',
+    test_mode: false,
   })
 
   useEffect(() => {
@@ -66,6 +67,7 @@ export function MerchantDialog({
         app_description: apiKey.app_description,
         redirect_uri: apiKey.redirect_uri,
         notify_url: apiKey.notify_url,
+        test_mode: apiKey.test_mode,
       }
     }
     return {
@@ -74,6 +76,7 @@ export function MerchantDialog({
       app_description: '',
       redirect_uri: '',
       notify_url: '',
+      test_mode: false,
     }
   }, [mode, apiKey])
 
