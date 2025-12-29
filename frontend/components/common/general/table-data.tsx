@@ -75,7 +75,10 @@ export const TransactionDataTable = React.memo(function TransactionDataTable({
               <TableHead className="sticky right-0 whitespace-nowrap text-center bg-background shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] w-[150px] z-40">操作</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="animate-in fade-in duration-200">
+          <TableBody 
+            key={transactions[0]?.id}
+            className="animate-in fade-in duration-200 [will-change:transform,opacity]"
+          >
             {paddingTop > 0 && (
               <tr style={{ height: `${ paddingTop }px` }}>
                 <td colSpan={13} />
