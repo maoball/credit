@@ -25,7 +25,7 @@ interface TestModeToggleProps {
   /** 更新回调 */
   onUpdate?: (updatedKey: MerchantAPIKey) => void
   /** 更新 API Key */
-  updateAPIKey?: (id: number, data: UpdateAPIKeyRequest) => Promise<void>
+  updateAPIKey?: (id: string, data: UpdateAPIKeyRequest) => Promise<void>
 }
 
 /**

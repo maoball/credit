@@ -13,7 +13,7 @@ export type OrderStatus = 'success' | 'pending' | 'failed' | 'expired' | 'disput
  */
 export interface Order {
   /** 订单 ID */
-  id: number;
+  id: string;
   /** 订单号（18位字符串） */
   order_no: string;
   /** 订单名称 */
@@ -21,9 +21,9 @@ export interface Order {
   /** 商户订单号 */
   merchant_order_no: string;
   /** 付款方用户ID */
-  payer_user_id: number;
+  payer_user_id: string;
   /** 收款方用户ID */
-  payee_user_id: number;
+  payee_user_id: string;
   /** 付款方账户 */
   payer_username: string;
   /** 收款方账户 */
@@ -55,7 +55,7 @@ export interface Order {
   /** 重定向 URI（可选） */
   redirect_uri?: string;
   /** 关联的争议 ID（可选） */
-  dispute_id?: number;
+  dispute_id?: string;
   /** 支付类型 */
   payment_type: string;
 }
@@ -79,7 +79,7 @@ export interface TransactionQueryParams {
   /** 结束时间（可选） */
   endTime?: string;
   /** 订单 ID（可选） */
-  id?: number;
+  id?: string;
   /** 订单名称，支持前缀模糊查询（可选） */
   order_name?: string;
   /** 付款方账户，支持前缀模糊查询（可选） */
@@ -107,7 +107,7 @@ export interface TransactionListResponse {
  */
 export interface TransferRequest {
   /** 收款人用户 ID */
-  recipient_id: number;
+  recipient_id: string;
   /** 收款人账户 */
   recipient_username: string;
   /** 转账金额（必须大于0，最多2位小数） */
@@ -123,7 +123,7 @@ export interface TransferRequest {
  */
 export interface TransferResponse {
   /** 订单 ID */
-  order_id: number;
+  order_id: string;
   /** 订单号 */
   order_no: string;
   /** 交易时间 */

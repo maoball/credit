@@ -120,7 +120,7 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
   const apiKeyId = searchParams.get("apiKeyId")
 
   /* 处理集市应用切换 */
-  const handleMerchantSelect = useCallback((id: number) => {
+  const handleMerchantSelect = useCallback((id: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("apiKeyId", id.toString())
     router.push(`${ window.location.pathname }?${ params.toString() }`)
@@ -358,7 +358,7 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
       redirect_uri: "",
     },
     order: {
-      id: 0,
+      id: '0',
       order_no: previewLink ? `LINK-${ previewLink.id }` : "PREVIEW",
       order_name: isCreating ? (productName || "服务名称") : (previewLink?.product_name || "服务名称"),
       payer_username: "user",
@@ -379,7 +379,7 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
       ...currentUserConfig,
       fee_rate: String(currentUserConfig.fee_rate)
     } : {
-      id: 0,
+      id: '0',
       level: user?.pay_level ?? 0,
       min_score: 0,
       max_score: null,

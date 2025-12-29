@@ -101,7 +101,7 @@ function MerchantDataContent({ apiKey }: MerchantDataProps) {
         return formatLocalDate(endDate)
       })() : undefined,
       client_id: apiKey.client_id,
-      id: selectedSearch.id ? parseInt(selectedSearch.id) : undefined,
+      id: selectedSearch.id || undefined,
       order_name: selectedSearch.order_name || undefined,
       payer_username: selectedSearch.payer_username || undefined,
       payee_username: selectedSearch.payee_username || undefined,

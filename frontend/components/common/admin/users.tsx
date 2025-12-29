@@ -41,7 +41,7 @@ export function UsersManager() {
 
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
   const [detailOpen, setDetailOpen] = useState(false)
-  const [updatingUserId, setUpdatingUserId] = useState<number | null>(null)
+  const [updatingUserId, setUpdatingUserId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchUsers()

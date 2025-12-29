@@ -26,9 +26,9 @@ interface MerchantInfoProps {
   /** 更新回调 */
   onUpdate?: (updatedKey: MerchantAPIKey) => void
   /** 删除回调 */
-  onDelete: (id: number) => void
+  onDelete: (id: string) => void
   /** 更新 API Key */
-  updateAPIKey?: (id: number, data: UpdateAPIKeyRequest) => Promise<void>
+  updateAPIKey?: (id: string, data: UpdateAPIKeyRequest) => Promise<void>
 }
 
 /**

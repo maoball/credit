@@ -91,7 +91,7 @@ function TransactionList({ initialType }: { initialType?: OrderType }) {
         endDate.setDate(endDate.getDate() + 1)
         return formatLocalDate(endDate)
       })() : undefined,
-      id: selectedSearch.id ? parseInt(selectedSearch.id) : undefined,
+      id: selectedSearch.id || undefined,
       order_name: selectedSearch.order_name || undefined,
       payer_username: selectedSearch.payer_username || undefined,
       payee_username: selectedSearch.payee_username || undefined,

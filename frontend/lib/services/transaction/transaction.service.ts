@@ -28,7 +28,7 @@ export class TransactionService extends BaseService {
    * ```
    */
   static async getTransactions(params: TransactionQueryParams): Promise<TransactionListResponse> {
-    return this.post<TransactionListResponse>('/transactions', params);
+    return this.post<TransactionListResponse>('/transactions', params as unknown as Record<string, unknown>);
   }
 
   /**

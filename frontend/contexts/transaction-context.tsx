@@ -22,7 +22,7 @@ interface TransactionContextState {
   loadMore: () => Promise<void>
   refresh: () => Promise<void>
   reset: () => void
-  updateOrderStatus: (orderId: number, updates: Partial<Pick<Order, 'status' | 'dispute_id'>>) => void
+  updateOrderStatus: (orderId: string, updates: Partial<Pick<Order, 'status' | 'dispute_id'>>) => void
 }
 
 const MAX_CACHE_SIZE = 50
@@ -97,7 +97,7 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
     const requestId = ++latestRequestIdRef.current
 
     /** 生成缓存key */
-    const cacheKey = generateTransactionCacheKey(queryParams)
+    const cacheKey = generateTransactionCacheKey(queryParams as Parameters<typeof generateTransactionCacheKey>[0])
 
     const cached = cacheRef.current[cacheKey]
     const now = Date.now()
@@ -179,9 +179,8 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
     })
   }, [currentPage, fetchTransactions, lastParams, loading])
 
-  /** 刷新当前页 */
   const refresh = useCallback(async () => {
-    const cacheKey = generateTransactionCacheKey({ ...lastParams, page: 1, page_size: pageSize })
+    const cacheKey = generateTransactionCacheKey({ ...lastParams, page: 1, page_size: pageSize } as Parameters<typeof generateTransactionCacheKey>[0])
     delete cacheRef.current[cacheKey]
 
     await fetchTransactions({
@@ -191,7 +190,7 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
   }, [fetchTransactions, lastParams, pageSize])
 
   /** 乐观更新订单状态 */
-  const updateOrderStatus = useCallback((orderId: number, updates: Partial<Pick<Order, 'status' | 'dispute_id'>>) => {
+  const updateOrderStatus = useCallback((orderId: string, updates: Partial<Pick<Order, 'status' | 'dispute_id'>>) => {
     setTransactions(prev =>
       prev.map(order =>
         order.id === orderId

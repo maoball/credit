@@ -77,7 +77,7 @@ export class MerchantService extends BaseService {
    * console.log('应用名称:', apiKey.app_name);
    * ```
    */
-  static async getAPIKey(id: number): Promise<MerchantAPIKey> {
+  static async getAPIKey(id: string): Promise<MerchantAPIKey> {
     return this.get<MerchantAPIKey>(`/api-keys/${ id }`);
   }
 
@@ -100,7 +100,7 @@ export class MerchantService extends BaseService {
    * ```
    */
   static async updateAPIKey(
-    id: number,
+    id: string,
     request: UpdateAPIKeyRequest,
   ): Promise<void> {
     return this.put<void>(`/api-keys/${ id }`, request);
@@ -119,7 +119,7 @@ export class MerchantService extends BaseService {
    * await MerchantService.deleteAPIKey(123);
    * ```
    */
-  static async deleteAPIKey(id: number): Promise<void> {
+  static async deleteAPIKey(id: string): Promise<void> {
     return this.delete<void>(`/api-keys/${ id }`);
   }
 
@@ -144,7 +144,7 @@ export class MerchantService extends BaseService {
    * console.log('支付链接 Token:', link.token);
    * ```
    */
-  static async createPaymentLink(apiKeyId: number, request: CreatePaymentLinkRequest): Promise<PaymentLink> {
+  static async createPaymentLink(apiKeyId: string, request: CreatePaymentLinkRequest): Promise<PaymentLink> {
     return this.post<PaymentLink>(`/api-keys/${ apiKeyId }/payment-links`, request);
   }
 
@@ -162,7 +162,7 @@ export class MerchantService extends BaseService {
    * console.log('支付链接数量:', links.length);
    * ```
    */
-  static async listPaymentLinks(apiKeyId: number): Promise<PaymentLink[]> {
+  static async listPaymentLinks(apiKeyId: string): Promise<PaymentLink[]> {
     return this.get<PaymentLink[]>(`/api-keys/${ apiKeyId }/payment-links`);
   }
 
@@ -180,7 +180,7 @@ export class MerchantService extends BaseService {
    * await MerchantService.deletePaymentLink(123, 456);
    * ```
    */
-  static async deletePaymentLink(apiKeyId: number, linkId: number): Promise<void> {
+  static async deletePaymentLink(apiKeyId: string, linkId: string): Promise<void> {
     return this.delete<void>(`/api-keys/${ apiKeyId }/payment-links/${ linkId }`);
   }
 
@@ -207,8 +207,8 @@ export class MerchantService extends BaseService {
    * ```
    */
   static async updatePaymentLink(
-    apiKeyId: number,
-    linkId: number,
+    apiKeyId: string,
+    linkId: string,
     request: UpdatePaymentLinkRequest
   ): Promise<void> {
     return this.put<void>(`/api-keys/${ apiKeyId }/payment-links/${ linkId }`, request);

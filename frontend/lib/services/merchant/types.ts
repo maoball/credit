@@ -3,9 +3,9 @@
  */
 export interface MerchantAPIKey {
   /** API Key ID */
-  id: number;
+  id: string;
   /** 用户 ID */
-  user_id: number;
+  user_id: string;
   /** 客户端 ID */
   client_id: string;
   /** 客户端密钥 */
@@ -91,7 +91,7 @@ export interface GetMerchantOrderResponse {
   /** 订单信息 */
   order: {
     /** 订单ID */
-    id: number;
+    id: string;
     /** 订单号 */
     order_no: string;
     /** 订单名称 */
@@ -126,7 +126,7 @@ export interface GetMerchantOrderResponse {
   /** 用户积分配置信息 */
   user_pay_config: {
     /** 配置ID */
-    id: number;
+    id: string;
     /** 积分等级 */
     level: number;
     /** 最低分数 */
@@ -156,9 +156,9 @@ export interface GetMerchantOrderResponse {
  */
 export interface PaymentLink {
   /** 链接 ID */
-  id: number;
+  id: string;
   /** 商户 API Key ID */
-  merchant_api_key_id: number;
+  merchant_api_key_id: string;
   /** 支付链接 Token */
   token: string;
   /** 金额 */
@@ -243,7 +243,7 @@ export interface GetPaymentLinkInfoResponse {
   /** 用户积分配置信息 */
   user_pay_config: {
     /** 配置ID */
-    id: number;
+    id: string;
     /** 积分等级 */
     level: number;
     /** 最低分数 */
@@ -268,7 +268,7 @@ export interface QueryMerchantOrderRequest {
   /** 商户订单号（可选） */
   out_trade_no?: string;
   /** 平台订单号 */
-  trade_no: number;
+  trade_no: string;
   /** 客户端 ID */
   pid: string;
   /** 客户端密钥 */
@@ -314,7 +314,7 @@ export interface RefundMerchantOrderRequest {
   /** 商户订单号（可选） */
   out_trade_no?: string;
   /** 平台订单号 */
-  trade_no: number;
+  trade_no: string;
   /** 退款金额 */
   money: number | string;
 }

@@ -80,12 +80,11 @@ export function Transfer() {
     setIsPasswordOpen(true)
   }
 
-  /* 处理最终转账（第二步）*/
   const handleConfirmTransfer = async (password: string) => {
     setLoading(true)
     try {
       const transferData: TransferRequest = {
-        recipient_id: parseInt(recipientId),
+        recipient_id: recipientId,
         recipient_username: recipientUsername,
         amount: parseFloat(amount),
         pay_key: password,
