@@ -129,7 +129,7 @@ function MerchantDataContent({ apiKey }: MerchantDataProps) {
           {MERCHANT_ACTIONS.map((action) => (
             <button
               key={action.action}
-              className="rounded-lg p-4 border border-dashed hover:border-primary/50 transition-all text-left group"
+              className="rounded-lg p-4 border border-dashed hover:border-primary/50 transition-all text-left group cursor-pointer"
               onClick={() => actionHandlers[action.action]()}
             >
               <div className="flex items-center gap-4">

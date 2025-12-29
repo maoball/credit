@@ -434,7 +434,7 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
                     setTotalLimit("")
                     setUserLimit("")
                   }}
-                  className="rounded-lg p-4 border border-dashed hover:border-primary/50 shadow-none transition-all text-left group bg-background min-h-[100px] w-[180px] shrink-0 flex flex-col items-center justify-center gap-2"
+                  className="rounded-lg p-4 border border-dashed hover:border-primary/50 shadow-none transition-all text-left group bg-background min-h-[100px] w-[180px] shrink-0 flex flex-col items-center justify-center gap-2 cursor-pointer"
                 >
                   <div className="rounded-lg p-2 bg-purple-50 dark:bg-purple-950/20">
                     <Plus className="size-4 text-purple-600" />

@@ -87,7 +87,6 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                   key={item.id}
                   value={item.title}
                   onSelect={() => handleSelect(item)}
-                  className="cursor-pointer"
                 >
                   <Icon className="mr-2 h-4 w-4" />
                   <div className="flex flex-col">
