@@ -263,25 +263,9 @@ export const howToUseSections: PolicySection[] = [
     title: "7. 积分转移",
     content: (
       <div className="space-y-4 text-sm leading-relaxed">
-        <ul className="list-disc pl-4 md:pl-5 space-y-2">
-          <li><strong>适用场景：</strong>向 LINUX DO Credit 平台内的其他用户进行积分转移。</li>
-          <li><strong>操作步骤：</strong>
-            <ol className="list-decimal pl-4 md:pl-5 mt-1 text-muted-foreground">
-              <li>进入 <strong>活动</strong> 页面，选择 <strong>积分转移</strong></li>
-              <li>填写接收方信息：
-                <ul className="list-[circle] pl-5 mt-1">
-                  <li><strong>接收方账户：</strong>对方的 LINUX DO 用户名</li>
-                  <li><strong>接收方 ID：</strong>对方的用户 LINUX DO 用户 ID，确保积分去向准确</li>
-                  <li><strong>积分数量：</strong>转移的积分数量</li>
-                </ul>
-              </li>
-              <li>验证安全密码后，积分将实时到账</li>
-            </ol>
-          </li>
-        </ul>
         <div className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 px-3 py-2 rounded-lg mt-4">
           <p className="m-0 text-sm">
-            <strong>重要：</strong>请勿滥用积分转移进行刷号、交易等违规行为，积分审计系统发现此类行为会立即封禁相关账户！
+            <strong>重要：</strong>积分转移功能已下架，请遵循积分使用规范并使用正确流转功能继续！
           </p>
         </div>
       </div>
