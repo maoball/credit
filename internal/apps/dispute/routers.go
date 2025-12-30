@@ -197,7 +197,7 @@ func CreateDispute(c *gin.Context) {
 		func(tx *gorm.DB) error {
 			var order model.Order
 			if err := tx.Clauses(clause.Locking{Strength: "UPDATE", Options: "NOWAIT"}).
-				Where("id = ? AND payer_user_id = ? AND status = ? AND type = ?", req.OrderID, user.ID, model.OrderStatusSuccess, model.OrderTypePayment).
+				Where("id = ? AND payer_user_id = ? AND status = ? AND type IN ?", req.OrderID, user.ID, model.OrderStatusSuccess, []model.OrderType{model.OrderTypePayment, model.OrderTypeOnline}).
 				First(&order).Error; err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					return errors.New(OrderNotFoundForDispute)
@@ -283,7 +283,7 @@ func RefundReview(c *gin.Context) {
 
 			var order model.Order
 			if err := tx.Clauses(clause.Locking{Strength: "UPDATE", Options: "NOWAIT"}).
-				Where("id = ? AND payee_user_id = ? AND status = ? AND type = ?", dispute.OrderID, merchantUser.ID, model.OrderStatusDisputing, model.OrderTypePayment).
+				Where("id = ? AND payee_user_id = ? AND status = ? AND type IN ?", dispute.OrderID, merchantUser.ID, model.OrderStatusDisputing, []model.OrderType{model.OrderTypePayment, model.OrderTypeOnline}).
 				First(&order).Error; err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					return errors.New(NotOrderMerchant)
@@ -408,7 +408,7 @@ func CloseDispute(c *gin.Context) {
 
 			var order model.Order
 			if err := tx.Clauses(clause.Locking{Strength: "UPDATE", Options: "NOWAIT"}).
-				Where("id = ? AND status = ? AND type = ?", dispute.OrderID, model.OrderStatusDisputing, model.OrderTypePayment).
+				Where("id = ? AND status = ? AND type IN ?", dispute.OrderID, model.OrderStatusDisputing, []model.OrderType{model.OrderTypePayment, model.OrderTypeOnline}).
 				First(&order).Error; err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					return errors.New(OrderNotFoundForDispute)
