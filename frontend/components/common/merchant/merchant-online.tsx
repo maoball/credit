@@ -584,8 +584,8 @@ function MerchantOnlineContent({ apiKeys }: MerchantOnlineContentProps) {
                       )}
                     </AnimatePresence>
 
-                    <div className={`h-full w-full overflow-y-auto custom-scrollbar flex items-center justify-center p-4 ${ previewTheme === 'dark' ? 'dark bg-zinc-900' : 'bg-white' }`}>
-                      <div className={`flex ${ previewDevice === 'mobile' ? 'flex-col' : 'flex-row' } w-full max-w-4xl backdrop-blur-2xl border rounded-3xl overflow-hidden shadow-2xl relative shrink-0 ${ previewTheme === 'dark' ? 'bg-card/70 border-border/50' : 'bg-white border-gray-200' }`}>
+                    <div className={`h-full w-full overflow-y-auto custom-scrollbar flex items-center justify-center p-4 transition-colors duration-500 ${ previewTheme === 'dark' ? 'dark bg-zinc-900' : 'bg-white' }`}>
+                      <div className={`flex ${ previewDevice === 'mobile' ? 'flex-col' : 'flex-row' } w-full max-w-4xl backdrop-blur-2xl border rounded-3xl overflow-hidden shadow-2xl relative shrink-0 transition-colors duration-500 ${ previewTheme === 'dark' ? 'bg-card/70 border-border/50' : 'bg-white border-gray-200' }`}>
                         <PayingInfo orderInfo={previewOrderInfo} loading={loading} forceMobile={previewDevice === 'mobile'} />
                         <PayingNow orderInfo={previewOrderInfo} paying={false} payKey="" currentStep="method" selectedMethod="alipay" isOpen={false} loading={false} onPayKeyChange={() => { }} onCurrentStepChange={() => { }} onSelectedMethodChange={() => { }} onIsOpenChange={() => { }} onPayOrder={() => { }} forceMobile={previewDevice === 'mobile'} />
                         <div className="absolute inset-0 z-50 bg-transparent cursor-default" />
