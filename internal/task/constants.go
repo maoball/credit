@@ -23,7 +23,6 @@ const (
 	AutoRefundSingleDisputeTask           = "dispute:auto_refund_single"
 	MerchantPaymentNotifyTask             = "payment:merchant_notify"
 	SyncOrdersToClickHouseTask            = "order:sync_to_clickhouse"
-	ComputeLeaderboardRankingsTask        = "leaderboard:compute_rankings"
 )
 
 const (
