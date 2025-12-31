@@ -19,8 +19,6 @@ export type RedEnvelopeStatus = 'active' | 'finished' | 'expired';
 export interface RedEnvelope {
   /** 红包 ID */
   id: number;
-  /** 红包唯一码（用于分享链接） */
-  code: string;
   /** 创建者用户 ID */
   creator_id: number;
   /** 创建者用户名 */
@@ -99,8 +97,8 @@ export interface CreateRedEnvelopeResponse {
  * 领取红包请求参数
  */
 export interface ClaimRedEnvelopeRequest {
-  /** 红包唯一码 */
-  code: string;
+  /** 红包 ID */
+  id: string;
 }
 
 /**
@@ -149,12 +147,4 @@ export interface RedEnvelopeListResponse {
   page_size: number;
   /** 红包列表 */
   red_envelopes: RedEnvelope[];
-}
-
-/**
- * 红包功能是否启用响应
- */
-export interface RedEnvelopeEnabledResponse {
-  /** 是否启用 */
-  enabled: boolean;
 }

@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select"
 import { PasswordDialog } from "@/components/common/general/password-dialog"
 import services from "@/lib/services"
-import type { RedEnvelopeType, CreateRedEnvelopeRequest, RedEnvelope, RedEnvelopeListResponse } from "@/lib/services"
+import type { RedEnvelopeType, CreateRedEnvelopeRequest, RedEnvelope, RedEnvelopeListResponse, PublicConfigResponse } from "@/lib/services"
 import { formatDateTime } from "@/lib/utils"
 
 /**
@@ -63,6 +63,9 @@ export function RedEnvelope() {
   const [sentTotal, setSentTotal] = useState(0)
   const [receivedTotal, setReceivedTotal] = useState(0)
 
+  /* 配置状态 */
+  const [config, setConfig] = useState<PublicConfigResponse | null>(null)
+
   /* 加载红包列表 */
   const loadEnvelopes = async (listType: 'sent' | 'received', page: number) => {
     setListLoading(true)
@@ -87,8 +90,19 @@ export function RedEnvelope() {
     }
   }
 
+  /* 加载配置 */
+  const loadConfig = async () => {
+    try {
+      const result = await services.config.getPublicConfig()
+      setConfig(result)
+    } catch {
+      toast.error('加载配置失败')
+    }
+  }
+
   /* 初始加载 */
   useEffect(() => {
+    loadConfig()
     loadEnvelopes('sent', 1)
     loadEnvelopes('received', 1)
   }, [])
@@ -132,6 +146,15 @@ export function RedEnvelope() {
     }
 
     const amount = parseFloat(totalAmount)
+    
+    // 检查红包最大金额限制
+    if (config && parseFloat(config.red_envelope_max_amount) > 0) {
+      if (amount > parseFloat(config.red_envelope_max_amount)) {
+        toast.error(`红包金额不能超过 ${config.red_envelope_max_amount} LDC`)
+        return
+      }
+    }
+    
     if (type === "fixed" && amount / count < 0.01) {
       toast.error("每个红包金额不能小于0.01")
       return
@@ -205,6 +228,19 @@ export function RedEnvelope() {
     return null
   }, [totalAmount, totalCount, type])
 
+  /* 计算手续费 */
+  const feeInfo = React.useMemo(() => {
+    if (!totalAmount || !config) return null
+    const amount = parseFloat(totalAmount)
+    if (isNaN(amount)) return null
+    
+    const feeRate = parseFloat(config.red_envelope_fee_rate)
+    const fee = (amount * feeRate).toFixed(2)
+    const total = (amount + parseFloat(fee)).toFixed(2)
+    
+    return { fee, total, rate: feeRate }
+  }, [totalAmount, config])
+
   /* 获取状态标签 */
   const getStatusBadge = (status: string) => {
     const config = {
@@ -221,16 +257,16 @@ export function RedEnvelope() {
   }
 
   /* 生成红包链接 */
-  const getEnvelopeLink = (code: string) => {
+  const getEnvelopeLink = (id: number) => {
     if (typeof window !== 'undefined') {
-      return `${window.location.origin}/redenvelope/${code}`
+      return `${window.location.origin}/redenvelope/${id}`
     }
-    return `/redenvelope/${code}`
+    return `/redenvelope/${id}`
   }
 
   /* 渲染红包卡片 */
   const renderEnvelopeCard = (envelope: RedEnvelope, isSent: boolean) => {
-    const link = getEnvelopeLink(envelope.code)
+    const link = getEnvelopeLink(envelope.id)
     const claimedCount = envelope.total_count - envelope.remaining_count
     const claimedAmount = (parseFloat(envelope.total_amount) - parseFloat(envelope.remaining_amount)).toFixed(2)
 
@@ -478,6 +514,13 @@ export function RedEnvelope() {
                     disabled={loading}
                   />
                 </div>
+                {config && parseFloat(config.red_envelope_max_amount) > 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    最大 {config.red_envelope_max_amount} LDC
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground invisible">6565</p>
+                )}
               </div>
 
               <div className="grid gap-2">
@@ -491,6 +534,7 @@ export function RedEnvelope() {
                   onChange={(e) => setTotalCount(e.target.value)}
                   disabled={loading}
                 />
+                <p className="text-xs text-muted-foreground invisible">占位</p>
               </div>
             </div>
 
@@ -498,6 +542,25 @@ export function RedEnvelope() {
               <p className="text-sm text-muted-foreground">
                 每个红包 {perAmount} LDC
               </p>
+            )}
+
+            {feeInfo && parseFloat(feeInfo.fee) > 0 && (
+              <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <div className="text-sm space-y-1">
+                  <div className="flex justify-between text-muted-foreground">
+                    <span>红包金额</span>
+                    <span className="font-mono">{totalAmount} LDC</span>
+                  </div>
+                  <div className="flex justify-between text-amber-600 dark:text-amber-500">
+                    <span>手续费 ({(feeInfo.rate * 100).toFixed(1)}%)</span>
+                    <span className="font-mono">+{feeInfo.fee} LDC</span>
+                  </div>
+                  <div className="flex justify-between font-semibold text-foreground pt-1 border-t border-amber-200 dark:border-amber-800">
+                    <span>总计支付</span>
+                    <span className="font-mono">{feeInfo.total} LDC</span>
+                  </div>
+                </div>
+              </div>
             )}
 
             <div className="grid gap-2">
@@ -541,7 +604,11 @@ export function RedEnvelope() {
         onConfirm={handleConfirmCreate}
         loading={loading}
         title="密码验证"
-        description={`正在创建 ${totalAmount} LDC 的红包（${totalCount}个）`}
+        description={
+          feeInfo && parseFloat(feeInfo.fee) > 0
+            ? `正在创建 ${totalAmount} LDC 的红包（${totalCount}个），手续费 ${feeInfo.fee} LDC，总计支付 ${feeInfo.total} LDC`
+            : `正在创建 ${totalAmount} LDC 的红包（${totalCount}个）`
+        }
       />
 
       {/* 创建成功结果 */}

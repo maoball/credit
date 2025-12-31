@@ -7,7 +7,6 @@ import type {
   RedEnvelopeDetailResponse,
   RedEnvelopeListParams,
   RedEnvelopeListResponse,
-  RedEnvelopeEnabledResponse,
 } from './types';
 
 /**
@@ -51,7 +50,7 @@ export class RedEnvelopeService extends BaseService {
    *
    * @example
    * ```typescript
-   * const result = await RedEnvelopeService.claim({ code: 'abc123' });
+   * const result = await RedEnvelopeService.claim({ id: '123456' });
    * console.log('领取金额:', result.amount);
    * ```
    */
@@ -61,19 +60,19 @@ export class RedEnvelopeService extends BaseService {
 
   /**
    * 获取红包详情
-   * @param code - 红包唯一码
+   * @param id - 红包ID
    * @returns 红包详情（包含领取记录）
    * @throws {NotFoundError} 当红包不存在时
    *
    * @example
    * ```typescript
-   * const detail = await RedEnvelopeService.getDetail('abc123');
+   * const detail = await RedEnvelopeService.getDetail('123456');
    * console.log('红包状态:', detail.red_envelope.status);
    * console.log('已领取人数:', detail.claims.length);
    * ```
    */
-  static async getDetail(code: string): Promise<RedEnvelopeDetailResponse> {
-    return this.get<RedEnvelopeDetailResponse>(`/${code}`);
+  static async getDetail(id: string): Promise<RedEnvelopeDetailResponse> {
+    return this.get<RedEnvelopeDetailResponse>(`/${id}`);
   }
 
   /**
@@ -93,21 +92,5 @@ export class RedEnvelopeService extends BaseService {
    */
   static async getList(params: RedEnvelopeListParams): Promise<RedEnvelopeListResponse> {
     return this.post<RedEnvelopeListResponse>('/list', params);
-  }
-
-  /**
-   * 检查红包功能是否启用
-   * @returns 红包功能启用状态
-   *
-   * @example
-   * ```typescript
-   * const result = await RedEnvelopeService.isEnabled();
-   * if (result.enabled) {
-   *   console.log('红包功能已启用');
-   * }
-   * ```
-   */
-  static async isEnabled(): Promise<RedEnvelopeEnabledResponse> {
-    return this.get<RedEnvelopeEnabledResponse>('/enabled');
   }
 }

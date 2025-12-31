@@ -38,25 +38,32 @@ func HandleRefundExpiredRedEnvelopes(ctx context.Context, t *asynq.Task) error {
 
 // refundExpiredRedEnvelopes 退款过期红包
 func refundExpiredRedEnvelopes(ctx context.Context) {
-	// 查询所有过期且未退款的红包
-	var expiredEnvelopes []model.RedEnvelope
-	if err := db.DB(ctx).
-		Where("status = ? AND expires_at < ? AND remaining_amount > 0", model.RedEnvelopeStatusActive, time.Now()).
-		Find(&expiredEnvelopes).Error; err != nil {
-		logger.ErrorF(ctx, "查询过期红包失败: %v", err)
-		return
-	}
+	const batchSize = 100 // 每批处理100个红包
+	var lastID uint64 = 0
+	var totalProcessed int = 0
 
-	if len(expiredEnvelopes) == 0 {
-		logger.InfoF(ctx, "没有需要退款的过期红包")
-		return
-	}
+	for {
+		// 使用游标分页查询过期红包
+		var expiredEnvelopes []model.RedEnvelope
+		if err := db.DB(ctx).
+			Where("id > ? AND status = ? AND expires_at < ? AND remaining_amount > 0", lastID, model.RedEnvelopeStatusActive, time.Now()).
+			Order("id ASC").
+			Limit(batchSize).
+			Find(&expiredEnvelopes).Error; err != nil {
+			logger.ErrorF(ctx, "查询过期红包失败: %v", err)
+			return
+		}
 
-	logger.InfoF(ctx, "找到 %d 个需要退款的过期红包", len(expiredEnvelopes))
+		// 没有更多数据，退出循环
+		if len(expiredEnvelopes) == 0 {
+			break
+		}
 
-	// 处理每个过期红包
-	for _, envelope := range expiredEnvelopes {
-		if err := db.DB(ctx).Transaction(func(tx *gorm.DB) error {
+		logger.InfoF(ctx, "本批次找到 %d 个需要退款的过期红包", len(expiredEnvelopes))
+
+		// 处理每个过期红包
+		for _, envelope := range expiredEnvelopes {
+			if err := db.DB(ctx).Transaction(func(tx *gorm.DB) error {
 			// 更新红包状态为已过期
 			if err := tx.Model(&model.RedEnvelope{}).
 				Where("id = ? AND status = ?", envelope.ID, model.RedEnvelopeStatusActive).
@@ -77,21 +84,20 @@ func refundExpiredRedEnvelopes(ctx context.Context) {
 				}
 
 				// 创建退款订单记录
-				order := model.Order{
-					OrderName:     fmt.Sprintf("红包退款-%s", envelope.Greeting),
-					ClientID:      "red_envelope",
-					PayerUserID:   envelope.CreatorID,
-					PayeeUserID:   envelope.CreatorID,
-					Amount:        envelope.RemainingAmount,
-					Status:        model.OrderStatusSuccess,
-					Type:          "red_envelope_refund",
-					Remark:        fmt.Sprintf("红包过期退款，红包ID:%d", envelope.ID),
-					PaymentType:   "balance",
-					TradeTime:     time.Now(),
-					ExpiresAt:     time.Now().Add(24 * time.Hour),
+				orderName := "红包退款"
+				if envelope.Greeting != "" {
+					orderName = fmt.Sprintf("红包退款-%s", envelope.Greeting)
 				}
-				if order.OrderName == "红包退款-" {
-					order.OrderName = "红包退款"
+				order := model.Order{
+					OrderName:   orderName,
+					PayerUserID: envelope.CreatorID,
+					PayeeUserID: envelope.CreatorID,
+					Amount:      envelope.RemainingAmount,
+					Status:      model.OrderStatusSuccess,
+					Type:        model.OrderTypeRedEnvelopeRefund,
+					Remark:      fmt.Sprintf("红包过期退款，红包ID:%d", envelope.ID),
+					TradeTime:   time.Now(),
+					ExpiresAt:   time.Now().Add(24 * time.Hour),
 				}
 
 				if err := tx.Create(&order).Error; err != nil {
@@ -101,9 +107,21 @@ func refundExpiredRedEnvelopes(ctx context.Context) {
 				logger.InfoF(ctx, "红包ID:%d 退款成功，金额:%s", envelope.ID, envelope.RemainingAmount.String())
 			}
 
-			return nil
-		}); err != nil {
-			logger.ErrorF(ctx, "红包ID:%d 退款失败: %v", envelope.ID, err)
+				return nil
+			}); err != nil {
+				logger.ErrorF(ctx, "红包ID:%d 退款失败: %v", envelope.ID, err)
+			} else {
+				totalProcessed++
+			}
+
+			// 更新游标
+			lastID = envelope.ID
 		}
+	}
+
+	if totalProcessed > 0 {
+		logger.InfoF(ctx, "退款任务完成，共处理 %d 个过期红包", totalProcessed)
+	} else {
+		logger.InfoF(ctx, "没有需要退款的过期红包")
 	}
 }

@@ -99,6 +99,21 @@ func initSystemConfigs() {
 			Value:       "0",
 			Description: "红包功能是否启用（1启用，0禁用）",
 		},
+		{
+			Key:         model.ConfigKeyRedEnvelopeMaxAmount,
+			Value:       "1000",
+			Description: "单个红包的最大积分上限",
+		},
+		{
+			Key:         model.ConfigKeyRedEnvelopeDailyLimit,
+			Value:       "10",
+			Description: "每日发红包的个数限制",
+		},
+		{
+			Key:         model.ConfigKeyRedEnvelopeFeeRate,
+			Value:       "0",
+			Description: "红包手续费率（0-1之间的小数，0表示不收费）",
+		},
 	}
 
 	if err := tx.Create(&defaultConfigs).Error; err != nil {

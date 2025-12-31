@@ -32,14 +32,15 @@ import (
 type OrderType string
 
 const (
-	OrderTypeReceive   OrderType = "receive"
-	OrderTypePayment   OrderType = "payment"
-	OrderTypeTransfer  OrderType = "transfer"
-	OrderTypeCommunity OrderType = "community"
-	OrderTypeOnline    OrderType = "online"
-	OrderTypeTest      OrderType = "test"
-	OrderTypeRedEnvelopeSend  OrderType = "red_envelope_send"
+	OrderTypeReceive            OrderType = "receive"
+	OrderTypePayment            OrderType = "payment"
+	OrderTypeTransfer           OrderType = "transfer"
+	OrderTypeCommunity          OrderType = "community"
+	OrderTypeOnline             OrderType = "online"
+	OrderTypeTest               OrderType = "test"
+	OrderTypeRedEnvelopeSend    OrderType = "red_envelope_send"
 	OrderTypeRedEnvelopeReceive OrderType = "red_envelope_receive"
+	OrderTypeRedEnvelopeRefund  OrderType = "red_envelope_refund"
 )
 
 type OrderStatus string

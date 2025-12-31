@@ -67,14 +67,14 @@ export function TradeMain() {
     setMounted(true)
   }, [])
 
-  const [redEnvelopeEnabled, setRedEnvelopeEnabled] = React.useState(true)
+  const [redEnvelopeEnabled, setRedEnvelopeEnabled] = React.useState(false)
 
   React.useEffect(() => {
-    // 检查红包功能是否启用
-    services.redEnvelope.isEnabled()
-      .then(res => setRedEnvelopeEnabled(res.enabled))
+    // 从公共配置中获取红包功能状态
+    services.config.getPublicConfig()
+      .then(res => setRedEnvelopeEnabled(res.red_envelope_enabled))
       .catch(() => setRedEnvelopeEnabled(false))
-  })
+  }, [])
 
   /* 获取活动类型 */
   const getOrderType = (tab: TabValue): OrderType | undefined => {
@@ -127,10 +127,12 @@ export function TradeMain() {
           <div className="pt-2 space-y-8">
             {renderPageContent()}
 
-            <div className="space-y-4">
-              <h2 className="font-semibold">活动记录</h2>
-              <TradeTable type={getOrderType(activeTab)} />
-            </div>
+            {activeTab !== 'redenvelope' && (
+              <div className="space-y-4">
+                <h2 className="font-semibold">活动记录</h2>
+                <TradeTable type={getOrderType(activeTab)} />
+              </div>
+            )}
           </div>
         </Tabs>
       </div>

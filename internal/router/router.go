@@ -165,8 +165,7 @@ func Serve() {
 			// Red Envelope
 			redEnvelopeRouter := apiV1Router.Group("/redenvelope")
 			{
-				redEnvelopeRouter.GET("/enabled", redenvelope.IsEnabled)
-				redEnvelopeRouter.GET("/:code", oauth.LoginRequired(), redenvelope.GetDetail)
+				redEnvelopeRouter.GET("/:id", oauth.LoginRequired(), redenvelope.GetDetail)
 				redEnvelopeRouter.POST("/create", oauth.LoginRequired(), redenvelope.Create)
 				redEnvelopeRouter.POST("/claim", oauth.LoginRequired(), redenvelope.Claim)
 				redEnvelopeRouter.POST("/list", oauth.LoginRequired(), redenvelope.List)

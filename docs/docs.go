@@ -1379,24 +1379,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/redenvelope/enabled": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "redenvelope"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/util.ResponseAny"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/redenvelope/list": {
             "post": {
                 "consumes": [
@@ -1429,7 +1411,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/redenvelope/{code}": {
+        "/api/v1/redenvelope/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1440,8 +1422,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "红包码",
-                        "name": "code",
+                        "description": "红包ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -1798,7 +1780,9 @@ const docTemplate = `{
                         "community",
                         "online",
                         "test",
-                        "redenvelope"
+                        "red_envelope_send",
+                        "red_envelope_receive",
+                        "red_envelope_refund"
                     ]
                 }
             }
@@ -1964,10 +1948,10 @@ const docTemplate = `{
         "redenvelope.ClaimRequest": {
             "type": "object",
             "required": [
-                "code"
+                "id"
             ],
             "properties": {
-                "code": {
+                "id": {
                     "type": "string"
                 }
             }

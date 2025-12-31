@@ -39,38 +39,29 @@ const (
 
 // RedEnvelope 红包
 type RedEnvelope struct {
-	ID               uint64            `json:"id" gorm:"primaryKey;autoIncrement"`
-	Code             string            `json:"code" gorm:"size:64;uniqueIndex;not null"`
+	ID               uint64            `json:"id" gorm:"primaryKey"`
 	CreatorID        uint64            `json:"creator_id" gorm:"index;not null"`
 	CreatorUsername  string            `json:"creator_username" gorm:"->"`
 	CreatorAvatarURL string            `json:"creator_avatar_url" gorm:"->"`
 	Type             RedEnvelopeType   `json:"type" gorm:"type:varchar(20);not null"`
-	TotalAmount     decimal.Decimal   `json:"total_amount" gorm:"type:numeric(20,2);not null"`
-	RemainingAmount decimal.Decimal   `json:"remaining_amount" gorm:"type:numeric(20,2);not null"`
-	TotalCount      int               `json:"total_count" gorm:"not null"`
-	RemainingCount  int               `json:"remaining_count" gorm:"not null"`
-	Greeting        string            `json:"greeting" gorm:"size:100"`
-	Status          RedEnvelopeStatus `json:"status" gorm:"type:varchar(20);not null;index"`
-	ExpiresAt       time.Time         `json:"expires_at" gorm:"not null;index"`
-	CreatedAt       time.Time         `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt       time.Time         `json:"updated_at" gorm:"autoUpdateTime"`
+	TotalAmount      decimal.Decimal   `json:"total_amount" gorm:"type:numeric(20,2);not null"`
+	RemainingAmount  decimal.Decimal   `json:"remaining_amount" gorm:"type:numeric(20,2);not null"`
+	TotalCount       int               `json:"total_count" gorm:"not null"`
+	RemainingCount   int               `json:"remaining_count" gorm:"not null"`
+	Greeting         string            `json:"greeting" gorm:"size:100"`
+	Status           RedEnvelopeStatus `json:"status" gorm:"type:varchar(20);not null;index"`
+	ExpiresAt        time.Time         `json:"expires_at" gorm:"not null;index"`
+	CreatedAt        time.Time         `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt        time.Time         `json:"updated_at" gorm:"autoUpdateTime"`
 }
 
 // RedEnvelopeClaim 红包领取记录
 type RedEnvelopeClaim struct {
-	ID            uint64          `json:"id" gorm:"primaryKey;autoIncrement"`
+	ID            uint64          `json:"id" gorm:"primaryKey"`
 	RedEnvelopeID uint64          `json:"red_envelope_id" gorm:"index;not null"`
 	UserID        uint64          `json:"user_id" gorm:"index;not null"`
 	Username      string          `json:"username" gorm:"->"`
 	AvatarURL     string          `json:"avatar_url" gorm:"->"`
 	Amount        decimal.Decimal `json:"amount" gorm:"type:numeric(20,2);not null"`
 	ClaimedAt     time.Time       `json:"claimed_at" gorm:"autoCreateTime"`
-}
-
-func (RedEnvelope) TableName() string {
-	return "red_envelopes"
-}
-
-func (RedEnvelopeClaim) TableName() string {
-	return "red_envelope_claims"
 }

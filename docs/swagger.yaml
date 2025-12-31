@@ -198,7 +198,9 @@ definitions:
         - community
         - online
         - test
-        - redenvelope
+        - red_envelope_send
+        - red_envelope_receive
+        - red_envelope_refund
         type: string
     type: object
   payment.CreateOrderRequest:
@@ -315,10 +317,10 @@ definitions:
     type: object
   redenvelope.ClaimRequest:
     properties:
-      code:
+      id:
         type: string
     required:
-    - code
+    - id
     type: object
   redenvelope.CreateRequest:
     properties:
@@ -1287,12 +1289,12 @@ paths:
             $ref: '#/definitions/util.ResponseAny'
       tags:
       - payment
-  /api/v1/redenvelope/{code}:
+  /api/v1/redenvelope/{id}:
     get:
       parameters:
-      - description: 红包码
+      - description: 红包ID
         in: path
-        name: code
+        name: id
         required: true
         type: string
       produces:
@@ -1335,17 +1337,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/redenvelope.CreateRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/util.ResponseAny'
-      tags:
-      - redenvelope
-  /api/v1/redenvelope/enabled:
-    get:
       produces:
       - application/json
       responses:

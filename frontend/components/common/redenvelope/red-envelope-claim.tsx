@@ -12,12 +12,12 @@ import services from "@/lib/services"
 import type { RedEnvelopeDetailResponse, RedEnvelopeClaim } from "@/lib/services"
 
 interface RedEnvelopeClaimProps {
-  code: string
+  id: string
 }
 
 type ClaimState = "loading" | "ready" | "opening" | "opened" | "claimed" | "error"
 
-export function RedEnvelopeClaimPage({ code }: RedEnvelopeClaimProps) {
+export function RedEnvelopeClaimPage({ id }: RedEnvelopeClaimProps) {
   const [state, setState] = useState<ClaimState>("loading")
   const [detail, setDetail] = useState<RedEnvelopeDetailResponse | null>(null)
   const [claimedAmount, setClaimedAmount] = useState<string | null>(null)
@@ -25,7 +25,7 @@ export function RedEnvelopeClaimPage({ code }: RedEnvelopeClaimProps) {
 
   const loadDetail = useCallback(async () => {
     try {
-      const data = await services.redEnvelope.getDetail(code)
+      const data = await services.redEnvelope.getDetail(id)
       console.log('Red envelope data:', data.red_envelope)
       setDetail(data)
       if (data.user_claimed) {
@@ -40,7 +40,7 @@ export function RedEnvelopeClaimPage({ code }: RedEnvelopeClaimProps) {
       setError(err instanceof Error ? err.message : "加载失败")
       setState("error")
     }
-  }, [code])
+  }, [id])
 
   useEffect(() => {
     loadDetail()
@@ -49,11 +49,11 @@ export function RedEnvelopeClaimPage({ code }: RedEnvelopeClaimProps) {
   const handleOpen = async () => {
     setState("opening")
     try {
-      const result = await services.redEnvelope.claim({ code })
+      const result = await services.redEnvelope.claim({ id })
       setClaimedAmount(result.amount)
       
       // Reload the full details to get updated claims list
-      const updatedDetail = await services.redEnvelope.getDetail(code)
+      const updatedDetail = await services.redEnvelope.getDetail(id)
       setDetail(updatedDetail)
       
       setTimeout(() => setState("claimed"), 1500)
