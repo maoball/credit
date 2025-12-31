@@ -21,29 +21,8 @@ import (
 )
 
 const (
-	cacheKeyPrefix  = "leaderboard:"
-	cacheTTL        = 5 * time.Minute
-	defaultPageSize = 20
-)
-
-// PeriodType 时间周期类型
-type PeriodType string
-
-const (
-	PeriodDay     PeriodType = "day"
-	PeriodWeek    PeriodType = "week"
-	PeriodMonth   PeriodType = "month"
-	PeriodAllTime PeriodType = "all_time"
-)
-
-// MetricType 指标类型
-type MetricType string
-
-const (
-	MetricReceiveAmount     MetricType = "receive_amount"
-	MetricPaymentAmount     MetricType = "payment_amount"
-	MetricTransferInAmount  MetricType = "transfer_in_amount"
-	MetricTransferOutAmount MetricType = "transfer_out_amount"
-	MetricVolumeAmount      MetricType = "volume_amount"
-	MetricNetAmount         MetricType = "net_amount"
+	cacheKeyPrefix  = "leaderboard:v1:"
+	cacheTTL        = 30 * time.Second
+	defaultPageSize = 50
+	maxPageSize     = 50
 )
