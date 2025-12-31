@@ -33,7 +33,7 @@ export const UserRankCard = React.memo(function UserRankCard({
     return null;
   }
 
-  const score = parseFloat(data.user.score).toLocaleString();
+  const balance = parseFloat(data.user.available_balance).toLocaleString();
 
   return (
     <motion.div
@@ -54,9 +54,9 @@ export const UserRankCard = React.memo(function UserRankCard({
         {/* 您 */}
         <span className="text-blue-600 font-medium">您</span>
 
-        {/* 积分 */}
+        {/* 余额 */}
         <span className="text-blue-900 font-bold text-lg tabular-nums">
-          {score}
+          {balance}
         </span>
       </div>
     </motion.div>

@@ -108,7 +108,7 @@ function PodiumEntry({
               styles.text,
             )}
           >
-            {parseFloat(entry.score).toLocaleString()}
+            {parseFloat(entry.available_balance).toLocaleString()}
           </p>
         </div>
       </motion.div>

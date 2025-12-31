@@ -185,15 +185,10 @@ export type {
 // 排行榜服务
 export { LeaderboardService } from "./leaderboard";
 export type {
-  PeriodType,
-  MetricType,
-  TrendType,
-  LeaderboardPeriod,
   LeaderboardEntry,
   LeaderboardListRequest,
   LeaderboardListResponse,
   UserRankInfo,
   UserRankResponse,
-  MetricInfo,
   LeaderboardMetadataResponse,
 } from "./leaderboard";

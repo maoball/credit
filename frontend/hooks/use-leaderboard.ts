@@ -5,31 +5,18 @@ import { LeaderboardService } from "@/lib/services/leaderboard";
 import type {
   LeaderboardListResponse,
   LeaderboardListRequest,
-  LeaderboardMetadataResponse,
   LeaderboardEntry,
   UserRankResponse,
-  PeriodType,
-  MetricType,
 } from "@/lib/services/leaderboard";
 
-interface UseLeaderboardParams {
-  period?: PeriodType;
-  metric?: MetricType;
-}
-
-export const useLeaderboard = (initialParams?: UseLeaderboardParams) => {
+export const useLeaderboard = () => {
   const [data, setData] = React.useState<LeaderboardListResponse | null>(null);
   const [allItems, setAllItems] = React.useState<LeaderboardEntry[]>([]);
-  const [metadata, setMetadata] =
-    React.useState<LeaderboardMetadataResponse | null>(null);
   const [myRank, setMyRank] = React.useState<UserRankResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [loadingMore, setLoadingMore] = React.useState(false);
   const [myRankLoading, setMyRankLoading] = React.useState(true);
   const [error, setError] = React.useState<Error | null>(null);
-  const [params, setParams] = React.useState<UseLeaderboardParams>(
-    initialParams ?? {},
-  );
 
   const currentPageRef = React.useRef(1);
 
@@ -76,13 +63,10 @@ export const useLeaderboard = (initialParams?: UseLeaderboardParams) => {
   );
 
   const fetchMyRank = React.useCallback(
-    async (
-      queryParams: Pick<LeaderboardListRequest, "period" | "metric">,
-      ignore?: { current: boolean },
-    ) => {
+    async (ignore?: { current: boolean }) => {
       setMyRankLoading(true);
       try {
-        const response = await LeaderboardService.getMyRank(queryParams);
+        const response = await LeaderboardService.getMyRank();
         if (!ignore?.current) {
           setMyRank(response);
         }
@@ -100,28 +84,14 @@ export const useLeaderboard = (initialParams?: UseLeaderboardParams) => {
     [],
   );
 
-  const fetchMetadata = React.useCallback(async () => {
-    try {
-      const response = await LeaderboardService.getMetadata();
-      setMetadata(response);
-    } catch (err) {
-      console.error("Failed to fetch leaderboard metadata:", err);
-    }
-  }, []);
-
-  React.useEffect(() => {
-    fetchMetadata();
-  }, [fetchMetadata]);
-
   React.useEffect(() => {
     const ignore = { current: false };
-    const queryParams = { period: params.period, metric: params.metric };
-    fetchData(queryParams, false, ignore);
-    fetchMyRank(queryParams, ignore);
+    fetchData({}, false, ignore);
+    fetchMyRank(ignore);
     return () => {
       ignore.current = true;
     };
-  }, [params.period, params.metric, fetchData, fetchMyRank]);
+  }, [fetchData, fetchMyRank]);
 
   const loadNextPage = React.useCallback(() => {
     if (
@@ -130,22 +100,14 @@ export const useLeaderboard = (initialParams?: UseLeaderboardParams) => {
       !loadingMore
     ) {
       const nextPage = currentPageRef.current + 1;
-      fetchData({ ...params, page: nextPage, page_size: data.page_size }, true);
+      fetchData({ page: nextPage, page_size: data.page_size }, true);
     }
-  }, [data, params, loadingMore, fetchData]);
-
-  const updateParams = React.useCallback(
-    (newParams: Partial<UseLeaderboardParams>) => {
-      setParams((prev) => ({ ...prev, ...newParams }));
-    },
-    [],
-  );
+  }, [data, loadingMore, fetchData]);
 
   const refresh = React.useCallback(() => {
-    const queryParams = { period: params.period, metric: params.metric };
-    fetchData(queryParams, false);
-    fetchMyRank(queryParams);
-  }, [fetchData, fetchMyRank, params]);
+    fetchData({}, false);
+    fetchMyRank();
+  }, [fetchData, fetchMyRank]);
 
   const hasMore = data
     ? currentPageRef.current * data.page_size < data.total
@@ -154,15 +116,12 @@ export const useLeaderboard = (initialParams?: UseLeaderboardParams) => {
   return {
     data,
     items: allItems,
-    metadata,
     myRank,
     loading,
     loadingMore,
     myRankLoading,
     error,
-    params,
     hasMore,
-    updateParams,
     loadNextPage,
     refresh,
   };

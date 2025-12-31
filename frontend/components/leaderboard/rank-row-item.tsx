@@ -45,9 +45,9 @@ export const RankRowItem = React.memo(function RankRowItem({
         {entry.username}
       </span>
 
-      {/* 积分 */}
+      {/* 余额 */}
       <span className="font-semibold tabular-nums">
-        {parseFloat(entry.score).toLocaleString()}
+        {parseFloat(entry.available_balance).toLocaleString()}
       </span>
     </motion.div>
   );
