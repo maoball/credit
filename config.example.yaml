@@ -6,7 +6,7 @@ app:
   app_name: "linux-do-credit"
   env: "development" # development, testing, production
   addr: ":8000"
-  node_id: 1 # 分布式节点 ID (0-1023)，不同实例必须不同
+  node_id: 1  # 分布式节点 ID (0-1023)，不同实例必须不同
   graceful_shutdown_timeout: 30
   session_cookie_name: "linux_do_credit_session_id" # change this in local dev env
   session_secret: "<uniq string>" # you can't change this after first time start
@@ -22,7 +22,7 @@ oauth2:
   client_id: "<OAUTH2_CLIENT_ID>"
   client_secret: "<OAUTH2_CLIENT_SECRET>"
   redirect_uri: "<OAUTH2_REDIRECT_URI>"
-  issuer: "https://connect.linux.do/" # OIDC Issuer URL，用于自动发现端点
+  issuer: "https://connect.linux.do/"  # OIDC Issuer URL，用于自动发现端点
   authorization_endpoint: "https://connect.linux.do/oauth2/authorize"
   token_endpoint: "https://connect.linux.do/oauth2/token"
   user_endpoint: "https://connect.linux.do/api/user"
@@ -40,7 +40,7 @@ database:
   max_open_conn: 128
   conn_max_lifetime: 1800
   conn_max_idle_time: 600
-  log_level: "info" # error, warn, info, debug, silent
+  log_level: "info"  # error, warn, info, debug, silent
   ssl_mode: "disable"
   time_zone: "Asia/Shanghai"
   application_name: "pay-server"
@@ -77,9 +77,9 @@ redis:
     - "127.0.0.1:6379"
   username: ""
   password: ""
-  db: 0 # Cluster 模式忽略此项
-  cluster_mode: false # true 启用 Cluster 模式
-  master_name: "" # 非空启用 Sentinel 模式
+  db: 0                    # Cluster 模式忽略此项
+  cluster_mode: false      # true 启用 Cluster 模式
+  master_name: ""          # 非空启用 Sentinel 模式
   key_prefix: "credit:"
   pool_size: 100
   min_idle_conn: 10
@@ -92,9 +92,9 @@ redis:
 
 # Log
 log:
-  level: "info" # debug, info, warn, error, fatal, panic
-  format: "json" # text, json
-  output: "stdout" # stdout, file
+  level: "info"  # debug, info, warn, error, fatal, panic
+  format: "json"  # text, json
+  output: "stdout"  # stdout, file
   file_path: "./logs/app.log"
   max_size: 100
   max_age: 30
@@ -121,8 +121,8 @@ worker:
       priority: 3
   # 积分更新速率限制：rate 次/period 秒
   gamification_score_rate_limit:
-    rate: 1 # 允许的请求次数
-    period: 3 # 时间周期（秒）
+    rate: 1     # 允许的请求次数
+    period: 3   # 时间周期（秒）
 
 # linuxDo
 linuxDo:
@@ -130,4 +130,4 @@ linuxDo:
 
 # OpenTelemetry
 otel:
-  sampling_rate: 0.1 # 采样率 0.0-1.0
+  sampling_rate: 0.1  # 采样率 0.0-1.0
