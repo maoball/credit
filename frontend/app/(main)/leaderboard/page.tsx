@@ -69,6 +69,7 @@ export default function LeaderboardPage() {
         currentUserId={myRank?.user.user_id}
         onLoadMore={loadNextPage}
         hasMore={hasMore}
+        startRank={4}
       />
     </div>
   );

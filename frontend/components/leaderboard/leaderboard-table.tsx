@@ -12,6 +12,7 @@ interface LeaderboardTableProps {
   currentUserId?: number;
   onLoadMore?: () => void;
   hasMore?: boolean;
+  startRank?: number;
 }
 
 export const LeaderboardTable = React.memo(function LeaderboardTable({
@@ -20,6 +21,7 @@ export const LeaderboardTable = React.memo(function LeaderboardTable({
   currentUserId,
   onLoadMore,
   hasMore,
+  startRank = 1,
 }: LeaderboardTableProps) {
   const parentRef = React.useRef<HTMLDivElement>(null);
 
@@ -93,7 +95,7 @@ export const LeaderboardTable = React.memo(function LeaderboardTable({
             >
               <RankRowItem
                 entry={entry}
-                index={virtualRow.index}
+                rank={startRank + virtualRow.index}
                 isCurrentUser={entry.user_id === currentUserId}
               />
             </div>

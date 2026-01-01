@@ -24,6 +24,7 @@ import (
 
 	"github.com/linux-do/credit/internal/db"
 	"github.com/linux-do/credit/internal/model"
+	"github.com/shopspring/decimal"
 )
 
 func getList(ctx context.Context, req *ListRequest) (*ListResponse, error) {
@@ -73,10 +74,25 @@ func getUserRank(ctx context.Context, userID uint64) (*UserRankResponse, error) 
 		return nil, err
 	}
 
-	// 计算排名：统计余额比当前用户高的人数
+	// 用户余额 <= 0 时不在排行榜中
+	if user.AvailableBalance.LessThanOrEqual(decimal.Zero) {
+		return &UserRankResponse{
+			User: UserRankInfo{
+				UserID:           userID,
+				Rank:             0,
+				AvailableBalance: user.AvailableBalance,
+			},
+		}, nil
+	}
+
+	// 计算排名：统计比当前用户排位更高的人数
+	// 排序规则：available_balance DESC, id ASC
+	// 即：余额更高，或余额相同但 id 更小
 	var rank int64
 	if err := db.DB(ctx).Model(&model.User{}).
-		Where("available_balance > ?", user.AvailableBalance).
+		Where("available_balance > 0").
+		Where("(available_balance > ?) OR (available_balance = ? AND id < ?)",
+			user.AvailableBalance, user.AvailableBalance, userID).
 		Count(&rank).Error; err != nil {
 		return nil, err
 	}

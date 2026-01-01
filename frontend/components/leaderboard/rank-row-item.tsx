@@ -8,20 +8,20 @@ import type { LeaderboardEntry } from "@/lib/services/leaderboard";
 
 interface RankRowItemProps {
   entry: LeaderboardEntry;
-  index: number;
+  rank: number;
   isCurrentUser?: boolean;
 }
 
 export const RankRowItem = React.memo(function RankRowItem({
   entry,
-  index,
+  rank,
   isCurrentUser,
 }: RankRowItemProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.03 }}
+      transition={{ duration: 0.3, delay: (rank % 10) * 0.03 }}
       className={cn(
         "flex items-center gap-4 py-3 px-4 rounded-xl transition-colors",
         isCurrentUser ? "bg-blue-100" : "hover:bg-muted/50",
@@ -29,7 +29,7 @@ export const RankRowItem = React.memo(function RankRowItem({
     >
       {/* 排名 */}
       <span className="w-10 text-muted-foreground font-medium tabular-nums">
-        #{index + 1}
+        #{rank}
       </span>
 
       {/* 头像 */}
