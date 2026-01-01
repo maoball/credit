@@ -19,9 +19,9 @@ definitions:
       test_mode:
         type: boolean
     required:
-    - app_homepage_url
-    - app_name
-    - notify_url
+      - app_homepage_url
+      - app_name
+      - notify_url
     type: object
   api_key.UpdateAPIKeyRequest:
     properties:
@@ -49,7 +49,7 @@ definitions:
         example: "0"
         type: string
     required:
-    - dispute_id
+      - dispute_id
     type: object
   dispute.CreateDisputeRequest:
     properties:
@@ -60,8 +60,8 @@ definitions:
         maxLength: 100
         type: string
     required:
-    - order_id
-    - reason
+      - order_id
+      - reason
     type: object
   dispute.ListDisputesRequest:
     properties:
@@ -77,9 +77,9 @@ definitions:
         type: integer
       status:
         enum:
-        - disputing
-        - refund
-        - closed
+          - disputing
+          - refund
+          - closed
         type: string
     type: object
   dispute.RefundReviewRequest:
@@ -92,12 +92,12 @@ definitions:
         type: string
       status:
         enum:
-        - refund
-        - closed
+          - refund
+          - closed
         type: string
     required:
-    - dispute_id
-    - status
+      - dispute_id
+      - status
     type: object
   link.PayByLinkRequest:
     properties:
@@ -110,8 +110,8 @@ definitions:
       token:
         type: string
     required:
-    - pay_key
-    - token
+      - pay_key
+      - token
     type: object
   link.PaymentLinkRequest:
     properties:
@@ -130,22 +130,22 @@ definitions:
         minimum: 1
         type: integer
     required:
-    - amount
-    - product_name
+      - amount
+      - product_name
     type: object
   model.PayLevel:
     enum:
-    - 0
-    - 1
-    - 2
-    - 3
+      - 0
+      - 1
+      - 2
+      - 3
     format: int32
     type: integer
     x-enum-varnames:
-    - PayLevelFree
-    - PayLevelBasic
-    - PayLevelStandard
-    - PayLevelPremium
+      - PayLevelFree
+      - PayLevelBasic
+      - PayLevelStandard
+      - PayLevelPremium
   oauth.CallbackRequest:
     properties:
       code:
@@ -179,22 +179,22 @@ definitions:
         type: string
       status:
         enum:
-        - success
-        - pending
-        - failed
-        - expired
-        - disputing
-        - refund
-        - refused
+          - success
+          - pending
+          - failed
+          - expired
+          - disputing
+          - refund
+          - refused
         type: string
       type:
         enum:
-        - receive
-        - payment
-        - transfer
-        - community
-        - online
-        - test
+          - receive
+          - payment
+          - transfer
+          - community
+          - online
+          - test
         type: string
     type: object
   payment.CreateOrderRequest:
@@ -212,8 +212,8 @@ definitions:
         maxLength: 100
         type: string
     required:
-    - amount
-    - order_name
+      - amount
+      - order_name
     type: object
   payment.PayOrderRequest:
     properties:
@@ -223,8 +223,8 @@ definitions:
         maxLength: 6
         type: string
     required:
-    - order_no
-    - pay_key
+      - order_no
+      - pay_key
     type: object
   payment.QueryMerchantOrderResponse:
     properties:
@@ -284,10 +284,10 @@ definitions:
       trade_no:
         type: integer
     required:
-    - key
-    - money
-    - pid
-    - trade_no
+      - key
+      - money
+      - pid
+      - trade_no
     type: object
   payment.TransferRequest:
     properties:
@@ -305,10 +305,10 @@ definitions:
         maxLength: 100
         type: string
     required:
-    - amount
-    - pay_key
-    - recipient_id
-    - recipient_username
+      - amount
+      - pay_key
+      - recipient_id
+      - recipient_username
     type: object
   system_config.CreateSystemConfigRequest:
     properties:
@@ -322,8 +322,8 @@ definitions:
         maxLength: 255
         type: string
     required:
-    - key
-    - value
+      - key
+      - value
     type: object
   system_config.UpdateSystemConfigRequest:
     properties:
@@ -334,7 +334,7 @@ definitions:
         maxLength: 255
         type: string
     required:
-    - value
+      - value
     type: object
   task.DispatchTaskRequest:
     properties:
@@ -347,7 +347,7 @@ definitions:
       user_id:
         type: integer
     required:
-    - task_type
+      - task_type
     type: object
   user.UpdatePayKeyRequest:
     properties:
@@ -355,7 +355,7 @@ definitions:
         maxLength: 6
         type: string
     required:
-    - pay_key
+      - pay_key
     type: object
   user.updateUserStatusRequest:
     properties:
@@ -369,7 +369,7 @@ definitions:
       fee_rate:
         type: number
       level:
-        $ref: '#/definitions/model.PayLevel'
+        $ref: "#/definitions/model.PayLevel"
       max_score:
         type: integer
       min_score:
@@ -378,8 +378,8 @@ definitions:
       score_rate:
         type: number
     required:
-    - fee_rate
-    - score_rate
+      - fee_rate
+      - score_rate
     type: object
   user_pay_config.UpdateUserPayConfigRequest:
     properties:
@@ -395,8 +395,8 @@ definitions:
       score_rate:
         type: number
     required:
-    - fee_rate
-    - score_rate
+      - fee_rate
+      - score_rate
     type: object
   util.ResponseAny:
     properties:
@@ -413,934 +413,922 @@ paths:
   /api.php:
     get:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - in: query
-        name: act
-        type: string
-      - in: query
-        name: key
-        required: true
-        type: string
-      - in: query
-        name: out_trade_no
-        type: string
-      - in: query
-        name: pid
-        required: true
-        type: string
-      - in: query
-        name: trade_no
-        required: true
-        type: integer
+        - in: query
+          name: act
+          type: string
+        - in: query
+          name: key
+          required: true
+          type: string
+        - in: query
+          name: out_trade_no
+          type: string
+        - in: query
+          name: pid
+          required: true
+          type: string
+        - in: query
+          name: trade_no
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/payment.QueryMerchantOrderResponse'
+            $ref: "#/definitions/payment.QueryMerchantOrderResponse"
       tags:
-      - payment
+        - payment
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: 退款请求
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/payment.RefundOrderRequest'
+        - description: 退款请求
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/payment.RefundOrderRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/payment.RefundMerchantOrderResponse'
+            $ref: "#/definitions/payment.RefundMerchantOrderResponse"
       tags:
-      - payment
+        - payment
   /api/v1/admin/system-configs:
     get:
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/system_config.CreateSystemConfigRequest'
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/system_config.CreateSystemConfigRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
   /api/v1/admin/system-configs/{key}:
     delete:
       parameters:
-      - description: 配置键
-        in: path
-        name: key
-        required: true
-        type: string
+        - description: 配置键
+          in: path
+          name: key
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
     get:
       parameters:
-      - description: 配置键
-        in: path
-        name: key
-        required: true
-        type: string
+        - description: 配置键
+          in: path
+          name: key
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
     put:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: 配置键
-        in: path
-        name: key
-        required: true
-        type: string
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/system_config.UpdateSystemConfigRequest'
+        - description: 配置键
+          in: path
+          name: key
+          required: true
+          type: string
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/system_config.UpdateSystemConfigRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
   /api/v1/admin/tasks/dispatch:
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/task.DispatchTaskRequest'
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/task.DispatchTaskRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
   /api/v1/admin/tasks/types:
     get:
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
   /api/v1/admin/user-pay-configs:
     get:
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/user_pay_config.CreateUserPayConfigRequest'
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/user_pay_config.CreateUserPayConfigRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
   /api/v1/admin/user-pay-configs/{id}:
     delete:
       parameters:
-      - description: 配置ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: 配置ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
     get:
       parameters:
-      - description: 配置ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: 配置ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
     put:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: 配置ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/user_pay_config.UpdateUserPayConfigRequest'
+        - description: 配置ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/user_pay_config.UpdateUserPayConfigRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
   /api/v1/admin/users:
     get:
       parameters:
-      - in: query
-        minimum: 1
-        name: page
-        type: integer
-      - in: query
-        maximum: 100
-        minimum: 1
-        name: page_size
-        type: integer
-      - in: query
-        name: username
-        type: string
+        - in: query
+          minimum: 1
+          name: page
+          type: integer
+        - in: query
+          maximum: 100
+          minimum: 1
+          name: page_size
+          type: integer
+        - in: query
+          name: username
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
   /api/v1/admin/users/{id}/status:
     put:
       parameters:
-      - description: 用户ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: 状态
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/user.updateUserStatusRequest'
+        - description: 用户ID
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: 状态
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/user.updateUserStatusRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - admin
+        - admin
   /api/v1/config/public:
     get:
       consumes:
-      - application/json
+        - application/json
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - config
+        - config
   /api/v1/dashboard/stats/daily:
     get:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: 查询天数，最大7天
-        in: query
-        name: days
-        required: true
-        type: integer
+        - description: 查询天数，最大7天
+          in: query
+          name: days
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       summary: 获取每日收支统计
       tags:
-      - dashboard
+        - dashboard
   /api/v1/dashboard/stats/top-customers:
     get:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: 查询天数，最大7天
-        in: query
-        name: days
-        required: true
-        type: integer
-      - description: 返回数量，最大10
-        in: query
-        name: limit
-        required: true
-        type: integer
+        - description: 查询天数，最大7天
+          in: query
+          name: days
+          required: true
+          type: integer
+        - description: 返回数量，最大10
+          in: query
+          name: limit
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       summary: 获取Top客户
       tags:
-      - dashboard
+        - dashboard
   /api/v1/health:
     get:
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - health
+        - health
   /api/v1/leaderboard:
     get:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: 页码
-        in: query
-        name: page
-        type: integer
-      - description: 每页数量
-        in: query
-        name: page_size
-        type: integer
+        - description: 页码
+          in: query
+          name: page
+          type: integer
+        - description: 每页数量
+          in: query
+          name: page_size
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       summary: 获取排行榜列表
       tags:
-      - leaderboard
+        - leaderboard
   /api/v1/leaderboard/me:
     get:
       consumes:
-      - application/json
+        - application/json
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       summary: 获取当前用户排名
       tags:
-      - leaderboard
-  /api/v1/leaderboard/metadata:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/util.ResponseAny'
-      summary: 获取排行榜元数据
-      tags:
-      - leaderboard
+        - leaderboard
   /api/v1/leaderboard/users/{id}:
     get:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: 用户ID
-        in: path
-        name: id
-        required: true
-        type: integer
+        - description: 用户ID
+          in: path
+          name: id
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       summary: 获取指定用户排名
       tags:
-      - leaderboard
+        - leaderboard
   /api/v1/merchant/api-keys:
     get:
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - merchant
+        - merchant
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/api_key.CreateAPIKeyRequest'
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/api_key.CreateAPIKeyRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - merchant
+        - merchant
   /api/v1/merchant/api-keys/{id}:
     delete:
       parameters:
-      - description: API Key ID
-        format: int64
-        in: path
-        name: id
-        required: true
-        type: integer
+        - description: API Key ID
+          format: int64
+          in: path
+          name: id
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - merchant
+        - merchant
     get:
       parameters:
-      - description: API Key ID
-        format: int64
-        in: path
-        name: id
-        required: true
-        type: integer
+        - description: API Key ID
+          format: int64
+          in: path
+          name: id
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - merchant
+        - merchant
     put:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: API Key ID
-        format: int64
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/api_key.UpdateAPIKeyRequest'
+        - description: API Key ID
+          format: int64
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/api_key.UpdateAPIKeyRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - merchant
+        - merchant
   /api/v1/merchant/api-keys/{id}/payment-links:
     get:
       parameters:
-      - description: API Key ID
-        format: int64
-        in: path
-        name: id
-        required: true
-        type: integer
+        - description: API Key ID
+          format: int64
+          in: path
+          name: id
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - merchant
+        - merchant
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: API Key ID
-        format: int64
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: 创建支付链接请求
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/link.PaymentLinkRequest'
+        - description: API Key ID
+          format: int64
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: 创建支付链接请求
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/link.PaymentLinkRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - merchant
+        - merchant
   /api/v1/merchant/api-keys/{id}/payment-links/{linkId}:
     delete:
       parameters:
-      - description: API Key ID
-        format: int64
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Payment Link ID
-        format: int64
-        in: path
-        name: linkId
-        required: true
-        type: integer
+        - description: API Key ID
+          format: int64
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: Payment Link ID
+          format: int64
+          in: path
+          name: linkId
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - merchant
+        - merchant
     put:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: API Key ID
-        format: int64
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Payment Link ID
-        format: int64
-        in: path
-        name: linkId
-        required: true
-        type: integer
-      - description: 更新支付链接请求
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/link.PaymentLinkRequest'
+        - description: API Key ID
+          format: int64
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: Payment Link ID
+          format: int64
+          in: path
+          name: linkId
+          required: true
+          type: integer
+        - description: 更新支付链接请求
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/link.PaymentLinkRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - merchant
+        - merchant
   /api/v1/merchant/payment:
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: 支付订单请求
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/payment.PayOrderRequest'
+        - description: 支付订单请求
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/payment.PayOrderRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - payment
+        - payment
   /api/v1/merchant/payment-links/{token}:
     get:
       parameters:
-      - description: 支付链接 Token
-        in: path
-        name: token
-        required: true
-        type: string
+        - description: 支付链接 Token
+          in: path
+          name: token
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - merchant
+        - merchant
   /api/v1/merchant/payment-links/pay:
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: 支付请求
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/link.PayByLinkRequest'
+        - description: 支付请求
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/link.PayByLinkRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - merchant
+        - merchant
   /api/v1/merchant/payment/order:
     get:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: 订单号
-        in: query
-        name: order_no
-        required: true
-        type: string
+        - description: 订单号
+          in: query
+          name: order_no
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - payment
+        - payment
   /api/v1/oauth/callback:
     post:
       parameters:
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/oauth.CallbackRequest'
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/oauth.CallbackRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - oauth
+        - oauth
   /api/v1/oauth/login:
     get:
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - oauth
+        - oauth
   /api/v1/oauth/logout:
     get:
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - oauth
+        - oauth
   /api/v1/oauth/user-info:
     get:
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - oauth
+        - oauth
   /api/v1/order/dispute:
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dispute.CreateDisputeRequest'
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/dispute.CreateDisputeRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - order
+        - order
   /api/v1/order/dispute/close:
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dispute.CloseDisputeRequest'
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/dispute.CloseDisputeRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - order
+        - order
   /api/v1/order/disputes:
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: request body
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/dispute.ListDisputesRequest'
+        - description: request body
+          in: body
+          name: request
+          schema:
+            $ref: "#/definitions/dispute.ListDisputesRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - order
+        - order
   /api/v1/order/disputes/merchant:
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: request body
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/dispute.ListDisputesRequest'
+        - description: request body
+          in: body
+          name: request
+          schema:
+            $ref: "#/definitions/dispute.ListDisputesRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - order
+        - order
   /api/v1/order/refund-review:
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dispute.RefundReviewRequest'
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/dispute.RefundReviewRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - order
+        - order
   /api/v1/order/transactions:
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: request body
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/order.TransactionListRequest'
+        - description: request body
+          in: body
+          name: request
+          schema:
+            $ref: "#/definitions/order.TransactionListRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - order
+        - order
   /api/v1/payment/transfer:
     post:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: 转账请求
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/payment.TransferRequest'
+        - description: 转账请求
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/payment.TransferRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - payment
+        - payment
   /api/v1/user/pay-key:
     put:
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/user.UpdatePayKeyRequest'
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/user.UpdatePayKeyRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - user
+        - user
   /pay/submit.php:
     post:
       consumes:
-      - application/x-www-form-urlencoded
+        - application/x-www-form-urlencoded
       parameters:
-      - description: request body
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/payment.CreateOrderRequest'
+        - description: request body
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/payment.CreateOrderRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.ResponseAny'
+            $ref: "#/definitions/util.ResponseAny"
       tags:
-      - payment
+        - payment
 swagger: "2.0"

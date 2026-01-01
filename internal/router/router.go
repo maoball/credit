@@ -150,7 +150,6 @@ func Serve() {
 				leaderboardRouter.GET("", leaderboard.List)
 				leaderboardRouter.GET("/me", leaderboard.GetMyRank)
 				leaderboardRouter.GET("/users/:id", leaderboard.GetUserRankByID)
-				leaderboardRouter.GET("/metadata", leaderboard.Metadata)
 			}
 
 			// Order

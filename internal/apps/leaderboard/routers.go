@@ -63,15 +63,6 @@ type UserRankInfo struct {
 	AvailableBalance decimal.Decimal `json:"available_balance"`
 }
 
-// MetadataResponse 元数据响应
-type MetadataResponse struct {
-	SortBy   string `json:"sort_by"`
-	Order    string `json:"order"`
-	Defaults struct {
-		PageSize int `json:"page_size"`
-	} `json:"defaults"`
-}
-
 // List 获取排行榜列表
 // @Summary 获取排行榜列表
 // @Tags leaderboard
@@ -141,14 +132,4 @@ func GetUserRankByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, util.OK(response))
-}
-
-// Metadata 获取排行榜元数据
-// @Summary 获取排行榜元数据
-// @Tags leaderboard
-// @Produce json
-// @Success 200 {object} util.ResponseAny
-// @Router /api/v1/leaderboard/metadata [get]
-func Metadata(c *gin.Context) {
-	c.JSON(http.StatusOK, util.OK(getMetadata()))
 }

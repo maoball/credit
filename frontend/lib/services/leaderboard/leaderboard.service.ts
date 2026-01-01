@@ -3,7 +3,6 @@ import type {
   LeaderboardListRequest,
   LeaderboardListResponse,
   UserRankResponse,
-  LeaderboardMetadataResponse,
 } from "./types";
 
 /**
@@ -39,13 +38,5 @@ export class LeaderboardService extends BaseService {
    */
   static async getUserRankById(userId: number): Promise<UserRankResponse> {
     return this.get<UserRankResponse>(`/users/${userId}`);
-  }
-
-  /**
-   * 获取排行榜元数据
-   * @returns 配置信息
-   */
-  static async getMetadata(): Promise<LeaderboardMetadataResponse> {
-    return this.get<LeaderboardMetadataResponse>("/metadata");
   }
 }

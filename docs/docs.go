@@ -660,25 +660,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/leaderboard/metadata": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "leaderboard"
-                ],
-                "summary": "获取排行榜元数据",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/util.ResponseAny"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/leaderboard/users/{id}": {
             "get": {
                 "consumes": [

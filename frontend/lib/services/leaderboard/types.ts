@@ -66,18 +66,3 @@ export interface UserRankResponse {
   /** 用户排名信息 */
   user: UserRankInfo;
 }
-
-/**
- * 排行榜元数据响应
- */
-export interface LeaderboardMetadataResponse {
-  /** 排序字段 */
-  sort_by: string;
-  /** 排序方向 */
-  order: string;
-  /** 默认值 */
-  defaults: {
-    /** 默认每页数量 */
-    page_size: number;
-  };
-}

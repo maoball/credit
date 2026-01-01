@@ -103,18 +103,6 @@ func getCacheTTL(ctx context.Context) time.Duration {
 	return time.Duration(ttl) * time.Second
 }
 
-func getMetadata() *MetadataResponse {
-	return &MetadataResponse{
-		SortBy: "available_balance",
-		Order:  "desc",
-		Defaults: struct {
-			PageSize int `json:"page_size"`
-		}{
-			PageSize: 50,
-		},
-	}
-}
-
 func queryLeaderboard(ctx context.Context, req *ListRequest) ([]LeaderboardEntry, int64, error) {
 	offset := (req.Page - 1) * req.PageSize
 
