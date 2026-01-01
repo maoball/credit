@@ -33,9 +33,8 @@ type ListRequest struct {
 	PageSize int `form:"page_size" binding:"required,min=1,max=50"`
 }
 
-// LeaderboardEntry 排行榜条目
+// LeaderboardEntry 排行榜条目（rank 由前端根据 offset + index + 1 计算）
 type LeaderboardEntry struct {
-	Rank             int             `json:"rank"`
 	UserID           uint64          `json:"user_id"`
 	Username         string          `json:"username"`
 	AvatarURL        string          `json:"avatar_url"`

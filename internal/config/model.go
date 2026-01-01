@@ -27,7 +27,6 @@ type configModel struct {
 	ClickHouse clickHouseConfig `mapstructure:"clickhouse"`
 	LinuxDo    linuxDoConfig    `mapstructure:"linuxdo"`
 	Otel       otelConfig       `mapstructure:"otel"`
-	Leaderboard leaderboardConfig `mapstructure:"leaderboard"`
 }
 
 // appConfig 应用基本配置
@@ -176,9 +175,4 @@ type linuxDoConfig struct {
 // otelConfig OpenTelemetry 配置
 type otelConfig struct {
 	SamplingRate float64 `mapstructure:"sampling_rate"`
-}
-
-// leaderboardConfig 排行榜配置
-type leaderboardConfig struct {
-	CacheTTLSeconds int `mapstructure:"cache_ttl_seconds"`
 }

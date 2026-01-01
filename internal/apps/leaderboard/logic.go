@@ -22,10 +22,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/linux-do/credit/internal/config"
 	"github.com/linux-do/credit/internal/db"
 	"github.com/linux-do/credit/internal/model"
-	"github.com/shopspring/decimal"
 )
 
 func getList(ctx context.Context, req *ListRequest) (*ListResponse, error) {
@@ -54,7 +52,7 @@ func getList(ctx context.Context, req *ListRequest) (*ListResponse, error) {
 	}
 
 	if data, err := json.Marshal(response); err == nil {
-		_ = db.Redis.Set(ctx, db.PrefixedKey(cacheKey), data, getCacheTTL()).Err()
+		_ = db.Redis.Set(ctx, db.PrefixedKey(cacheKey), data, getCacheTTL(ctx)).Err()
 	}
 	return response, nil
 }
@@ -92,14 +90,14 @@ func getUserRank(ctx context.Context, userID uint64) (*UserRankResponse, error) 
 	}
 
 	if data, err := json.Marshal(response); err == nil {
-		_ = db.Redis.Set(ctx, db.PrefixedKey(cacheKey), data, getCacheTTL()).Err()
+		_ = db.Redis.Set(ctx, db.PrefixedKey(cacheKey), data, getCacheTTL(ctx)).Err()
 	}
 	return response, nil
 }
 
-func getCacheTTL() time.Duration {
-	ttl := config.Config.Leaderboard.CacheTTLSeconds
-	if ttl <= 0 {
+func getCacheTTL(ctx context.Context) time.Duration {
+	ttl, err := model.GetIntByKey(ctx, model.ConfigKeyLeaderboardCacheTTLSeconds)
+	if err != nil || ttl <= 0 {
 		ttl = 30
 	}
 	return time.Duration(ttl) * time.Second
@@ -120,41 +118,21 @@ func getMetadata() *MetadataResponse {
 func queryLeaderboard(ctx context.Context, req *ListRequest) ([]LeaderboardEntry, int64, error) {
 	offset := (req.Page - 1) * req.PageSize
 
-	// 统计总数
+	baseQuery := db.DB(ctx).Model(&model.User{}).Where("available_balance > 0")
+
 	var total int64
-	if err := db.DB(ctx).Model(&model.User{}).
-		Where("available_balance > 0").
-		Count(&total).Error; err != nil {
+	if err := baseQuery.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
-	// 查询排行榜
-	var users []struct {
-		ID               uint64          `gorm:"column:id"`
-		Username         string          `gorm:"column:username"`
-		AvatarURL        string          `gorm:"column:avatar_url"`
-		AvailableBalance decimal.Decimal `gorm:"column:available_balance"`
-	}
-
-	if err := db.DB(ctx).Table("users").
-		Select("id, username, avatar_url, available_balance").
-		Where("available_balance > 0").
+	var items []LeaderboardEntry
+	if err := baseQuery.
+		Select("id as user_id, username, avatar_url, available_balance").
 		Order("available_balance DESC, id ASC").
 		Offset(offset).
 		Limit(req.PageSize).
-		Scan(&users).Error; err != nil {
+		Scan(&items).Error; err != nil {
 		return nil, 0, err
-	}
-
-	items := make([]LeaderboardEntry, len(users))
-	for i, u := range users {
-		items[i] = LeaderboardEntry{
-			Rank:             offset + i + 1,
-			UserID:           u.ID,
-			Username:         u.Username,
-			AvatarURL:        u.AvatarURL,
-			AvailableBalance: u.AvailableBalance,
-		}
 	}
 
 	return items, total, nil

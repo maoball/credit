@@ -4,11 +4,9 @@
  */
 
 /**
- * 排行榜条目
+ * 排行榜条目（rank 由前端根据 index + 1 计算）
  */
 export interface LeaderboardEntry {
-  /** 排名 */
-  rank: number;
   /** 用户ID */
   user_id: number;
   /** 用户名 */

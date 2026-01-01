@@ -29,7 +29,7 @@ export const RankRowItem = React.memo(function RankRowItem({
     >
       {/* 排名 */}
       <span className="w-10 text-muted-foreground font-medium tabular-nums">
-        #{entry.rank}
+        #{index + 1}
       </span>
 
       {/* 头像 */}
