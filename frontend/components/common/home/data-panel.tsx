@@ -37,6 +37,7 @@ export function DataPanel() {
 
   const availableBalance = parseFloat(user?.available_balance || '0')
   const remainQuota = parseFloat(user?.remain_quota || '0')
+  const communityBalance = parseFloat(user?.community_balance || '0').toLocaleString()
 
   /* 获取每日统计数据 */
   React.useEffect(() => {
@@ -181,7 +182,17 @@ export function DataPanel() {
       {/* 统计数据区域 - 移动端在下方并排展示，桌面端在右侧垂直展示 */}
       <div className="md:col-span-1 flex flex-row md:flex-col order-2 md:order-none gap-8 md:gap-0">
         <div className="flex-1 md:border-b md:pb-4 border-r md:border-r-0 border-border pr-8 md:pr-0">
-          <div className="text-sm text-muted-foreground font-medium whitespace-nowrap">LINUX DO Credits</div>
+          <div className="text-sm text-muted-foreground font-medium whitespace-nowrap">
+            可用 LINUX DO Credits
+            <Popover>
+              <PopoverTrigger>
+                <Info className="size-3.5 cursor-pointer" />
+              </PopoverTrigger>
+              <PopoverContent side="top" className="w-auto max-w-[280px] p-3">
+                <p className="text-xs">社区基准分数(上一次从社区同步的积分基准值): {userLoading ? '-' : communityBalance} </p>
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className="text-xl font-semibold pt-2">
             {userLoading ? '-' : <CountingNumber number={availableBalance} decimalPlaces={2} />}
           </div>
