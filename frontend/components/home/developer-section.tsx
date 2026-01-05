@@ -36,8 +36,8 @@ export const DeveloperSection = React.memo(function DeveloperSection({ className
           transition={{ duration: 0.8 }}
           className="order-2 lg:order-1 relative"
         >
-          <div className="relative overflow-hidden rounded-xl border border-white/20 bg-black backdrop-blur-xl shadow-2xl">
-            <div className="flex items-center px-4 py-3 border-b border-white/20">
+          <div className="relative overflow-hidden rounded-xl border border-white/20 bg-black backdrop-blur-xl shadow-2xl max-w-full">
+            <div className="flex items-center px-4 py-3 border-b border-white/20 w-full">
               <div className="flex-1 flex gap-2">
                 <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
                 <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
@@ -56,7 +56,7 @@ export const DeveloperSection = React.memo(function DeveloperSection({ className
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
-              <pre className="text-sm font-mono text-neutral-300 leading-relaxed">
+              <pre className="text-xs sm:text-sm font-mono text-neutral-300 leading-relaxed whitespace-pre-wrap break-all sm:whitespace-pre sm:break-normal overflow-x-auto">
                 <code className="block">
                   <span className="text-purple-400">curl</span> <span className="text-green-400">https://credit.linux.do/epay/submit.php</span> \{'\n'}
                   {'  '}-u <span className="text-yellow-400">sk_live_...:</span> \{'\n'}
