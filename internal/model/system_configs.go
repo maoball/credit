@@ -40,6 +40,7 @@ const (
 	ConfigKeyRedEnvelopeMaxAmount       = "red_envelope_max_amount"       // 单个红包的最大积分上限
 	ConfigKeyRedEnvelopeDailyLimit      = "red_envelope_daily_limit"      // 每日发红包的个数限制
 	ConfigKeyRedEnvelopeFeeRate         = "red_envelope_fee_rate"         // 红包手续费率（0-1之间的小数，0表示不收费）
+	ConfigKeyRedEnvelopeMaxRecipients   = "red_envelope_max_recipients"   // 每个红包的最大可领取人数上限
 )
 
 const (
@@ -105,4 +106,19 @@ func GetDecimalByKey(ctx context.Context, key string, precision int32) (decimal.
 
 	// 裁剪到指定小数位数
 	return value.Truncate(precision), nil
+}
+
+// GetBoolByKey 通过 key 查询配置并转换为 bool 类型
+func GetBoolByKey(ctx context.Context, key string) (bool, error) {
+	var sc SystemConfig
+	if err := sc.GetByKey(ctx, key); err != nil {
+		return false, err
+	}
+
+	value, err := strconv.ParseBool(sc.Value)
+	if err != nil {
+		return false, fmt.Errorf("配置 %s 的值 '%s' 无法转换为布尔值: %w", key, sc.Value, err)
+	}
+
+	return value, nil
 }

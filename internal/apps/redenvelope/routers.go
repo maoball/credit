@@ -102,6 +102,12 @@ func Create(c *gin.Context) {
 		return
 	}
 
+	// 检查红包最低金额限制（1 LDC）
+	if req.TotalAmount.LessThan(decimal.NewFromInt(1)) {
+		c.JSON(http.StatusBadRequest, util.Err(common.RedEnvelopeMinAmountRequired))
+		return
+	}
+
 	// 检查单个红包最大金额限制
 	maxAmount, err := model.GetDecimalByKey(c.Request.Context(), model.ConfigKeyRedEnvelopeMaxAmount, 2)
 	if err != nil {
@@ -113,13 +119,22 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	// 固定金额红包检查每个红包金额
-	if req.Type == model.RedEnvelopeTypeFixed {
-		perAmount := req.TotalAmount.Div(decimal.NewFromInt(int64(req.TotalCount)))
-		if perAmount.LessThan(decimal.NewFromFloat(0.01)) {
-			c.JSON(http.StatusBadRequest, util.Err(AmountTooSmall))
-			return
-		}
+	// 检查红包最大领取人数限制
+	maxRecipients, err := model.GetIntByKey(c.Request.Context(), model.ConfigKeyRedEnvelopeMaxRecipients)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, util.Err(err.Error()))
+		return
+	}
+	if req.TotalCount > maxRecipients {
+		c.JSON(http.StatusBadRequest, util.Err(common.RedEnvelopeRecipientsExceeded))
+		return
+	}
+
+	// 检查每个红包平均金额不能小于0.01（避免前面领取者获得0 LDC）
+	perAmount := req.TotalAmount.Div(decimal.NewFromInt(int64(req.TotalCount)))
+	if perAmount.LessThan(decimal.NewFromFloat(0.01)) {
+		c.JSON(http.StatusBadRequest, util.Err(AmountTooSmall))
+		return
 	}
 
 	currentUser, _ := util.GetFromContext[*model.User](c, oauth.UserObjKey)

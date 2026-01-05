@@ -85,6 +85,13 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
 
     const amount = parseFloat(totalAmount)
 
+    // 检查红包最低金额限制（1 LDC）
+    if (amount < 1) {
+      toast.error("红包总金额不能低于1 LDC")
+      return
+    }
+    
+    // 检查红包最大金额限制
     if (config && parseFloat(config.red_envelope_max_amount) > 0) {
       if (amount > parseFloat(config.red_envelope_max_amount)) {
         toast.error(`红包的积分总数不能超过 ${ config.red_envelope_max_amount } LDC`)
@@ -302,7 +309,7 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
             </Button>
             <Button
               onClick={handleFormSubmit}
-              disabled={!totalAmount || !totalCount || loading}
+              disabled={!totalAmount || !totalCount || loading || !!(config && config.red_envelope_max_recipients > 0 && parseInt(totalCount) > config.red_envelope_max_recipients)}
               className="bg-red-500 hover:bg-red-600 h-8 text-xs"
             >
               下一步

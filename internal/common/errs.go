@@ -32,6 +32,8 @@ const (
 	RedEnvelopeDisabled           = "红包功能未启用"
 	RedEnvelopeAmountExceeded     = "红包金额超过单个红包最大限额"
 	RedEnvelopeDailyLimitExceeded = "今日发红包数量已达上限"
+	RedEnvelopeRecipientsExceeded = "红包个数超过最大可领取人数上限"
+	RedEnvelopeMinAmountRequired  = "红包总金额不能低于1LDC"
 )
 
 const (

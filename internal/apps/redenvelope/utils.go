@@ -30,24 +30,24 @@ func calculateRandomAmount(remaining decimal.Decimal, count int) decimal.Decimal
 	}
 
 	minAmount := decimal.NewFromFloat(0.01)
-	
+
 	// 确保剩余金额足够分配给所有人至少0.01
 	minRequired := minAmount.Mul(decimal.NewFromInt(int64(count)))
-	if remaining.LessThan(minRequired) {
-		// 如果剩余金额不足，平均分配
-		return remaining.Div(decimal.NewFromInt(int64(count))).Round(2)
+	if remaining.LessThanOrEqual(minRequired) {
+		// 如果剩余金额刚好或不足，每人分配0.01（确保不会出现0 LDC的情况）
+		return minAmount
 	}
 
 	// 二倍均值算法：金额范围 [0.01, min(剩余金额/剩余人数*2, 剩余金额-其他人最小金额)]
 	avg := remaining.Div(decimal.NewFromInt(int64(count)))
 	maxAmount := avg.Mul(decimal.NewFromInt(2))
-	
+
 	// 确保给其他人留下足够的金额（每人至少0.01）
 	maxPossible := remaining.Sub(minAmount.Mul(decimal.NewFromInt(int64(count - 1))))
 	if maxAmount.GreaterThan(maxPossible) {
 		maxAmount = maxPossible
 	}
-	
+
 	// 确保maxAmount不小于minAmount
 	if maxAmount.LessThan(minAmount) {
 		maxAmount = minAmount
@@ -64,7 +64,7 @@ func calculateRandomAmount(remaining decimal.Decimal, count int) decimal.Decimal
 	if diffCents <= 0 {
 		return minAmount
 	}
-	
+
 	randCents := rand.Int63n(diffCents + 1) // [0, diffCents]
 	randAmount := decimal.NewFromInt(randCents).Div(decimal.NewFromInt(100))
 	amount := minAmount.Add(randAmount)

@@ -114,6 +114,11 @@ func initSystemConfigs() {
 			Value:       "0",
 			Description: "红包手续费率（0-1之间的小数，0表示不收费）",
 		},
+		{
+			Key:         model.ConfigKeyRedEnvelopeMaxRecipients,
+			Value:       "10000",
+			Description: "每个红包的最大可领取人数上限",
+		},
 	}
 
 	if err := tx.Create(&defaultConfigs).Error; err != nil {
