@@ -1447,6 +1447,25 @@ paths:
       tags:
       - payment
   /pay/submit.php:
+    get:
+      consumes:
+      - application/x-www-form-urlencoded
+      parameters:
+      - description: request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/payment.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.ResponseAny'
+      tags:
+      - payment
     post:
       consumes:
       - application/x-www-form-urlencoded

@@ -96,6 +96,7 @@ type RefundOrderRequest struct {
 // @Param request body CreateOrderRequest true "request body"
 // @Success 200 {object} util.ResponseAny
 // @Router /pay/submit.php [post]
+// @Router /pay/submit.php [get]
 func CreateMerchantOrder(c *gin.Context) {
 	req, _ := util.GetFromContext[*CreateOrderRequest](c, CreateOrderRequestKey)
 	apiKey, _ := util.GetFromContext[*model.MerchantAPIKey](c, APIKeyObjKey)

@@ -103,7 +103,7 @@ func Serve() {
 	r.Use(otelgin.Middleware(config.Config.App.AppName), loggerMiddleware())
 
 	// 支付接口
-	r.POST("/pay/submit.php", payment.RequireSignatureAuth(), payment.CreateMerchantOrder)
+	r.Match([]string{"GET", "POST"}, "/pay/submit.php", payment.RequireSignatureAuth(), payment.CreateMerchantOrder)
 	// 查询订单
 	r.GET("/api.php", payment.QueryMerchantOrder)
 	// 退款接口

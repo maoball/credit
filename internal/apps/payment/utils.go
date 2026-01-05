@@ -27,7 +27,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"github.com/linux-do/credit/internal/apps/oauth"
 	"github.com/linux-do/credit/internal/common"
 	"github.com/linux-do/credit/internal/db"
@@ -189,7 +188,7 @@ func GenerateSignature(params map[string]string, secret string) string {
 // VerifySignature 验证MD5签名
 func VerifySignature(c *gin.Context, apiKey *model.MerchantAPIKey) (*CreateOrderRequest, error) {
 	var req EPayRequest
-	if err := c.ShouldBindWith(&req, binding.FormPost); err != nil {
+	if err := c.ShouldBind(&req); err != nil {
 		return nil, err
 	}
 
@@ -210,15 +209,19 @@ func VerifySignature(c *gin.Context, apiKey *model.MerchantAPIKey) (*CreateOrder
 		"notify_url":   req.NotifyURL,
 		"return_url":   req.ReturnURL,
 		"name":         req.OrderName,
-		"money":        req.Amount.Truncate(2).StringFixed(2),
 		"device":       req.Device,
 	}
 
-	// 生成期望的签名
-	expectedSign := GenerateSignature(params, apiKey.ClientSecret)
+	params["money"] = req.Amount.Truncate(2).StringFixed(2)
+	expectedSignFixed := GenerateSignature(params, apiKey.ClientSecret)
 
-	// 常量时间比较签名（防止时序攻击）
-	if subtle.ConstantTimeCompare([]byte(strings.ToLower(expectedSign)), []byte(strings.ToLower(req.Sign))) != 1 {
+	params["money"] = req.Amount.Truncate(2).String()
+	expectedSignTrimmed := GenerateSignature(params, apiKey.ClientSecret)
+
+	matchFixed := subtle.ConstantTimeCompare([]byte(strings.ToLower(expectedSignFixed)), []byte(strings.ToLower(req.Sign))) == 1
+	matchTrimmed := subtle.ConstantTimeCompare([]byte(strings.ToLower(expectedSignTrimmed)), []byte(strings.ToLower(req.Sign))) == 1
+
+	if !matchFixed && !matchTrimmed {
 		return nil, errors.New("签名验证失败")
 	}
 

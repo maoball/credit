@@ -1507,6 +1507,36 @@ const docTemplate = `{
             }
         },
         "/pay/submit.php": {
+            "get": {
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/payment.CreateOrderRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/util.ResponseAny"
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/x-www-form-urlencoded"

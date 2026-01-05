@@ -113,7 +113,7 @@ func RequireMerchantAuth() gin.HandlerFunc {
 // RequireSignatureAuth 验证签名
 func RequireSignatureAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		PayType := c.PostForm("type")
+		PayType := c.Request.FormValue("type")
 
 		var apiKey model.MerchantAPIKey
 
