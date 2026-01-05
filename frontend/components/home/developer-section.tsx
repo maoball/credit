@@ -24,7 +24,7 @@ export const DeveloperSection = React.memo(function DeveloperSection({ className
     <section className={cn("relative z-10 w-full min-h-screen flex items-center justify-center px-6 overflow-hidden", className)}>
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] max-w-[90vw] max-h-[90vh] bg-purple-500/10 rounded-full blur-[120px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] max-w-[90vw] max-h-[90vh] bg-purple-500/10 rounded-full blur-[120px] animate-pulse" />
         </div>
       </div>
       <div className="container mx-auto max-w-7xl grid lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10">
