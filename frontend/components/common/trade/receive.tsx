@@ -1,4 +1,7 @@
+"use client"
+
 import * as React from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -38,19 +41,34 @@ function FeatureCard({ title, description, linkText, href }: { title: string, de
  * 显示积分收益功能和规则
  */
 export function Receive() {
+  const [isVisible, setIsVisible] = useState(true)
+  const [isHiding, setIsHiding] = useState(false)
+
+  const handleHide = () => {
+    setIsHiding(true)
+    setTimeout(() => setIsVisible(false), 300)
+  }
+
   return (
     <div className="space-y-4">
-      <div className="bg-muted/50 rounded-lg px-6 py-8">
-        <div className="max-w-2xl">
-          <h2 className="text-2xl font-bold mb-4 text-foreground">获得积分收益</h2>
-          <p className="text-muted-foreground mb-6 leading-relaxed">
-            通过无代码选项快速开始探索或使用与我们的 API 集成的可自定义积分服务。
-          </p>
-          <Button className="bg-primary hover:bg-primary/90 font-medium px-6 rounded-md shadow-sm">
-            开始使用
-          </Button>
+      {isVisible && (
+        <div
+          className={`bg-muted/50 rounded-lg px-6 py-8 transition-opacity duration-300 ${isHiding ? 'opacity-0' : 'opacity-100'}`}
+        >
+          <div className="max-w-2xl">
+            <h2 className="text-2xl font-bold mb-4 text-foreground">获得积分收益</h2>
+            <p className="text-muted-foreground mb-6 leading-relaxed">
+              通过无代码选项快速开始探索或使用与我们的 API 集成的可自定义积分服务。
+            </p>
+            <Button
+              className="bg-primary hover:bg-primary/90 font-medium px-6 rounded-md shadow-sm"
+              onClick={handleHide}
+            >
+              开始使用
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <FeatureCard
