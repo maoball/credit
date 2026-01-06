@@ -24,7 +24,7 @@ export const DeveloperSection = React.memo(function DeveloperSection({ className
     <section className={cn("relative z-10 w-full min-h-screen flex items-center justify-center px-6 overflow-hidden", className)}>
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] max-w-[90vw] max-h-[90vh] bg-purple-500/10 rounded-full blur-[120px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] max-w-[90vw] max-h-[90vh] bg-purple-500/10 rounded-full blur-[120px] animate-pulse" />
         </div>
       </div>
       <div className="container mx-auto max-w-7xl grid lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10">
@@ -36,18 +36,18 @@ export const DeveloperSection = React.memo(function DeveloperSection({ className
           transition={{ duration: 0.8 }}
           className="order-2 lg:order-1 relative"
         >
-          <div className="relative overflow-hidden rounded-xl border border-white/20 bg-black backdrop-blur-xl shadow-2xl">
-            <div className="flex justify-between items-center px-4 py-3 border-b border-white/20">
-              <div className="flex gap-2">
+          <div className="relative overflow-hidden rounded-xl border border-white/20 bg-black backdrop-blur-xl shadow-2xl max-w-full">
+            <div className="flex items-center px-4 py-3 border-b border-white/20 w-full">
+              <div className="flex-1 flex gap-2">
                 <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
                 <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
                 <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
               </div>
-              <div className="text-xs text-muted-foreground font-mono flex items-center gap-1">
+              <div className="flex-none text-xs text-muted-foreground font-mono flex items-center gap-1">
                 <Terminal className="w-3 h-3" />
                 bash
               </div>
-              <div className="w-10" />
+              <div className="flex-1" />
             </div>
 
             <div className="p-6 overflow-x-auto relative group">
@@ -56,7 +56,7 @@ export const DeveloperSection = React.memo(function DeveloperSection({ className
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
-              <pre className="text-sm font-mono text-neutral-300 leading-relaxed">
+              <pre className="text-xs sm:text-sm font-mono text-neutral-300 leading-relaxed whitespace-pre-wrap break-all sm:whitespace-pre sm:break-normal overflow-x-auto">
                 <code className="block">
                   <span className="text-purple-400">curl</span> <span className="text-green-400">https://credit.linux.do/epay/submit.php</span> \{'\n'}
                   {'  '}-u <span className="text-yellow-400">sk_live_...:</span> \{'\n'}
