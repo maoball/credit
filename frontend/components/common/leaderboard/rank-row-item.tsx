@@ -27,12 +27,10 @@ export const RankRowItem = React.memo(function RankRowItem({
         isCurrentUser ? "bg-blue-100" : "hover:bg-muted/50",
       )}
     >
-      {/* 排名 */}
       <span className="w-10 text-muted-foreground font-medium tabular-nums">
-        #{rank}
+        # {rank}
       </span>
 
-      {/* 头像 */}
       <Avatar className="h-9 w-9">
         <AvatarImage src={entry.avatar_url} alt={entry.username} />
         <AvatarFallback className="text-xs">
@@ -40,14 +38,12 @@ export const RankRowItem = React.memo(function RankRowItem({
         </AvatarFallback>
       </Avatar>
 
-      {/* 用户名 */}
       <span className="flex-1 min-w-0 font-medium truncate">
         {entry.username}
       </span>
 
-      {/* 余额 */}
       <span className="font-semibold tabular-nums">
-        {parseFloat(entry.available_balance).toLocaleString()}
+        {parseFloat(entry.available_balance as string).toFixed(2)}
       </span>
     </motion.div>
   );

@@ -7,7 +7,7 @@ import type {
 
 /**
  * 排行榜服务
- * 简化版：基于 available_balance 排序
+ * 基于 available_balance 排序
  */
 export class LeaderboardService extends BaseService {
   protected static readonly basePath = "/api/v1/leaderboard";
@@ -37,6 +37,6 @@ export class LeaderboardService extends BaseService {
    * @returns 用户排名响应
    */
   static async getUserRankById(userId: number): Promise<UserRankResponse> {
-    return this.get<UserRankResponse>(`/users/${userId}`);
+    return this.get<UserRankResponse>(`/users/${ userId }`);
   }
 }

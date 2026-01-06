@@ -70,9 +70,8 @@ export const useLeaderboard = () => {
         if (!ignore?.current) {
           setMyRank(response);
         }
-      } catch (err) {
+      } catch {
         if (!ignore?.current) {
-          console.error("Failed to fetch my rank:", err);
           setMyRank(null);
         }
       } finally {

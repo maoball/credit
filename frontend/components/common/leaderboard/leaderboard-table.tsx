@@ -30,22 +30,24 @@ export const LeaderboardTable = React.memo(function LeaderboardTable({
     getScrollElement: () => parentRef.current,
     estimateSize: () => 64,
     overscan: 5,
+    useFlushSync: false,
   });
 
   const virtualItems = virtualizer.getVirtualItems();
-  const lastItem = virtualItems[virtualItems.length - 1];
-  const lastItemIndex = lastItem?.index ?? -1;
 
   React.useEffect(() => {
+    const lastItem = virtualItems[virtualItems.length - 1];
+    if (!lastItem) return;
+
     if (
-      lastItemIndex >= items.length - 1 &&
+      lastItem.index >= items.length - 1 &&
       hasMore &&
       !loading &&
       onLoadMore
     ) {
       onLoadMore();
     }
-  }, [lastItemIndex, items.length, hasMore, loading, onLoadMore]);
+  }, [virtualItems, items.length, hasMore, loading, onLoadMore]);
 
   if (loading && items.length === 0) {
     return (
@@ -74,7 +76,7 @@ export const LeaderboardTable = React.memo(function LeaderboardTable({
     <div ref={parentRef} className="h-[600px] overflow-auto">
       <div
         style={{
-          height: `${virtualizer.getTotalSize()}px`,
+          height: `${ virtualizer.getTotalSize() }px`,
           width: "100%",
           position: "relative",
         }}
@@ -89,8 +91,8 @@ export const LeaderboardTable = React.memo(function LeaderboardTable({
                 top: 0,
                 left: 0,
                 width: "100%",
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
+                height: `${ virtualRow.size }px`,
+                transform: `translateY(${ virtualRow.start }px)`,
               }}
             >
               <RankRowItem

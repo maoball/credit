@@ -33,30 +33,26 @@ export const UserRankCard = React.memo(function UserRankCard({
     return null;
   }
 
-  const balance = parseFloat(data.user.available_balance).toLocaleString();
+  const balance: number = parseFloat(data.user.available_balance);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={cn("bg-blue-100 rounded-xl px-5 py-4", className)}
+      className={cn("bg-blue-100 dark:bg-blue-900/20 rounded-xl px-5 py-4 ", className)}
     >
       <div className="flex items-center justify-between">
-        {/* 排名 */}
         <div className="flex items-center gap-2">
-          <span className="text-blue-600 font-medium">排名:</span>
-          <span className="text-blue-900 font-bold text-lg tabular-nums">
-            {data.user.rank.toLocaleString()}
+          <span className="text-blue-600 font-bold text-lg tabular-nums">
+            # {data.user.rank.toLocaleString()}
           </span>
         </div>
 
-        {/* 您 */}
-        <span className="text-blue-600 font-medium">您</span>
+        <span className="text-blue-600 font-bold text-lg">您</span>
 
-        {/* 余额 */}
-        <span className="text-blue-900 font-bold text-lg tabular-nums">
-          {balance}
+        <span className="text-blue-600 font-bold text-lg tabular-nums">
+          {balance.toFixed(2)}
         </span>
       </div>
     </motion.div>
