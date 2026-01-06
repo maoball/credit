@@ -102,11 +102,11 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       <div className="hidden border-t bg-muted/20 px-4 py-2 md:flex items-center gap-4 text-[10px] text-muted-foreground uppercase tracking-wider font-medium select-none">
         <div className="flex items-center gap-1">
           <kbd className="bg-muted px-1.5 py-0.5 rounded border shadow-sm text-foreground">↵</kbd>
-          <span>Open</span>
+          <span>打开</span>
         </div>
         <div className="flex items-center gap-1">
           <kbd className="bg-muted px-1.5 py-0.5 rounded border shadow-sm text-foreground">Esc</kbd>
-          <span>Close</span>
+          <span>关闭搜索界面</span>
         </div>
       </div>
     </CommandDialog>
