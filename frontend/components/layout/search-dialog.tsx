@@ -54,6 +54,20 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
         e.preventDefault()
         onOpenChange(!open)
       }
+
+      if (e.key === '/'&& !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const target = e.target as HTMLElement
+        const isEditing = target.tagName === 'INPUT' || 
+                         target.tagName === 'TEXTAREA' || 
+                         target.tagName === 'SELECT' ||
+                         target.isContentEditable ||
+                         target.closest('[contenteditable="true"]')
+
+        if (!isEditing) {
+          e.preventDefault()
+          onOpenChange(true)
+        }
+      }
     }
 
     document.addEventListener('keydown', down)
