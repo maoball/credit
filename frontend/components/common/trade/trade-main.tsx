@@ -115,19 +115,17 @@ export function TradeMain() {
           onValueChange={(v) => setActiveTab(v as TabValue)}
           className="w-full"
         >
-          <div className="border-b border-border">
-            <TabsList className="flex p-0 gap-4 rounded-none w-full bg-transparent justify-start h-auto overflow-x-auto overflow-y-hidden">
-              <TabsTrigger value="receive" className={TAB_TRIGGER_STYLES}>积分收益</TabsTrigger>
-              <TabsTrigger value="payment" className={TAB_TRIGGER_STYLES}>积分消耗</TabsTrigger>
-              <TabsTrigger value="transfer" className={TAB_TRIGGER_STYLES}>积分转移</TabsTrigger>
-              <TabsTrigger value="community" className={TAB_TRIGGER_STYLES}>社区划转</TabsTrigger>
-              <TabsTrigger value="online" className={TAB_TRIGGER_STYLES}>在线流转</TabsTrigger>
-              {redEnvelopeEnabled && (
-                <TabsTrigger value="redenvelope" className={TAB_TRIGGER_STYLES}>积分红包</TabsTrigger>
-              )}
-              <TabsTrigger value="all" className={TAB_TRIGGER_STYLES}>所有活动</TabsTrigger>
-            </TabsList>
-          </div>
+          <TabsList className="flex p-0 gap-4 rounded-none w-full bg-transparent justify-start border-b border-border overflow-x-auto overflow-y-hidden">
+            <TabsTrigger value="receive" className={TAB_TRIGGER_STYLES}>积分收益</TabsTrigger>
+            <TabsTrigger value="payment" className={TAB_TRIGGER_STYLES}>积分消耗</TabsTrigger>
+            <TabsTrigger value="transfer" className={TAB_TRIGGER_STYLES}>积分转移</TabsTrigger>
+            <TabsTrigger value="community" className={TAB_TRIGGER_STYLES}>社区划转</TabsTrigger>
+            <TabsTrigger value="online" className={TAB_TRIGGER_STYLES}>在线流转</TabsTrigger>
+            {redEnvelopeEnabled && (
+              <TabsTrigger value="redenvelope" className={TAB_TRIGGER_STYLES}>积分红包</TabsTrigger>
+            )}
+            <TabsTrigger value="all" className={TAB_TRIGGER_STYLES}>所有活动</TabsTrigger>
+          </TabsList>
 
           <div className="pt-2 space-y-8">
             {renderPageContent()}
