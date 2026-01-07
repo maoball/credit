@@ -1,10 +1,10 @@
 /**
  * Leaderboard 服务类型定义
- * 简化版：仅使用 available_balance 排序
+ * 使用 available_balance 排序
  */
 
 /**
- * 排行榜条目（rank 由前端根据 index + 1 计算）
+ * 排行榜条目
  */
 export interface LeaderboardEntry {
   /** 用户ID */
@@ -18,14 +18,14 @@ export interface LeaderboardEntry {
 }
 
 /**
- * 排行榜列表请求参数
+ * 排行榜请求参数
  */
 export interface LeaderboardListRequest {
   /** 页码 */
   page: number;
   /** 每页数量 */
   page_size: number;
-  /** 索引签名（兼容 BaseService.get 参数类型） */
+  /** 索引签名 */
   [key: string]: unknown;
 }
 

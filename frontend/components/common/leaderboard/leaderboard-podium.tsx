@@ -25,21 +25,24 @@ function PodiumEntry({
   const styles = {
     1: {
       height: 160,
-      gradient: "from-yellow-400/20 to-yellow-600/5",
-      border: "border-yellow-400/50",
-      text: "text-yellow-600 dark:text-yellow-400",
+      width: "w-32 md:w-44",
+      bg: "bg-yellow-400/20 dark:bg-yellow-600/80",
+      text: "text-yellow-400",
+      avatarBorder: "border-yellow-400",
     },
     2: {
       height: 120,
-      gradient: "from-slate-300/20 to-slate-500/5",
-      border: "border-slate-300/50",
-      text: "text-slate-600 dark:text-slate-400",
+      width: "w-28 md:w-36",
+      bg: "bg-slate-300/20 dark:bg-slate-500/80",
+      text: "text-slate-300",
+      avatarBorder: "border-slate-300",
     },
     3: {
       height: 90,
-      gradient: "from-amber-700/20 to-amber-900/5",
-      border: "border-amber-700/50",
-      text: "text-amber-700 dark:text-amber-600",
+      width: "w-24 md:w-28",
+      bg: "bg-amber-700/20 dark:bg-amber-900/80",
+      text: "text-amber-700",
+      avatarBorder: "border-amber-700",
     },
   }[rank];
 
@@ -56,21 +59,27 @@ function PodiumEntry({
         transition={{ delay: delay + 0.3, duration: 0.5 }}
         className="flex flex-col items-center mb-3 relative"
       >
-        {rank === 1 && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: delay + 0.5, type: "spring" }}
-            className="absolute -top-10 text-yellow-500 drop-shadow-lg"
-          >
-            <Crown size={40} fill="currentColor" />
-          </motion.div>
-        )}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: delay + 0.5, type: "spring" }}
+          className={cn(
+            "absolute -top-10 drop-shadow-lg",
+            rank === 1 && "text-yellow-500",
+            rank === 2 && "text-slate-400",
+            rank === 3 && "text-amber-600"
+          )}
+        >
+          <Crown
+            size={rank === 1 ? 40 : 36}
+            fill="currentColor"
+          />
+        </motion.div>
 
         <div className="relative group">
           <Avatar
             className={cn(
-              "border-4 shadow-xl transition-transform duration-300 group-hover:scale-105",
+              "border-4 shadow-lg transition-transform duration-300 group-hover:scale-105",
               rank === 1
                 ? "h-24 w-24 border-yellow-400"
                 : rank === 2
@@ -79,7 +88,7 @@ function PodiumEntry({
             )}
           >
             <AvatarImage src={entry.avatar_url} alt={entry.username} />
-            <AvatarFallback className="font-bold">
+            <AvatarFallback className="font-bold text-xl">
               {entry.username.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -88,9 +97,9 @@ function PodiumEntry({
             className={cn(
               "absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center justify-center w-6 h-6 rounded-full border-2 text-[10px] font-bold bg-background",
               rank === 1
-                ? "border-yellow-400 text-yellow-600"
+                ? "border-yellow-400 text-yellow-400"
                 : rank === 2
-                  ? "border-slate-300 text-slate-600"
+                  ? "border-slate-300 text-slate-300"
                   : "border-amber-700 text-amber-700",
             )}
           >
@@ -104,33 +113,25 @@ function PodiumEntry({
           </p>
           <p
             className={cn(
-              "text-xs font-mono font-bold opacity-80",
+              "text-xs font-mono font-bold",
               styles.text,
             )}
           >
-            {parseFloat(entry.available_balance).toLocaleString()}
+            {parseFloat(entry.available_balance as string).toFixed(2)}
           </p>
         </div>
       </motion.div>
 
-      {/* Podium Box */}
       <motion.div
         initial={{ height: 0 }}
         animate={{ height: styles.height }}
         transition={{ delay, duration: 0.6, type: "spring", stiffness: 60 }}
         className={cn(
-          "w-24 md:w-32 rounded-t-lg relative overflow-hidden backdrop-blur-sm border-x border-t",
-          styles.gradient,
-          styles.border,
+          "rounded-t-lg relative overflow-hidden border-t border-x",
+          styles.width,
+          styles.bg,
         )}
       >
-        <div
-          className={cn(
-            "absolute inset-0 bg-gradient-to-b opacity-30",
-            styles.gradient,
-          )}
-        />
-        <div className="absolute top-0 w-full h-1 bg-white/20" />
       </motion.div>
     </div>
   );
@@ -142,7 +143,7 @@ export const LeaderboardPodium = React.memo(function LeaderboardPodium({
 }: LeaderboardPodiumProps) {
   if (loading) {
     return (
-      <div className="bg-gradient-to-b from-muted/50 to-muted/20 rounded-3xl p-8 border border-muted/50">
+      <div className="border border-dashed rounded-xl p-8">
         <div className="flex items-end justify-center gap-4 py-8 min-h-[300px]">
           {[2, 1, 3].map((rank) => (
             <div
@@ -175,13 +176,12 @@ export const LeaderboardPodium = React.memo(function LeaderboardPodium({
   const top3 = items.slice(0, 3);
   if (top3.length === 0) {
     return (
-      <div className="bg-gradient-to-b from-muted/50 to-muted/20 rounded-3xl py-20 text-center border border-muted/50">
+      <div className="border border-dashed rounded-xl py-20 text-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-muted-foreground"
         >
-          <div className="text-5xl mb-4">🏆</div>
           <p className="text-lg font-medium">暂无排行数据</p>
           <p className="text-sm mt-1">快来成为第一个上榜的用户吧！</p>
         </motion.div>
@@ -189,18 +189,18 @@ export const LeaderboardPodium = React.memo(function LeaderboardPodium({
     );
   }
 
-  const [first, second, third] = top3;
+  const first = top3[0];
+  const second = top3[1];
+  const third = top3[2];
 
   return (
-    <div className="bg-gradient-to-b from-muted/50 to-muted/20 rounded-3xl p-8 border border-muted/50 relative overflow-hidden">
-      {/* Ambient Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-gradient-to-b from-primary/5 to-transparent blur-3xl" />
+    <div className="bg-gradient-to-b from-blue-50 to-blue-50/20 dark:from-blue-950/20 dark:to-transparent rounded-3xl p-8 relative overflow-hidden">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-gradient-to-b from-blue-100/20 to-transparent blur-3xl pointer-events-none" />
 
       <div className="flex items-end justify-center gap-3 md:gap-8 relative z-10 pt-10">
-        {/* Staggered reveal: 3rd (0s) -> 2nd (0.2s) -> 1st (0.4s) */}
-        {third && <PodiumEntry entry={third} rank={3} delay={0} />}
-        {second && <PodiumEntry entry={second} rank={2} delay={0.2} />}
-        {first && <PodiumEntry entry={first} rank={1} delay={0.4} />}
+        {second && <PodiumEntry entry={second} rank={2} delay={0} />}
+        {first && <PodiumEntry entry={first} rank={1} delay={0.2} />}
+        {third && <PodiumEntry entry={third} rank={3} delay={0.4} />}
       </div>
     </div>
   );
