@@ -53,7 +53,7 @@ export function Receive() {
     <div className="space-y-4">
       {isVisible && (
         <div
-          className={`bg-muted/50 rounded-lg px-6 py-8 transition-opacity duration-300 ${isHiding ? 'opacity-0' : 'opacity-100'}`}
+          className={`bg-muted/50 rounded-lg px-6 py-8 overflow-hidden transition-all duration-300 ease-out ${isHiding ? 'opacity-0 max-h-0 !py-0 !mb-0' : 'opacity-100 max-h-[500px]'}`}
         >
           <div className="max-w-2xl">
             <h2 className="text-2xl font-bold mb-4 text-foreground">获得积分收益</h2>
