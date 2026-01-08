@@ -361,8 +361,8 @@ export function LegalPageLayout({
                 id={section.value}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-10%" }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true, margin: "100px" }}
+                transition={{ duration: 0.3 }}
                 className="scroll-mt-24 group"
                 data-docs-section
               >
