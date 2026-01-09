@@ -16,7 +16,6 @@ import { useUser } from "@/contexts/user-context"
 import {
   OrderDetailDialog,
   CreateDisputeDialog,
-  CancelDisputeDialog,
   ViewDisputeHistoryDialog,
   RefundReviewDialog,
 } from "./dispute-dialog"
