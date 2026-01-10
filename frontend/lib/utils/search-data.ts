@@ -1,3 +1,9 @@
+import PinyinMatch from 'pinyin-match'
+
+// Handle CJS/ESM interop for pinyin-match
+const match: any = (PinyinMatch as any).default?.match || (PinyinMatch as any).match || PinyinMatch;
+
+
 /**
  * 搜索项接口
  */
@@ -9,6 +15,7 @@ export interface SearchItem {
   category: 'page' | 'feature' | 'setting' | 'admin'
   keywords: string[]
   icon?: string
+  matchRange?: [number, number]
 }
 
 /**
@@ -482,17 +489,6 @@ export const searchData: SearchItem[] = [
 ]
 
 /**
- * 预计算的搜索索引
- * 在模块加载时一次性处理,避免每次搜索重复创建字符串
- */
-const searchIndex: Map<string, string> = new Map(
-  searchData.map((item) => [
-    item.id,
-    [item.title, item.description, ...item.keywords].join(' ').toLowerCase()
-  ])
-)
-
-/**
  * 搜索功能
  * @param query 搜索关键词
  * @param isAdmin 是否为管理员
@@ -510,10 +506,23 @@ export function searchItems(query: string, isAdmin: boolean = false): SearchItem
     return filteredData
   }
 
-  const lowerQuery = trimmedQuery.toLowerCase()
+  return filteredData.map(item => {
+    // 优先匹配标题
+    const titleMatch = typeof match === 'function' ? match(item.title, trimmedQuery) : null
+    if (titleMatch) {
+      return { ...item, matchRange: titleMatch as [number, number] }
+    }
 
-  return filteredData.filter((item) => {
-    const searchText = searchIndex.get(item.id)
-    return searchText ? searchText.includes(lowerQuery) : false
-  })
+    // 匹配描述
+    if (typeof match === 'function' && match(item.description, trimmedQuery)) {
+      return item
+    }
+
+    // 匹配关键词
+    if (item.keywords.some(keyword => typeof match === 'function' && match(keyword, trimmedQuery))) {
+      return item
+    }
+
+    return null
+  }).filter((item): item is SearchItem => item !== null)
 }
