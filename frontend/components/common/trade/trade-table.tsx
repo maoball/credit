@@ -69,15 +69,6 @@ function TransactionList({ initialType }: { initialType?: OrderType }) {
     setDateRange(null)
     setSelectedQuickSelection(null)
     setSelectedSearch({})
-
-    /* 重新获取数据 */
-    fetchTransactions({
-      page: 1,
-      page_size: pageSize,
-      type: initialType,
-      startTime: undefined,
-      endTime: undefined,
-    })
   }
 
   /* 当筛选条件改变时，重新加载数据 */
