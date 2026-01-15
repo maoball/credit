@@ -229,6 +229,7 @@ func Create(c *gin.Context) {
 		order := model.Order{
 			OrderName:   "红包支出",
 			PayerUserID: currentUser.ID,
+			PayeeUserID: 0,
 			Amount:      totalDeduction,
 			Status:      model.OrderStatusSuccess,
 			Type:        model.OrderTypeRedEnvelopeSend,
@@ -460,13 +461,13 @@ func List(c *gin.Context) {
 	query := db.DB(c.Request.Context()).Model(&model.RedEnvelope{}).
 		Select("red_envelopes.*, users.username as creator_username, users.avatar_url as creator_avatar_url").
 		Joins("LEFT JOIN users ON red_envelopes.creator_id = users.id")
-
-	if req.Type == "sent" {
+	switch req.Type {
+	case "sent":
 		query = query.Where("red_envelopes.creator_id = ?", currentUser.ID)
-	} else if req.Type == "received" {
+	case "received":
 		query = query.Joins("INNER JOIN red_envelope_claims ON red_envelopes.id = red_envelope_claims.red_envelope_id").
 			Where("red_envelope_claims.user_id = ?", currentUser.ID)
-	} else {
+	default:
 		query = query.Where("red_envelopes.creator_id = ?", currentUser.ID)
 	}
 
