@@ -25,7 +25,6 @@ import (
 	"github.com/linux-do/credit/internal/db"
 	"github.com/linux-do/credit/internal/model"
 	"github.com/linux-do/credit/internal/util"
-	"gorm.io/gorm"
 )
 
 type TransactionListRequest struct {
@@ -60,66 +59,6 @@ type TransactionListResponse struct {
 	} `json:"orders"`
 }
 
-// buildTypeQuery builds a subquery for multiple order types
-func buildTypeQuery(baseQuery *gorm.DB, types []string, userID uint64, clientID string, clientIDHandled *bool, c *gin.Context) *gorm.DB {
-	if len(types) == 0 {
-		return baseQuery.Where("orders.payee_user_id = ? OR orders.payer_user_id = ?", userID, userID)
-	}
-
-	// Build conditions for each type
-	var conditions []string
-	var args []interface{}
-
-	for _, t := range types {
-		orderType := model.OrderType(t)
-
-		switch orderType {
-		case model.OrderTypeReceive:
-			conditions = append(conditions, "(orders.type = ? AND orders.payee_user_id = ?)")
-			args = append(args, model.OrderTypePayment, userID)
-		case model.OrderTypeCommunity, model.OrderTypeRedEnvelopeRefund:
-			conditions = append(conditions, "(orders.type = ? AND orders.payee_user_id = ?)")
-			args = append(args, orderType, userID)
-		case model.OrderTypeRedEnvelopeReceive:
-			conditions = append(conditions, "(orders.type = ? AND (orders.payer_user_id = ? OR orders.payee_user_id = ?))")
-			args = append(args, orderType, userID, userID)
-		case model.OrderTypeOnline:
-			if clientID != "" {
-				*clientIDHandled = true
-				var count int64
-				db.DB(c.Request.Context()).Model(&model.MerchantAPIKey{}).
-					Where("client_id = ? AND user_id = ?", clientID, userID).
-					Count(&count)
-				if count > 0 {
-					conditions = append(conditions, "(orders.type = ? AND orders.client_id = ?)")
-					args = append(args, orderType, clientID)
-				} else {
-					conditions = append(conditions, "(orders.type = ? AND orders.client_id = ? AND (orders.payer_user_id = ? OR orders.payee_user_id = ?))")
-					args = append(args, orderType, clientID, userID, userID)
-				}
-			} else {
-				conditions = append(conditions, "(orders.type = ? AND (orders.payer_user_id = ? OR orders.payee_user_id = ?))")
-				args = append(args, orderType, userID, userID)
-			}
-		case model.OrderTypePayment, model.OrderTypeTransfer, model.OrderTypeTest, model.OrderTypeDistribute, model.OrderTypeRedEnvelopeSend:
-			conditions = append(conditions, "(orders.type = ? AND orders.payer_user_id = ?)")
-			args = append(args, orderType, userID)
-		}
-	}
-
-	if len(conditions) == 0 {
-		return baseQuery.Where("orders.payee_user_id = ? OR orders.payer_user_id = ?", userID, userID)
-	}
-
-	// Join conditions with OR
-	combinedCondition := conditions[0]
-	for i := 1; i < len(conditions); i++ {
-		combinedCondition += " OR " + conditions[i]
-	}
-
-	return baseQuery.Where(combinedCondition, args...)
-}
-
 // ListTransactions 获取交易列表
 // @Tags order
 // @Accept json
@@ -144,7 +83,62 @@ func ListTransactions(c *gin.Context) {
 		Joins("LEFT JOIN users as payee_user ON orders.payee_user_id = payee_user.id")
 
 	clientIDHandled := false
-	baseQuery = buildTypeQuery(baseQuery, req.Types, user.ID, req.ClientID, &clientIDHandled, c)
+	if len(req.Types) > 0 {
+		// 使用 IN 查询支持多个类型
+		var conditions []string
+		var args []interface{}
+
+		for _, t := range req.Types {
+			orderType := model.OrderType(t)
+
+			switch orderType {
+			case model.OrderTypeReceive:
+				// receive 类型：查询当前用户作为收款方的 payment 订单
+				conditions = append(conditions, "(orders.type = ? AND orders.payee_user_id = ?)")
+				args = append(args, model.OrderTypePayment, user.ID)
+			case model.OrderTypeCommunity, model.OrderTypeRedEnvelopeRefund, model.OrderTypeRedEnvelopeReceive:
+				// community、red_envelope_refund、red_envelope_receive 类型：查询当前用户作为收款方的订单
+				conditions = append(conditions, "(orders.type = ? AND orders.payee_user_id = ?)")
+				args = append(args, orderType, user.ID)
+			case model.OrderTypeOnline:
+				// online 类型：商家可查看自己 client_id 的所有订单，普通用户只能查看与自己相关的订单
+				if req.ClientID != "" {
+					clientIDHandled = true
+					var count int64
+					if err := db.DB(c.Request.Context()).Model(&model.MerchantAPIKey{}).
+						Where("client_id = ? AND user_id = ?", req.ClientID, user.ID).
+						Count(&count).Error; err != nil {
+						c.JSON(http.StatusInternalServerError, util.Err(err.Error()))
+						return
+					}
+					if count > 0 {
+						conditions = append(conditions, "(orders.type = ? AND orders.client_id = ?)")
+						args = append(args, orderType, req.ClientID)
+					} else {
+						conditions = append(conditions, "(orders.type = ? AND orders.client_id = ? AND (orders.payer_user_id = ? OR orders.payee_user_id = ?))")
+						args = append(args, orderType, req.ClientID, user.ID, user.ID)
+					}
+				} else {
+					conditions = append(conditions, "(orders.type = ? AND (orders.payer_user_id = ? OR orders.payee_user_id = ?))")
+					args = append(args, orderType, user.ID, user.ID)
+				}
+			case model.OrderTypePayment, model.OrderTypeTransfer, model.OrderTypeTest, model.OrderTypeDistribute, model.OrderTypeRedEnvelopeSend:
+				// payment、transfer、test、distribute、red_envelope_send 类型：查询当前用户作为付款方的订单
+				conditions = append(conditions, "(orders.type = ? AND orders.payer_user_id = ?)")
+				args = append(args, orderType, user.ID)
+			}
+		}
+
+		if len(conditions) > 0 {
+			combinedCondition := conditions[0]
+			for i := 1; i < len(conditions); i++ {
+				combinedCondition += " OR " + conditions[i]
+			}
+			baseQuery = baseQuery.Where(combinedCondition, args...)
+		}
+	} else {
+		baseQuery = baseQuery.Where("orders.payee_user_id = ? OR orders.payer_user_id = ?", user.ID, user.ID)
+	}
 
 	if len(req.Statuses) > 0 {
 		baseQuery = baseQuery.Where("orders.status IN ?", req.Statuses)
