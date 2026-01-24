@@ -359,7 +359,7 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
         return {
           tooltip: '争议已拒绝，点击查看',
           timelineText: '服务方驳回争议',
-          timelineColor: 'destructive',
+          isRed: true,
           showTimestamp: true,
           showContent: false,
           content: null
@@ -368,7 +368,7 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
         return {
           tooltip: '争议已退款',
           timelineText: '服务方已退款',
-          timelineColor: 'primary',
+          isRed: false,
           showTimestamp: true,
           showContent: true,
           content: '退款已完成'
@@ -377,19 +377,19 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
         return {
           tooltip: '争议处理中，点击查看',
           timelineText: '争议进行中，等待服务方处理',
-          timelineColor: 'primary',
+          isRed: false,
           showTimestamp: false,
           showContent: false,
           content: null
         }
       default:
         return {
-          tooltip: '未知状态',
+          tooltip: 'w?',
           timelineText: '不知道的状态欸w，刷新一下页面试试？',
-          timelineColor: 'primary',
+          isRed: true,
           showTimestamp: false,
-          showContent: false,
-          content: null
+          showContent: true,
+          content: '出现问题了呢w'
         }
     }
   }, [order.status])
@@ -488,10 +488,10 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
               </div>
 
               <div className="relative">
-                <div className={`absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full ${disputeConfig.timelineColor === 'destructive' ? 'bg-destructive' : 'bg-primary'} ring-4 ring-background`} />
+                <div className={`absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full ${disputeConfig.isRed ? 'bg-destructive' : 'bg-primary'} ring-4 ring-background`} />
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className={`text-sm font-medium ${disputeConfig.timelineColor === 'destructive' ? 'text-destructive' : ''}`}>
+                    <span className={`text-sm font-medium ${disputeConfig.isRed ? 'text-destructive' : ''}`}>
                       {disputeConfig.timelineText}
                     </span>
                     {disputeConfig.showTimestamp && (
