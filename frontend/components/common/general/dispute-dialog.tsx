@@ -353,6 +353,47 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
   const [disputeHistory, setDisputeHistory] = useState<Dispute | null>(null)
   const [fetchingHistory, setFetchingHistory] = useState(false)
 
+  const disputeConfig = React.useMemo(() => {
+    switch (order.status) {
+      case 'refused':
+        return {
+          tooltip: '争议已拒绝，点击查看',
+          timelineText: '服务方驳回争议',
+          timelineColor: 'destructive',
+          showTimestamp: true,
+          showContent: false,
+          content: null
+        }
+      case 'refund':
+        return {
+          tooltip: '争议已退款',
+          timelineText: '服务方已退款',
+          timelineColor: 'primary',
+          showTimestamp: true,
+          showContent: true,
+          content: '退款已完成'
+        }
+      case 'disputing':
+        return {
+          tooltip: '争议处理中，点击查看',
+          timelineText: '争议进行中，等待服务方处理',
+          timelineColor: 'primary',
+          showTimestamp: false,
+          showContent: false,
+          content: null
+        }
+      default:
+        return {
+          tooltip: '未知状态',
+          timelineText: '不知道的状态欸w，刷新一下页面试试？',
+          timelineColor: 'primary',
+          showTimestamp: false,
+          showContent: false,
+          content: null
+        }
+    }
+  }, [order.status])
+
   const resetForm = () => {
     setDisputeHistory(null)
   }
@@ -403,43 +444,6 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
     return { userReason: fullReason, merchantReason: null }
   }
 
-  const toolTipText = (() => {
-    switch (order.status) {
-      case 'refused': 
-        return '争议已拒绝，点击查看'
-      case 'refund': 
-        return '争议已退款'
-      case 'disputing': 
-        return '争议处理中，点击查看'
-      default: 
-        return 'w?'
-    }
-  })
-
-  const timeLineText = (() => {
-    switch (order.status) {
-      case 'refused': 
-        return '服务方驳回争议'
-      case 'refund': 
-        return '服务方已退款'
-      case 'disputing':
-        return '争议进行中'
-      default: 
-        return '不知道的状态欸w'
-    }
-  })
-
-  const timeLineContent = (() => {
-    switch (order.status) {
-      case 'refund': 
-        return '退款已完成'
-      case 'disputing': 
-        return '这句应该是被隐藏了呢w'
-      default:
-        return '好神奇w，是什么让这一句显示出来了呢？w）'
-    }
-  })
-
   return (
     <>
       <Tooltip>
@@ -454,7 +458,7 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
           </Button>
         </TooltipTrigger>
         <TooltipContent side="top">
-          <p>{toolTipText()}</p>
+          <p>{disputeConfig.tooltip}</p>
         </TooltipContent>
       </Tooltip>
       <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -482,33 +486,34 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
                   </div>
                 </div>
               </div>
-            { order.status === 'refused'?
-              (
-                <div className="relative">
-                  <div className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-destructive ring-4 ring-background" />
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-destructive">{timeLineText()}</span>
-                      <span className="text-xs text-muted-foreground">{formatDateTime(disputeHistory.updated_at)}</span>
-                    </div>
+
+              <div className="relative">
+                <div className={`absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full ${disputeConfig.timelineColor === 'destructive' ? 'bg-destructive' : 'bg-primary'} ring-4 ring-background`} />
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-sm font-medium ${disputeConfig.timelineColor === 'destructive' ? 'text-destructive' : ''}`}>
+                      {disputeConfig.timelineText}
+                    </span>
+                    {disputeConfig.showTimestamp && (
+                      <span className="text-xs text-muted-foreground">
+                        {formatDateTime(disputeHistory.updated_at)}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {order.status === 'refused' && (
                     <div className="text-sm text-muted-foreground bg-destructive/5 border border-destructive/10 p-3 rounded-md">
                       {parseDisputeReason(disputeHistory.reason).merchantReason || "未提供拒绝理由"}
                     </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="relative">
-                  <div className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-primary ring-4 ring-background" />
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{timeLineText()}</span>
-                      <span className="text-xs text-muted-foreground">{(order.status !== 'refund') ? "":formatDateTime(disputeHistory.updated_at)}</span>
+                  )}
+                  
+                  {order.status === 'refund' && disputeConfig.showContent && disputeConfig.content && (
+                    <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
+                      {disputeConfig.content}
                     </div>
-                    {order.status === 'refund' ? <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">{timeLineContent()}</div> : null}
-                  </div>
+                  )}
                 </div>
-              )
-            }
+              </div>
             </div>
           ) : (
             <div className="py-8 text-center text-muted-foreground text-sm">
