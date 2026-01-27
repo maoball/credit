@@ -175,13 +175,14 @@ func UploadRedEnvelopeCover(c *gin.Context) {
 	// 完整文件路径 - 使用 filepath.Clean 防止路径遍历
 	fullPath := filepath.Clean(filepath.Join(uploadPath, filename))
 
-	// 二次验证：确保文件路径在上传目录内 (防止路径遍历)
-	absUploadPath, _ := filepath.Abs(uploadPath)
-	absFullPath, _ := filepath.Abs(fullPath)
-	if !strings.HasPrefix(absFullPath, absUploadPath) {
+	// 验证路径安全性并获取经过验证的安全路径
+	safePath, err := ValidatePath(uploadPath, fullPath)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, util.Err(ErrInvalidFilePath))
 		return
 	}
+	// 使用经过验证的安全路径
+	fullPath = safePath
 
 	// 检查文件是否已存在
 	if _, err := os.Stat(fullPath); err == nil {

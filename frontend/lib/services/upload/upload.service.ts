@@ -44,12 +44,7 @@ export class UploadService extends BaseService {
     formData.append('file', file);
     formData.append('type', type);
 
-    // 使用 post 方法并设置正确的 Content-Type 头
-    return this.post<UploadImageResponse>('/redenvelope/cover', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    } as any);
+    return this.post<UploadImageResponse>('/redenvelope/cover', formData);
   }
 
   /**

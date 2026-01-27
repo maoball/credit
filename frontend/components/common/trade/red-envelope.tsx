@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { toast } from "sonner"
 import { Gift, Copy, Check, ExternalLink, Pencil, X, Upload } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -376,10 +377,13 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                       <Label className="text-xs text-muted-foreground mb-1">背景封面 (2:3 比例)</Label>
                       {cover.coverImage ? (
                         <div className="relative group">
-                          <img
+                          <Image
                             src={cover.coverImage}
                             alt="背景封面"
+                            width={400}
+                            height={96}
                             className="w-full h-24 object-cover rounded border"
+                            unoptimized
                           />
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded">
                             <Button
@@ -420,10 +424,13 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                       <Label className="text-xs text-muted-foreground mb-1">装饰图片 (2:3 比例)</Label>
                       {cover.heterotypicImage ? (
                         <div className="relative group">
-                          <img
+                          <Image
                             src={cover.heterotypicImage}
                             alt="装饰图片"
+                            width={400}
+                            height={96}
                             className="w-full h-24 object-cover rounded border"
+                            unoptimized
                           />
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded">
                             <Button
@@ -494,10 +501,11 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                     transition={{ duration: 0.3, ease: "easeOut" }}
                     className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
                   >
-                    <img
+                    <Image
                       src={cover.heterotypicImage}
                       alt="装饰"
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                       style={{
                         transform: 'scale(1.2)',
                         transformOrigin: 'center'
@@ -510,10 +518,11 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                   {/* 预览背景 */}
                   {cover.coverImage ? (
                     <div className="absolute inset-0">
-                      <img
+                      <Image
                         src={cover.coverImage}
                         alt="预览"
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                       <div className="absolute inset-0 bg-black/20" />
                     </div>

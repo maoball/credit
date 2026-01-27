@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useState, useEffect, useCallback } from "react"
+import Image from "next/image"
 import { motion, AnimatePresence } from "motion/react"
 import { toast } from "sonner"
 import { Gift } from "lucide-react"
@@ -139,10 +140,11 @@ export function RedEnvelopeClaimPage({ id }: RedEnvelopeClaimProps) {
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
             >
-              <img
+              <Image
                 src={heterotypicImage}
                 alt="红包装饰"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
                 style={{
                   transform: 'scale(1.2)',
                   transformOrigin: 'center'
@@ -170,10 +172,11 @@ export function RedEnvelopeClaimPage({ id }: RedEnvelopeClaimProps) {
                 {/* 自定义背景封面或默认渐变背景 */}
                 {coverImage ? (
                   <div className="absolute inset-0">
-                    <img
+                    <Image
                       src={coverImage}
                       alt="红包封面"
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                     {/* 半透明遮罩以确保内容可读 */}
                     <div className="absolute inset-0 bg-black/20" />
@@ -283,10 +286,11 @@ export function RedEnvelopeClaimPage({ id }: RedEnvelopeClaimProps) {
                   {/* 背景层 */}
                   {coverImage ? (
                     <div className="absolute inset-0">
-                      <img
+                      <Image
                         src={coverImage}
                         alt="红包封面"
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                       <div className="absolute inset-0 bg-black/30" />
                     </div>
