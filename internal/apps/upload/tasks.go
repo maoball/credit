@@ -68,23 +68,33 @@ func cleanupUnusedUploads(ctx context.Context) {
 		for _, upload := range unusedUploads {
 			totalProcessed++
 
-			// 尝试删除物理文件
-			if err := os.Remove(upload.FilePath); err != nil {
-				if !os.IsNotExist(err) {
-					logger.ErrorF(ctx, "删除文件失败 [ID:%d, Path:%s]: %v", upload.ID, upload.FilePath, err)
-				}
-				// 即使文件不存在或删除失败，也标记为已删除
+			tx := db.DB(ctx).Begin()
+			if err := tx.Model(&model.Upload{}).
+				Where("id = ? AND status = ?", upload.ID, model.UploadStatusPending).
+				Update("status", model.UploadStatusDeleted).Error; err != nil {
+				tx.Rollback()
+				logger.ErrorF(ctx, "更新上传记录状态失败 [ID:%d]: %v", upload.ID, err)
+				lastID = upload.ID
+				continue
 			}
 
-			// 更新数据库记录状态为已删除
-			if err := db.DB(ctx).Model(&model.Upload{}).
-				Where("id = ?", upload.ID).
-				Update("status", model.UploadStatusDeleted).Error; err != nil {
-				logger.ErrorF(ctx, "更新上传记录状态失败 [ID:%d]: %v", upload.ID, err)
-			} else {
-				totalDeleted++
-				logger.InfoF(ctx, "成功清理上传文件 [ID:%d, Path:%s, Size:%d bytes]", upload.ID, upload.FilePath, upload.FileSize)
+			if err := os.Remove(upload.FilePath); err != nil {
+				if !os.IsNotExist(err) {
+					tx.Rollback()
+					logger.ErrorF(ctx, "删除文件失败 [ID:%d, Path:%s]: %v", upload.ID, upload.FilePath, err)
+					lastID = upload.ID
+					continue
+				}
 			}
+
+			if err := tx.Commit().Error; err != nil {
+				logger.ErrorF(ctx, "提交上传记录状态失败 [ID:%d]: %v", upload.ID, err)
+				lastID = upload.ID
+				continue
+			}
+
+			totalDeleted++
+			logger.InfoF(ctx, "成功清理上传文件 [ID:%d, Path:%s, Size:%d bytes]", upload.ID, upload.FilePath, upload.FileSize)
 
 			// 更新游标
 			lastID = upload.ID

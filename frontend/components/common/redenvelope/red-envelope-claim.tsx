@@ -63,8 +63,8 @@ export function RedEnvelopeClaimPage({ id }: RedEnvelopeClaimProps) {
   }
 
   // 从后端获取封面图片URL并进行安全验证
-  const coverImage = sanitizeImageUrl(detail?.red_envelope?.cover_image)
-  const heterotypicImage = sanitizeImageUrl(detail?.red_envelope?.heterotypic_image)
+  const coverImage = sanitizeImageUrl(detail?.red_envelope?.cover_image_url)
+  const heterotypicImage = sanitizeImageUrl(detail?.red_envelope?.heterotypic_image_url)
 
   useEffect(() => {
     loadDetail()

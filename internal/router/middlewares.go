@@ -17,9 +17,9 @@ limitations under the License.
 package router
 
 import (
+	"io"
 	"net/http"
-	"os"
-	"path/filepath"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -84,19 +84,32 @@ func uploadsStaticHandler() gin.HandlerFunc {
 			return
 		}
 
-		cleanRelPath := filepath.Clean(relPath)
+		cleanRelPath := path.Clean(relPath)
 		if cleanRelPath == "." || strings.HasPrefix(cleanRelPath, "..") {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 
-		fullPath := filepath.Join("uploads", filepath.FromSlash(cleanRelPath))
-		info, err := os.Stat(fullPath)
+		fs := http.Dir("uploads")
+		file, err := fs.Open(cleanRelPath)
+		if err != nil {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+		defer file.Close()
+
+		info, err := file.Stat()
 		if err != nil || info.IsDir() {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 
-		c.File(fullPath)
+		reader, ok := file.(io.ReadSeeker)
+		if !ok {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+
+		http.ServeContent(c.Writer, c.Request, info.Name(), info.ModTime(), reader)
 	}
 }

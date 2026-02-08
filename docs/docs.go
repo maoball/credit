@@ -2258,17 +2258,17 @@ const docTemplate = `{
                 "type"
             ],
             "properties": {
-                "cover_image": {
+                "cover_upload_id": {
                     "type": "string",
-                    "maxLength": 500
+                    "example": "0"
                 },
                 "greeting": {
                     "type": "string",
                     "maxLength": 100
                 },
-                "heterotypic_image": {
+                "heterotypic_upload_id": {
                     "type": "string",
-                    "maxLength": 500
+                    "example": "0"
                 },
                 "pay_key": {
                     "type": "string",

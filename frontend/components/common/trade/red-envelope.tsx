@@ -21,8 +21,10 @@ import services from "@/lib/services"
 import type { RedEnvelopeType, CreateRedEnvelopeRequest, PublicConfigResponse, RedEnvelope, RedEnvelopeListResponse } from "@/lib/services"
 
 interface RedEnvelopeCover {
-  coverImage: string | null
-  heterotypicImage: string | null
+  coverImageUrl: string | null
+  heterotypicImageUrl: string | null
+  coverUploadId: string | null
+  heterotypicUploadId: string | null
 }
 
 /**
@@ -49,8 +51,10 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
   
   /* 封面状态 */
   const [cover, setCover] = useState<RedEnvelopeCover>({
-    coverImage: null,
-    heterotypicImage: null
+    coverImageUrl: null,
+    heterotypicImageUrl: null,
+    coverUploadId: null,
+    heterotypicUploadId: null
   })
 
   /* 结果状态 */
@@ -145,8 +149,8 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
         total_count: parseInt(totalCount),
         greeting: greeting || "恭喜发财，大吉大利",
         pay_key: password,
-        cover_image: cover.coverImage || undefined,
-        heterotypic_image: cover.heterotypicImage || undefined,
+        cover_upload_id: cover.coverUploadId || undefined,
+        heterotypic_upload_id: cover.heterotypicUploadId || undefined,
       }
 
       const result = await services.redEnvelope.create(data)
@@ -163,7 +167,12 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
       setTotalAmount("")
       setTotalCount("")
       setGreeting("")
-      setCover({ coverImage: null, heterotypicImage: null })
+      setCover({
+        coverImageUrl: null,
+        heterotypicImageUrl: null,
+        coverUploadId: null,
+        heterotypicUploadId: null
+      })
       setShowCustomization(false)
 
     } catch (error: unknown) {
@@ -220,7 +229,8 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
       
       setCover(prev => ({
         ...prev,
-        [coverType === 'cover' ? 'coverImage' : 'heterotypicImage']: result.url
+        [coverType === 'cover' ? 'coverImageUrl' : 'heterotypicImageUrl']: result.url,
+        [coverType === 'cover' ? 'coverUploadId' : 'heterotypicUploadId']: result.id
       }))
       
       toast.dismiss(uploadingToast)
@@ -243,7 +253,8 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
   const handleRemoveCover = (type: 'cover' | 'heterotypic') => {
     setCover(prev => ({
       ...prev,
-      [type === 'cover' ? 'coverImage' : 'heterotypicImage']: null
+      [type === 'cover' ? 'coverImageUrl' : 'heterotypicImageUrl']: null,
+      [type === 'cover' ? 'coverUploadId' : 'heterotypicUploadId']: null
     }))
     toast.success(`${type === 'cover' ? '背景封面' : '装饰图片'}已移除`)
   }
@@ -361,7 +372,12 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                       size="icon-sm"
                       onClick={() => {
                         setShowCustomization(false)
-                        setCover({ coverImage: null, heterotypicImage: null })
+                        setCover({
+                          coverImageUrl: null,
+                          heterotypicImageUrl: null,
+                          coverUploadId: null,
+                          heterotypicUploadId: null
+                        })
                       }}
                       className="text-muted-foreground"
                     >
@@ -375,10 +391,10 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                     {/* 背景封面 */}
                     <div>
                       <Label className="text-xs text-muted-foreground mb-1">背景封面 (2:3 比例)</Label>
-                      {cover.coverImage ? (
+                      {cover.coverImageUrl ? (
                         <div className="relative group">
                           <Image
-                            src={cover.coverImage}
+                            src={cover.coverImageUrl}
                             alt="背景封面"
                             width={400}
                             height={96}
@@ -422,10 +438,10 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                     {/* 装饰图片 */}
                     <div>
                       <Label className="text-xs text-muted-foreground mb-1">装饰图片 (2:3 比例)</Label>
-                      {cover.heterotypicImage ? (
+                      {cover.heterotypicImageUrl ? (
                         <div className="relative group">
                           <Image
-                            src={cover.heterotypicImage}
+                            src={cover.heterotypicImageUrl}
                             alt="装饰图片"
                             width={400}
                             height={96}
@@ -494,7 +510,7 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
             <div className="flex items-center justify-center md:justify-end md:pr-8">
               <div className="relative w-52 h-80">
                 {/* 装饰图片 - 背景装饰层，放置在信封后方 */}
-                {cover.heterotypicImage && (
+                {cover.heterotypicImageUrl && (
                   <motion.div
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -502,7 +518,7 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                     className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
                   >
                     <Image
-                      src={cover.heterotypicImage}
+                      src={cover.heterotypicImageUrl}
                       alt="装饰"
                       fill
                       className="object-cover"
@@ -516,10 +532,10 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                 
                 <div className="relative w-full h-full rounded-2xl shadow-xl overflow-hidden z-10">
                   {/* 预览背景 */}
-                  {cover.coverImage ? (
+                  {cover.coverImageUrl ? (
                     <div className="absolute inset-0">
                       <Image
-                        src={cover.coverImage}
+                        src={cover.coverImageUrl}
                         alt="预览"
                         fill
                         className="object-cover"

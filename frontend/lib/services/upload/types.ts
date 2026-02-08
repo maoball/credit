@@ -2,6 +2,8 @@
  * 上传图片响应
  */
 export interface UploadImageResponse {
+  /** 上传记录 ID */
+  id: string;
   /** 上传后的图片URL */
   url: string;
   /** 文件名 */

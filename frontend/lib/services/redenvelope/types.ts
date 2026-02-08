@@ -39,14 +39,18 @@ export interface RedEnvelope {
   greeting: string;
   /** 红包状态 */
   status: RedEnvelopeStatus;
+  /** 封面上传记录 ID */
+  cover_upload_id?: string;
+  /** 装饰上传记录 ID */
+  heterotypic_upload_id?: string;
+  /** 封面图片URL */
+  cover_image_url?: string;
+  /** 异形装饰图片URL */
+  heterotypic_image_url?: string;
   /** 过期时间 */
   expires_at: string;
   /** 创建时间 */
   created_at: string;
-  /** 封面图片（背景） */
-  cover_image?: string;
-  /** 异形装饰图片 */
-  heterotypic_image?: string;
 }
 
 /**
@@ -83,10 +87,10 @@ export interface CreateRedEnvelopeRequest {
   greeting?: string;
   /** 支付密码（6-10位） */
   pay_key: string;
-  /** 封面图片（背景）base64 */
-  cover_image?: string;
-  /** 异形装饰图片 base64 */
-  heterotypic_image?: string;
+  /** 封面上传记录 ID */
+  cover_upload_id?: string;
+  /** 异形装饰上传记录 ID */
+  heterotypic_upload_id?: string;
 }
 
 /**

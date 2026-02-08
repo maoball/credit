@@ -19,6 +19,7 @@ package upload
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"image"
 	_ "image/gif"
@@ -28,7 +29,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -38,30 +38,12 @@ import (
 	"github.com/linux-do/credit/internal/db/idgen"
 	"github.com/linux-do/credit/internal/model"
 	"github.com/linux-do/credit/internal/util"
-)
-
-const (
-	// 上传目录
-	UploadDir = "uploads/redenvelope"
-
-	// 允许的图片类型
-	AllowedImageTypes = "image/jpeg,image/png,image/jpg,image/webp"
-
-	// 最大文件大小 (2MB)
-	MaxFileSize = 2 * 1024 * 1024
-
-	// 最大图片尺寸
-	MaxImageWidth  = 4096
-	MaxImageHeight = 4096
-)
-
-var (
-	// 安全的文件名正则 (只允许字母、数字、下划线、连字符)
-	safeFilenameRegex = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
+	"gorm.io/gorm"
 )
 
 // UploadResponse 上传响应
 type UploadResponse struct {
+	ID       uint64 `json:"id,string"`
 	URL      string `json:"url"`
 	Filename string `json:"filename"`
 	Size     int64  `json:"size"`
@@ -186,16 +168,63 @@ func UploadRedEnvelopeCover(c *gin.Context) {
 	// 使用经过验证的安全路径
 	fullPath = safePath
 
+	ensureUploadRecord := func() (uint64, error) {
+		var existing model.Upload
+		if err := db.DB(c.Request.Context()).
+			Where("file_path = ?", fullPath).
+			First(&existing).Error; err == nil {
+			return existing.ID, nil
+		} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, err
+		}
+
+		upload := model.Upload{
+			ID:       idgen.NextUint64ID(),
+			UserID:   currentUser.ID,
+			FilePath: fullPath,
+			FileURL:  urlPath,
+			FileSize: file.Size,
+			MimeType: contentType,
+			Purpose:  fmt.Sprintf("red_envelope_%s", coverType),
+			Status:   model.UploadStatusPending,
+		}
+
+		tx := db.DB(c.Request.Context()).Begin()
+		if err := tx.Create(&upload).Error; err != nil {
+			tx.Rollback()
+			if err := db.DB(c.Request.Context()).
+				Where("file_path = ?", fullPath).
+				First(&existing).Error; err == nil {
+				return existing.ID, nil
+			}
+			return 0, err
+		}
+		if err := tx.Commit().Error; err != nil {
+			return 0, err
+		}
+
+		return upload.ID, nil
+	}
+
 	// 检查文件是否已存在
 	if _, err := os.Stat(fullPath); err == nil {
-		// 文件已存在，直接返回URL
-		c.JSON(http.StatusOK, util.OK(UploadResponse{
+		recordID, err := ensureUploadRecord()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, util.Err(ErrSaveUploadRecordFailed))
+			return
+		}
+
+		response := UploadResponse{
+			ID:       recordID,
 			URL:      urlPath,
 			Filename: filename,
 			Size:     file.Size,
 			Width:    imgConfig.Width,
 			Height:   imgConfig.Height,
-		}))
+		}
+
+		// 文件已存在，直接返回URL
+		c.JSON(http.StatusOK, util.OK(response))
 		return
 	}
 
@@ -203,14 +232,23 @@ func UploadRedEnvelopeCover(c *gin.Context) {
 	dst, err := os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0640)
 	if err != nil {
 		if os.IsExist(err) {
-			// 文件已存在，返回现有文件
-			c.JSON(http.StatusOK, util.OK(UploadResponse{
+			recordID, err := ensureUploadRecord()
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, util.Err(ErrSaveUploadRecordFailed))
+				return
+			}
+
+			response := UploadResponse{
+				ID:       recordID,
 				URL:      urlPath,
 				Filename: filename,
 				Size:     file.Size,
 				Width:    imgConfig.Width,
 				Height:   imgConfig.Height,
-			}))
+			}
+
+			// 文件已存在，返回现有文件
+			c.JSON(http.StatusOK, util.OK(response))
 			return
 		}
 		c.JSON(http.StatusInternalServerError, util.Err(ErrSaveFileFailed))
@@ -225,28 +263,16 @@ func UploadRedEnvelopeCover(c *gin.Context) {
 		return
 	}
 
-	// 返回文件URL
-	url := urlPath
-
-	// 记录上传信息到数据库
-	upload := model.Upload{
-		ID:       idgen.NextUint64ID(),
-		UserID:   currentUser.ID,
-		FilePath: fullPath,
-		FileURL:  url,
-		FileSize: file.Size,
-		MimeType: contentType,
-		Purpose:  fmt.Sprintf("red_envelope_%s", coverType),
-		Status:   model.UploadStatusPending,
-	}
-	if err := db.DB(c.Request.Context()).Create(&upload).Error; err != nil {
-		// 记录失败不影响上传流程，只记录日志
-		// 这样即使数据库出问题，上传功能仍然可用
-		fmt.Printf("Failed to track upload: %v\n", err)
+	recordID, err := ensureUploadRecord()
+	if err != nil {
+		os.Remove(fullPath)
+		c.JSON(http.StatusInternalServerError, util.Err(ErrSaveUploadRecordFailed))
+		return
 	}
 
 	c.JSON(http.StatusOK, util.OK(UploadResponse{
-		URL:      url,
+		ID:       recordID,
+		URL:      urlPath,
 		Filename: filename,
 		Size:     file.Size,
 		Width:    imgConfig.Width,
