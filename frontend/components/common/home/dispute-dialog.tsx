@@ -37,7 +37,6 @@ export function DisputeDialog({ mode, open, onOpenChange }: DisputeDialogProps) 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-
   const fetchDisputes = useCallback(async (page: number = 1) => {
     try {
       setLoading(true)
@@ -54,16 +53,27 @@ export function DisputeDialog({ mode, open, onOpenChange }: DisputeDialogProps) 
           statuses: ['disputing']
         })
         filteredOrders = result.orders
+        const uniqueOrders = new Map()
+        filteredOrders.forEach(order => uniqueOrders.set(order.id, order))
+        filteredOrders = Array.from(uniqueOrders.values())
       } else {
-        const disputeResult = await TransactionService.getTransactions({
+        const paymentResult = await TransactionService.getTransactions({
           page,
-          page_size: DISPUTE_PAGE_SIZE,
-          types: ['payment', 'online']
+          page_size: Math.ceil(DISPUTE_PAGE_SIZE / 2),
+          types: ['payment']
         })
 
-        const allOrders = disputeResult.orders
+        const onlineResult = await TransactionService.getTransactions({
+          page,
+          page_size: Math.ceil(DISPUTE_PAGE_SIZE / 2),
+          types: ['online']
+        })
 
-        filteredOrders = allOrders.filter((order: Order) =>
+        const allOrders = [...paymentResult.orders, ...onlineResult.orders]
+        const uniqueOrders = new Map()
+        allOrders.forEach(order => uniqueOrders.set(order.id, order))
+
+        filteredOrders = Array.from(uniqueOrders.values()).filter((order: Order) =>
           order.status === 'disputing' || order.status === 'refused' || order.status === 'refund'
         )
 
@@ -84,7 +94,6 @@ export function DisputeDialog({ mode, open, onOpenChange }: DisputeDialogProps) 
         }
       }
 
-      // 总是替换数据，不累加
       setDisputes(filteredOrders)
     } catch (err) {
       const error = err as Error
