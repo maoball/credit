@@ -49,8 +49,8 @@ export function DisputeDialog({ mode, open, onOpenChange }: DisputeDialogProps) 
         result = await TransactionService.getTransactions({
           page,
           page_size: DISPUTE_PAGE_SIZE,
-          type: 'receive',
-          status: 'disputing'
+          types: ['receive'],
+          statuses: ['disputing']
         })
         filteredOrders = result.orders
         const uniqueOrders = new Map()
@@ -60,13 +60,13 @@ export function DisputeDialog({ mode, open, onOpenChange }: DisputeDialogProps) 
         const paymentResult = await TransactionService.getTransactions({
           page,
           page_size: Math.ceil(DISPUTE_PAGE_SIZE / 2),
-          type: 'payment'
+          types: ['payment']
         })
 
         const onlineResult = await TransactionService.getTransactions({
           page,
           page_size: Math.ceil(DISPUTE_PAGE_SIZE / 2),
-          type: 'online'
+          types: ['online']
         })
 
         const allOrders = [...paymentResult.orders, ...onlineResult.orders]
