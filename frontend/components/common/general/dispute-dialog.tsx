@@ -382,17 +382,10 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
           showContent: false,
           content: null
         }
-      default:
-        return {
-          tooltip: 'w?',
-          timelineText: '不知道的状态欸w，刷新一下页面试试？',
-          isRed: true,
-          showTimestamp: false,
-          showContent: true,
-          content: '出现问题了呢w'
-        }
     }
   }, [order.status])
+
+  if (!disputeConfig) return null
 
   const resetForm = () => {
     setDisputeHistory(null)
@@ -488,10 +481,10 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
               </div>
 
               <div className="relative">
-                <div className={`absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full ${disputeConfig.isRed ? 'bg-destructive' : 'bg-primary'} ring-4 ring-background`} />
+                <div className={`absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full ${ disputeConfig.isRed ? 'bg-destructive' : 'bg-primary' } ring-4 ring-background`} />
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className={`text-sm font-medium ${disputeConfig.isRed ? 'text-destructive' : ''}`}>
+                    <span className={`text-sm font-medium ${ disputeConfig.isRed ? 'text-destructive' : '' }`}>
                       {disputeConfig.timelineText}
                     </span>
                     {disputeConfig.showTimestamp && (
@@ -500,13 +493,13 @@ export function ViewDisputeHistoryDialog({ order }: { order: Order }) {
                       </span>
                     )}
                   </div>
-                  
+
                   {order.status === 'refused' && (
                     <div className="text-sm text-muted-foreground bg-destructive/5 border border-destructive/10 p-3 rounded-md">
                       {parseDisputeReason(disputeHistory.reason).merchantReason || "未提供拒绝理由"}
                     </div>
                   )}
-                  
+
                   {order.status === 'refund' && disputeConfig.showContent && disputeConfig.content && (
                     <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
                       {disputeConfig.content}
