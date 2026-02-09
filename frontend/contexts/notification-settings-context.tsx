@@ -1,9 +1,10 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from "react"
 
 interface NotificationSettingsContextType {
   showBell: boolean
+  isMounted: boolean
   setShowBell: (value: boolean) => void
 }
 
@@ -40,11 +41,12 @@ export function NotificationSettingsProvider({ children }: { children: ReactNode
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
   }
 
-  // Prevent hydration mismatch by returning default value until mounted
-  const contextValue: NotificationSettingsContextType = {
-    showBell: mounted ? showBell : true,
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo<NotificationSettingsContextType>(() => ({
+    showBell,
+    isMounted: mounted,
     setShowBell,
-  }
+  }), [showBell, mounted])
 
   return (
     <NotificationSettingsContext.Provider value={contextValue}>
