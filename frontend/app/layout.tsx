@@ -3,6 +3,7 @@ import { Inter, Noto_Sans_SC, Geist_Mono } from 'next/font/google';
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { CustomThemeProvider } from "@/lib/theme";
+import { BellRingProvider } from "@/contexts/bell-ring-context";
 import "./globals.css";
 
 const inter = Inter({
@@ -49,8 +50,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <CustomThemeProvider>
-            {children}
-            <Toaster position="top-center" />
+            <BellRingProvider>
+              {children}
+              <Toaster position="top-center" />
+            </BellRingProvider>
           </CustomThemeProvider>
         </ThemeProvider>
       </body>

@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { Bell, Plus, Settings, Search, Moon, Sun, Maximize2, Minimize2 } from "lucide-react"
 import { useUser } from "@/contexts/user-context"
+import { useBellRing } from "@/contexts/bell-ring-context"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useTheme } from "next-themes"
 import { useRouter } from "next/navigation"
@@ -22,6 +23,7 @@ import { SearchDialog } from "@/components/layout/search-dialog"
  */
 export function SiteHeader({ isFullWidth = false, onToggleFullWidth }: { isFullWidth?: boolean, onToggleFullWidth?: (value: boolean) => void }) {
   const { user } = useUser()
+  const { isRinging } = useBellRing()
   const { setTheme, resolvedTheme } = useTheme()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
@@ -53,7 +55,7 @@ export function SiteHeader({ isFullWidth = false, onToggleFullWidth }: { isFullW
               <span className="sr-only">搜索</span>
             </Button>
             <Button variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground">
-              <Bell className="size-[18px]" />
+              <Bell className="size-[18px]" style={isRinging ? { animation: 'var(--animate-bell-ring)', transformOrigin: 'top center' } : undefined} />
               <span className="sr-only">通知</span>
             </Button>
             <Button variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" onClick={() => router.push('/settings')}>
@@ -76,7 +78,7 @@ export function SiteHeader({ isFullWidth = false, onToggleFullWidth }: { isFullW
 
           <div className="ml-auto flex items-center gap-1">
             <Button variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground">
-              <Bell className="size-[18px]" />
+              <Bell className="size-[18px]" style={isRinging ? { animation: 'var(--animate-bell-ring)', transformOrigin: 'top center' } : undefined} />
               <span className="sr-only">通知</span>
             </Button>
             <Button variant="ghost" size="icon" className="size-9 text-muted-foreground hover:text-foreground" onClick={() => router.push('/settings')}>
