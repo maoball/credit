@@ -148,7 +148,7 @@ func UploadRedEnvelopeCover(c *gin.Context) {
 	filename := fmt.Sprintf("%d_%s_%s_%d%s", currentUser.ID, coverType, md5Sum[:8], timestamp, safeExt)
 
 	// 创建上传目录 (使用更安全的权限)
-	uploadPath := filepath.Join(UploadDir, time.Now().Format("2006/01"))
+	uploadPath := filepath.Join(UploadDir, time.Now().Format("2026/01/01"))
 	if err := os.MkdirAll(uploadPath, 0750); err != nil {
 		c.JSON(http.StatusInternalServerError, util.Err(ErrCreateDirFailed))
 		return
