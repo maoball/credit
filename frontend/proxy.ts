@@ -20,6 +20,7 @@ const rateLimitStore = new Map<string, RateLimitEntry>()
 /** 不需要速率限制的路径 */
 const EXCLUDED_PREFIXES = [
   '/api/v1/config',
+  '/api/v1/redenvelope/covers',
   '/epay/',
   '/lpay/',
 ]
@@ -28,6 +29,7 @@ const EXCLUDED_PREFIXES = [
 const RATE_LIMITS: Record<string, [number, number]> = {
   '/api/v1/oauth/login': [1, 5000],
   '/api/v1/oauth/callback': [1, 5000],
+  '/api/v1/upload/redenvelope/cover': [10, 3600000],
   '/api/v1/redenvelope': [30, 60000],
 }
 
