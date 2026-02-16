@@ -611,7 +611,7 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
               )}
             </div>
 
-            <div className="md:col-span-2 flex items-center justify-center md:justify-end md:pr-8">
+            <div className="md:col-span-2 flex items-center justify-center md:justify-end md:pr-8 my-6 md:my-0">
               <div className="relative w-52 h-80">
                 {cover.heterotypicImageUrl && (
                   <motion.div
@@ -627,7 +627,7 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                       className="object-cover"
                       style={{
                         transform: 'scale(1.2)',
-                        transformOrigin: 'center'
+                        transformOrigin: 'center center'
                       }}
                       unoptimized
                     />
