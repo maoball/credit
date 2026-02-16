@@ -30,7 +30,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/linux-do/credit/internal/apps/oauth"
@@ -45,10 +44,16 @@ import (
 type UploadResponse struct {
 	ID       uint64 `json:"id,string"`
 	URL      string `json:"url"`
-	Filename string `json:"filename"`
-	Size     int64  `json:"size"`
+	Filename string `json:"filename,omitempty"`
+	Size     int64  `json:"size,omitempty"`
 	Width    int    `json:"width,omitempty"`
 	Height   int    `json:"height,omitempty"`
+}
+
+// purposeMap 封面类型到用途的映射
+var purposeMap = map[string]string{
+	"cover":       model.UploadPurposeCover,
+	"heterotypic": model.UploadPurposeHeterotypic,
 }
 
 // UploadRedEnvelopeCover 上传红包封面
@@ -184,7 +189,7 @@ func UploadRedEnvelopeCover(c *gin.Context) {
 			FileURL:  urlPath,
 			FileSize: file.Size,
 			MimeType: contentType,
-			Purpose:  fmt.Sprintf("red_envelope_%s", coverType),
+			Purpose:  purposeMap[coverType],
 			Status:   model.UploadStatusPending,
 		}
 
@@ -277,4 +282,48 @@ func UploadRedEnvelopeCover(c *gin.Context) {
 		Width:    imgConfig.Width,
 		Height:   imgConfig.Height,
 	}))
+}
+
+// ListRedEnvelopeCovers 获取用户历史红包封面
+// @Tags redenvelope
+// @Produce json
+// @Param type query string true "封面类型 (cover/heterotypic)"
+// @Success 200 {object} util.ResponseAny
+// @Router /api/v1/redenvelope/covers [get]
+func ListRedEnvelopeCovers(c *gin.Context) {
+	currentUser, _ := util.GetFromContext[*model.User](c, oauth.UserObjKey)
+
+	coverType := c.Query("type")
+	purpose, ok := purposeMap[coverType]
+	if !ok {
+		c.JSON(http.StatusBadRequest, util.Err(ErrInvalidCoverType))
+		return
+	}
+
+	var uploads []model.Upload
+	if err := db.DB(c.Request.Context()).
+		Where("user_id = ? AND status = ? AND purpose = ?",
+			currentUser.ID, model.UploadStatusUsed, purpose).
+		Order("created_at DESC").
+		Limit(20).
+		Find(&uploads).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, util.Err("查询历史封面失败"))
+		return
+	}
+
+	// 按 file_url 去重
+	seen := make(map[string]bool)
+	var results []UploadResponse
+	for _, u := range uploads {
+		if seen[u.FileURL] {
+			continue
+		}
+		seen[u.FileURL] = true
+		results = append(results, UploadResponse{
+			ID:  u.ID,
+			URL: u.FileURL,
+		})
+	}
+
+	c.JSON(http.StatusOK, util.OK(results))
 }

@@ -7,9 +7,9 @@ export interface UploadImageResponse {
   /** 上传后的图片URL */
   url: string;
   /** 文件名 */
-  filename: string;
+  filename?: string;
   /** 文件大小（字节） */
-  size: number;
+  size?: number;
   /** 图片宽度 */
   width?: number;
   /** 图片高度 */

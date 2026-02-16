@@ -29,6 +29,12 @@ const (
 	UploadStatusDeleted UploadStatus = "deleted" // 已删除
 )
 
+// UploadPurpose 上传用途常量
+const (
+	UploadPurposeCover       = "red_envelope_cover"       // 红包背景封面
+	UploadPurposeHeterotypic = "red_envelope_heterotypic" // 红包异形装饰
+)
+
 // Upload 上传文件记录
 type Upload struct {
 	ID        uint64       `json:"id,string" gorm:"primaryKey"`

@@ -202,30 +202,34 @@ func Create(c *gin.Context) {
 
 		if req.CoverUploadID != nil {
 			var coverUpload model.Upload
-			if err := tx.Where("id = ? AND status = ? AND user_id = ? AND purpose = ?", *req.CoverUploadID, model.UploadStatusPending, currentUser.ID, "red_envelope_cover").
+			if err := tx.Where("id = ? AND status IN (?, ?) AND user_id = ? AND purpose = ?", *req.CoverUploadID, model.UploadStatusPending, model.UploadStatusUsed, currentUser.ID, model.UploadPurposeCover).
 				First(&coverUpload).Error; err != nil {
 				return errors.New(InvalidCoverImage)
 			}
 
-			if err := tx.Model(&model.Upload{}).
-				Where("id = ? AND status = ?", coverUpload.ID, model.UploadStatusPending).
-				Update("status", model.UploadStatusUsed).Error; err != nil {
-				return err
+			if coverUpload.Status == model.UploadStatusPending {
+				if err := tx.Model(&model.Upload{}).
+					Where("id = ? AND status = ?", coverUpload.ID, model.UploadStatusPending).
+					Update("status", model.UploadStatusUsed).Error; err != nil {
+					return err
+				}
 			}
 			coverUploadID = &coverUpload.ID
 		}
 
 		if req.HeterotypicUploadID != nil {
 			var heterotypicUpload model.Upload
-			if err := tx.Where("id = ? AND status = ? AND user_id = ? AND purpose = ?", *req.HeterotypicUploadID, model.UploadStatusPending, currentUser.ID, "red_envelope_heterotypic").
+			if err := tx.Where("id = ? AND status IN (?, ?) AND user_id = ? AND purpose = ?", *req.HeterotypicUploadID, model.UploadStatusPending, model.UploadStatusUsed, currentUser.ID, model.UploadPurposeHeterotypic).
 				First(&heterotypicUpload).Error; err != nil {
 				return errors.New(InvalidHeterotypicImage)
 			}
 
-			if err := tx.Model(&model.Upload{}).
-				Where("id = ? AND status = ?", heterotypicUpload.ID, model.UploadStatusPending).
-				Update("status", model.UploadStatusUsed).Error; err != nil {
-				return err
+			if heterotypicUpload.Status == model.UploadStatusPending {
+				if err := tx.Model(&model.Upload{}).
+					Where("id = ? AND status = ?", heterotypicUpload.ID, model.UploadStatusPending).
+					Update("status", model.UploadStatusUsed).Error; err != nil {
+					return err
+				}
 			}
 			heterotypicUploadID = &heterotypicUpload.ID
 		}

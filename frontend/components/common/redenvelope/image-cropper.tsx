@@ -104,7 +104,7 @@ export function ImageCropper({ isOpen, onOpenChange, onCropComplete, coverType }
     }
   }
 
-  // 裁剪比例配置 - 2:3 比例和矩形裁剪
+  // 裁剪比例配置 - 2:3
   const aspect = 2 / 3
   const cropShape = 'rect'
 
@@ -213,9 +213,7 @@ export function ImageCropper({ isOpen, onOpenChange, onCropComplete, coverType }
               />
             </div>
 
-            {/* 控制栏 - 紧凑的一行式布局 */}
             <div className="flex items-center gap-4 px-1">
-              {/* 缩放 */}
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <Label className="text-[10px] text-muted-foreground shrink-0">缩放</Label>
                 <Slider
@@ -229,10 +227,8 @@ export function ImageCropper({ isOpen, onOpenChange, onCropComplete, coverType }
                 <span className="text-[10px] text-muted-foreground tabular-nums w-7 text-right shrink-0">{Math.round(zoom * 100)}%</span>
               </div>
 
-              {/* 分隔 */}
               <div className="w-px h-4 bg-border shrink-0" />
 
-              {/* 旋转 */}
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <Label className="text-[10px] text-muted-foreground shrink-0">旋转</Label>
                 <Slider
@@ -246,10 +242,8 @@ export function ImageCropper({ isOpen, onOpenChange, onCropComplete, coverType }
                 <span className="text-[10px] text-muted-foreground tabular-nums w-6 text-right shrink-0">{rotation}°</span>
               </div>
 
-              {/* 分隔 */}
               <div className="w-px h-4 bg-border shrink-0" />
 
-              {/* 快捷操作 */}
               <div className="flex items-center gap-1 shrink-0">
                 <Button
                   variant="ghost"
