@@ -110,6 +110,7 @@ func uploadsStaticHandler() gin.HandlerFunc {
 			return
 		}
 
+		c.Header("Cache-Control", "public, max-age=604800, immutable")
 		http.ServeContent(c.Writer, c.Request, info.Name(), info.ModTime(), reader)
 	}
 }

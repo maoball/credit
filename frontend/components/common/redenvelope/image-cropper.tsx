@@ -108,9 +108,7 @@ export function ImageCropper({ isOpen, onOpenChange, onCropComplete, coverType }
   const aspect = 2 / 3
   const cropShape = 'rect'
 
-  const recommendedSize = coverType === 'cover'
-    ? { width: 360, height: 540, label: "背景封面 (2:3 比例)" }
-    : { width: 480, height: 720, label: "装饰图片 (2:3 比例，放置在红包后方)" }
+  const coverLabel = coverType === 'cover' ? '背景封面' : '装饰图片'
 
   // 处理文件选择
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,135 +162,126 @@ export function ImageCropper({ isOpen, onOpenChange, onCropComplete, coverType }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
+      <DialogContent className={`max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full ${ image ? 'sm:max-w-2xl' : 'sm:max-w-md' }`}>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-sm sm:text-base">
-            <Crop className="size-4 sm:size-5 text-primary" />
-            裁剪{coverType === 'cover' ? '封面' : '装饰'}图片
+          <DialogTitle className="text-sm">
+            {image ? `裁剪${ coverLabel }` : `上传${ coverLabel }`}
           </DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm">
-            {recommendedSize.label} - 推荐尺寸: {recommendedSize.width}×{recommendedSize.height}px
+          <DialogDescription className="text-xs">
+            {image ? '拖拽调整位置，滚轮缩放' : '推荐 2:3 比例，支持 JPG / PNG / WEBP，最大 2MB'}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {!image ? (
-            <div className="border-2 border-dashed rounded-lg p-6 sm:p-12 text-center">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-                id="image-upload"
+        {!image ? (
+          /* 上传区域 */
+          <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+              id="image-upload"
+            />
+            <Label
+              htmlFor="image-upload"
+              className="cursor-pointer block rounded-lg border border-dashed border-border hover:border-foreground/25 hover:bg-muted/50 transition-colors p-10 sm:p-14 text-center"
+            >
+              <Crop className="size-6 text-muted-foreground/40 mx-auto mb-3" />
+              <p className="text-xs font-medium text-foreground">点击选择图片</p>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                或拖拽图片到此处
+              </p>
+            </Label>
+          </div>
+        ) : (
+          /* 裁剪区域 */
+          <div className="space-y-3">
+            <div className="relative w-full h-[300px] sm:h-[420px] bg-muted/50 rounded-lg overflow-hidden touch-none">
+              <Cropper
+                image={image}
+                crop={crop}
+                zoom={zoom}
+                rotation={rotation}
+                aspect={aspect}
+                cropShape={cropShape}
+                showGrid={true}
+                onCropChange={setCrop}
+                onCropComplete={onCropCompleteHandler}
+                onZoomChange={setZoom}
+                onRotationChange={setRotation}
               />
-              <Label
-                htmlFor="image-upload"
-                className="cursor-pointer flex flex-col items-center gap-4"
-              >
-                <div className="size-12 sm:size-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Crop className="size-6 sm:size-8 text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-medium">点击上传图片</p>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
-                    支持 JPG、PNG、WEBP 格式，最大 2MB
-                  </p>
-                </div>
-              </Label>
             </div>
-          ) : (
-            <>
-              {/* 裁剪区域 */}
-              <div className="relative w-full h-[250px] sm:h-[400px] bg-muted rounded-lg overflow-hidden touch-none">
-                <Cropper
-                  image={image}
-                  crop={crop}
-                  zoom={zoom}
-                  rotation={rotation}
-                  aspect={aspect}
-                  cropShape={cropShape}
-                  showGrid={true}
-                  onCropChange={setCrop}
-                  onCropComplete={onCropCompleteHandler}
-                  onZoomChange={setZoom}
-                  onRotationChange={setRotation}
+
+            {/* 控制栏 - 紧凑的一行式布局 */}
+            <div className="flex items-center gap-4 px-1">
+              {/* 缩放 */}
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <Label className="text-[10px] text-muted-foreground shrink-0">缩放</Label>
+                <Slider
+                  value={[zoom]}
+                  onValueChange={(value: number[]) => setZoom(value[0])}
+                  min={1}
+                  max={3}
+                  step={0.1}
+                  className="flex-1"
                 />
+                <span className="text-[10px] text-muted-foreground tabular-nums w-7 text-right shrink-0">{Math.round(zoom * 100)}%</span>
               </div>
 
-              {/* 控制面板 */}
-              <div className="space-y-2 sm:space-y-3">
-                {/* 缩放控制 */}
-                <div className="space-y-1.5 sm:space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-[10px] sm:text-xs text-muted-foreground">缩放</Label>
-                    <span className="text-[10px] sm:text-xs text-muted-foreground">{Math.round(zoom * 100)}%</span>
-                  </div>
-                  <Slider
-                    value={[zoom]}
-                    onValueChange={(value: number[]) => setZoom(value[0])}
-                    min={1}
-                    max={3}
-                    step={0.1}
-                    className="w-full"
-                  />
-                </div>
+              {/* 分隔 */}
+              <div className="w-px h-4 bg-border shrink-0" />
 
-                {/* 旋转控制 */}
-                <div className="space-y-1.5 sm:space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-[10px] sm:text-xs text-muted-foreground">旋转</Label>
-                    <span className="text-[10px] sm:text-xs text-muted-foreground">{rotation}°</span>
-                  </div>
-                  <Slider
-                    value={[rotation]}
-                    onValueChange={(value: number[]) => setRotation(value[0])}
-                    min={0}
-                    max={360}
-                    step={1}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* 快捷按钮 */}
-                <div className="flex items-center justify-end gap-1.5 sm:gap-2 pt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setRotation((prev) => (prev + 90) % 360)}
-                    className="text-xs h-8"
-                  >
-                    <RotateCw className="size-3 sm:size-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">旋转 90°</span>
-                    <span className="sm:hidden">旋转</span>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      resetCropState()
-                    }}
-                    className="text-xs h-8"
-                  >
-                    <X className="size-3 sm:size-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">重新选择</span>
-                    <span className="sm:hidden">重选</span>
-                  </Button>
-                </div>
+              {/* 旋转 */}
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <Label className="text-[10px] text-muted-foreground shrink-0">旋转</Label>
+                <Slider
+                  value={[rotation]}
+                  onValueChange={(value: number[]) => setRotation(value[0])}
+                  min={0}
+                  max={360}
+                  step={1}
+                  className="flex-1"
+                />
+                <span className="text-[10px] text-muted-foreground tabular-nums w-6 text-right shrink-0">{rotation}°</span>
               </div>
-            </>
-          )}
-        </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="ghost" onClick={handleClose} className="text-xs sm:text-sm h-8 sm:h-10">
+              {/* 分隔 */}
+              <div className="w-px h-4 bg-border shrink-0" />
+
+              {/* 快捷操作 */}
+              <div className="flex items-center gap-1 shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setRotation((prev) => (prev + 90) % 360)}
+                  className="size-7 text-muted-foreground"
+                  title="旋转 90°"
+                >
+                  <RotateCw className="size-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={resetCropState}
+                  className="size-7 text-muted-foreground"
+                  title="重新选择"
+                >
+                  <X className="size-3.5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button variant="ghost" onClick={handleClose} className="text-xs h-8">
             取消
           </Button>
           <Button
             onClick={handleCrop}
             disabled={!image}
-            className="bg-red-500 hover:bg-red-600 text-xs sm:text-sm h-8 sm:h-10"
+            className="bg-red-500 hover:bg-red-600 text-xs h-8"
           >
             确认裁剪
           </Button>

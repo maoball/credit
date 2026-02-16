@@ -138,17 +138,16 @@ func UploadRedEnvelopeCover(c *gin.Context) {
 	src, _ = file.Open()
 	defer src.Close()
 
-	// 生成安全的文件名: 用户ID_类型_MD5_时间戳.扩展名
-	// 只使用验证过的格式，避免使用用户提供的扩展名
+	// 生成安全的文件名: 用户ID_类型_MD5.扩展名
+	// 使用完整 MD5 实现去重，同一用户上传相同图片会命中已有文件
 	safeExt := "." + format
 	if format == "jpeg" {
 		safeExt = ".jpg"
 	}
-	timestamp := time.Now().Unix()
-	filename := fmt.Sprintf("%d_%s_%s_%d%s", currentUser.ID, coverType, md5Sum[:8], timestamp, safeExt)
+	filename := fmt.Sprintf("%d_%s_%s%s", currentUser.ID, coverType, md5Sum, safeExt)
 
 	// 创建上传目录 (使用更安全的权限)
-	uploadPath := filepath.Join(UploadDir, time.Now().Format("2026/01/01"))
+	uploadPath := UploadDir
 	if err := os.MkdirAll(uploadPath, 0750); err != nil {
 		c.JSON(http.StatusInternalServerError, util.Err(ErrCreateDirFailed))
 		return

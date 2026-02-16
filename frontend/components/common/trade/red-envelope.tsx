@@ -4,7 +4,7 @@ import * as React from "react"
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { toast } from "sonner"
-import { Gift, Copy, Check, ExternalLink, Pencil, X, Upload } from "lucide-react"
+import { Gift, Copy, Check, ExternalLink, Pencil, X, ImagePlus } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -48,7 +48,7 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
   const [totalCount, setTotalCount] = useState("")
   const [greeting, setGreeting] = useState("")
   const [loading, setLoading] = useState(false)
-  
+
   /* 封面状态 */
   const [cover, setCover] = useState<RedEnvelopeCover>({
     coverImageUrl: null,
@@ -113,7 +113,7 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
       toast.error("红包总金额不能低于1 LDC")
       return
     }
-    
+
     if (config && parseFloat(config.red_envelope_max_amount) > 0) {
       if (amount > parseFloat(config.red_envelope_max_amount)) {
         toast.error(`红包的积分总数不能超过 ${ config.red_envelope_max_amount } LDC`)
@@ -219,25 +219,25 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
   /* 处理封面裁剪完成 */
   const handleCropComplete = async (croppedImage: string, coverType: 'cover' | 'heterotypic') => {
     try {
-      const uploadingToast = toast.loading(`正在上传${coverType === 'cover' ? '背景封面' : '装饰图片'}...`)
-      
+      const uploadingToast = toast.loading(`正在上传${ coverType === 'cover' ? '背景封面' : '装饰图片' }...`)
+
       const result = await services.upload.uploadBase64Image(
         croppedImage,
         coverType,
-        `${coverType}-${Date.now()}.png`
+        `${ coverType }-${ Date.now() }.png`
       )
-      
+
       setCover(prev => ({
         ...prev,
         [coverType === 'cover' ? 'coverImageUrl' : 'heterotypicImageUrl']: result.url,
         [coverType === 'cover' ? 'coverUploadId' : 'heterotypicUploadId']: result.id
       }))
-      
+
       toast.dismiss(uploadingToast)
-      toast.success(`${coverType === 'cover' ? '背景封面' : '装饰图片'}已设置`)
+      toast.success(`${ coverType === 'cover' ? '背景封面' : '装饰图片' }已设置`)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '上传失败'
-      toast.error(`上传${coverType === 'cover' ? '背景封面' : '装饰图片'}失败`, {
+      toast.error(`上传${ coverType === 'cover' ? '背景封面' : '装饰图片' }失败`, {
         description: errorMessage
       })
     }
@@ -256,7 +256,7 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
       [type === 'cover' ? 'coverImageUrl' : 'heterotypicImageUrl']: null,
       [type === 'cover' ? 'coverUploadId' : 'heterotypicUploadId']: null
     }))
-    toast.success(`${type === 'cover' ? '背景封面' : '装饰图片'}已移除`)
+    toast.success(`${ type === 'cover' ? '背景封面' : '装饰图片' }已移除`)
   }
 
   return (
@@ -290,14 +290,14 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                 variant={showCustomization ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setShowCustomization(!showCustomization)}
-                className={`flex items-center ${showCustomization ? "bg-red-500 hover:bg-red-600 text-white" : ""}`}
+                className={`flex items-center gap-1.5 text-xs transition-colors ${ showCustomization ? "bg-red-500 hover:bg-red-600 text-white" : "text-muted-foreground hover:text-foreground" }`}
               >
-                <Pencil className="size-4 mr-1.5" />
+                <Pencil className="size-3.5" />
                 <span>自定义封面</span>
               </Button>
             </DialogTitle>
             <DialogDescription>
-              创建积分红包，支持固定金额和拼手气两种模式{showCustomization && "。可为红包添加个性化背景和装饰"}。
+              创建积分红包，支持固定金额和拼手气两种模式{showCustomization && "，可添加个性化封面"}。
             </DialogDescription>
           </DialogHeader>
 
@@ -364,8 +364,14 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
 
               {/* 自定义封面区域 */}
               {showCustomization && (
-                <div className="grid gap-3 p-4 rounded-lg border border-dashed">
-                  <div className="flex items-center justify-between">
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  className="rounded-lg bg-muted/40 p-4"
+                >
+                  <div className="flex items-center justify-between mb-3">
                     <Label className="text-sm font-medium">红包封面</Label>
                     <Button
                       variant="ghost"
@@ -379,33 +385,30 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                           heterotypicUploadId: null
                         })
                       }}
-                      className="text-muted-foreground"
+                      className="size-6 text-muted-foreground hover:text-foreground"
                     >
-                      <X className="size-4" />
+                      <X className="size-3.5" />
                     </Button>
                   </div>
-                  
-                  <p className="text-xs text-muted-foreground">为红包添加个性化背景或装饰图片，让红包更有特色</p>
-                  
-                  <div className="space-y-2">
+
+                  <div className="grid grid-cols-2 gap-3">
                     {/* 背景封面 */}
-                    <div>
-                      <Label className="text-xs text-muted-foreground mb-1">背景封面 (2:3 比例)</Label>
+                    <div className="space-y-1.5">
+                      <Label className="text-[11px] text-muted-foreground">背景封面</Label>
                       {cover.coverImageUrl ? (
-                        <div className="relative group">
+                        <div className="relative group rounded-lg overflow-hidden ring-1 ring-border/50 h-28">
                           <Image
                             src={cover.coverImageUrl}
                             alt="背景封面"
-                            width={400}
-                            height={96}
-                            className="w-full h-24 object-cover rounded border"
+                            fill
+                            className="object-cover"
                             unoptimized
                           />
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded">
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100">
                             <Button
                               variant="ghost"
                               size="icon-sm"
-                              className="text-white hover:bg-white/20"
+                              className="size-7 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
                               onClick={() => handleOpenCropper('cover')}
                             >
                               <Pencil className="size-3" />
@@ -413,7 +416,7 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                             <Button
                               variant="ghost"
                               size="icon-sm"
-                              className="text-white hover:bg-white/20"
+                              className="size-7 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
                               onClick={() => handleRemoveCover('cover')}
                             >
                               <X className="size-3" />
@@ -421,38 +424,33 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                           </div>
                         </div>
                       ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
+                        <button
                           onClick={() => handleOpenCropper('cover')}
-                          className="w-full h-24 border-dashed"
+                          className="w-full h-28 rounded-lg border border-dashed border-border hover:border-foreground/25 bg-background hover:bg-muted/50 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer"
                         >
-                          <div className="flex flex-col items-center gap-1">
-                            <Upload className="size-4" />
-                            <span className="text-xs">上传背景封面</span>
-                          </div>
-                        </Button>
+                          <ImagePlus className="size-5 text-muted-foreground/50" />
+                          <span className="text-[11px] text-muted-foreground">上传背景</span>
+                        </button>
                       )}
                     </div>
 
                     {/* 装饰图片 */}
-                    <div>
-                      <Label className="text-xs text-muted-foreground mb-1">装饰图片 (2:3 比例)</Label>
+                    <div className="space-y-1.5">
+                      <Label className="text-[11px] text-muted-foreground">装饰图片</Label>
                       {cover.heterotypicImageUrl ? (
-                        <div className="relative group">
+                        <div className="relative group rounded-lg overflow-hidden ring-1 ring-border/50 h-28">
                           <Image
                             src={cover.heterotypicImageUrl}
                             alt="装饰图片"
-                            width={400}
-                            height={96}
-                            className="w-full h-24 object-cover rounded border"
+                            fill
+                            className="object-cover"
                             unoptimized
                           />
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded">
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100">
                             <Button
                               variant="ghost"
                               size="icon-sm"
-                              className="text-white hover:bg-white/20"
+                              className="size-7 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
                               onClick={() => handleOpenCropper('heterotypic')}
                             >
                               <Pencil className="size-3" />
@@ -460,7 +458,7 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                             <Button
                               variant="ghost"
                               size="icon-sm"
-                              className="text-white hover:bg-white/20"
+                              className="size-7 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30"
                               onClick={() => handleRemoveCover('heterotypic')}
                             >
                               <X className="size-3" />
@@ -468,25 +466,23 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                           </div>
                         </div>
                       ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
+                        <button
                           onClick={() => handleOpenCropper('heterotypic')}
-                          className="w-full h-24 border-dashed"
+                          className="w-full h-28 rounded-lg border border-dashed border-border hover:border-foreground/25 bg-background hover:bg-muted/50 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer"
                         >
-                          <div className="flex flex-col items-center gap-1">
-                            <Upload className="size-4" />
-                            <span className="text-xs">上传装饰图片</span>
-                          </div>
-                        </Button>
+                          <ImagePlus className="size-5 text-muted-foreground/50" />
+                          <span className="text-[11px] text-muted-foreground">上传装饰</span>
+                        </button>
                       )}
                     </div>
                   </div>
-                </div>
+
+                  <p className="text-[10px] text-muted-foreground/60 mt-2.5 text-center">推荐 2:3 比例，上传后可裁剪</p>
+                </motion.div>
               )}
 
               {feeInfo && parseFloat(feeInfo.fee) > 0 && (
-                <div className="text-xs space-y-1 p-2 rounded-md border border-dashed">
+                <div className="text-xs space-y-1.5 p-3 rounded-lg bg-muted/50">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">积分</span>
                     <span className="font-mono text-muted-foreground">{totalAmount} LDC</span>
@@ -497,10 +493,10 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                     </span>
                     <span className="font-mono text-muted-foreground">+{feeInfo.fee} LDC</span>
                   </div>
-                  <div className="border-t border-dashed my-1 opacity-50" />
+                  <div className="border-t border-border/50 my-0.5" />
                   <div className="flex justify-between items-center">
                     <span className="text-foreground font-medium">总计</span>
-                    <span className="font-mono font-medium">{feeInfo.total} LDC</span>
+                    <span className="font-mono font-semibold text-red-500">{feeInfo.total} LDC</span>
                   </div>
                 </div>
               )}
@@ -529,7 +525,7 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
                     />
                   </motion.div>
                 )}
-                
+
                 <div className="relative w-full h-full rounded-2xl shadow-xl overflow-hidden z-10">
                   {/* 预览背景 */}
                   {cover.coverImageUrl ? (
@@ -555,32 +551,32 @@ export function RedEnvelope({ onSuccess }: { onSuccess?: () => void }) {
 
                   {/* 预览内容 */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring" }}
-                  >
-                    <Avatar className="h-10 w-10 mb-2 border-2 border-yellow-400/80 shadow-lg">
-                      <AvatarImage src={user?.avatar_url} alt={user?.username} />
-                      <AvatarFallback className="bg-gradient-to-br from-yellow-300 to-yellow-500 text-red-600 font-bold text-sm">
-                        {user?.username?.charAt(0).toUpperCase() || '你'}
-                      </AvatarFallback>
-                    </Avatar>
-                  </motion.div>
-                  <p className="text-yellow-100 text-xs font-medium mb-6">{user?.username || '你'} 的红包</p>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring" }}
+                    >
+                      <Avatar className="h-10 w-10 mb-2 border-2 border-yellow-400/80 shadow-lg">
+                        <AvatarImage src={user?.avatar_url} alt={user?.username} />
+                        <AvatarFallback className="bg-gradient-to-br from-yellow-300 to-yellow-500 text-red-600 font-bold text-sm">
+                          {user?.username?.charAt(0).toUpperCase() || '你'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </motion.div>
+                    <p className="text-yellow-100 text-xs font-medium mb-6">{user?.username || '你'} 的红包</p>
 
-                  <motion.div
-                    className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 flex items-center justify-center shadow-2xl border-4 border-yellow-200/50"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <span className="text-red-600 font-bold text-xl" style={{ fontFamily: 'serif' }}>
-                      開
-                    </span>
-                  </motion.div>
+                    <motion.div
+                      className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 flex items-center justify-center shadow-2xl border-4 border-yellow-200/50"
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <span className="text-red-600 font-bold text-xl" style={{ fontFamily: 'serif' }}>
+                        開
+                      </span>
+                    </motion.div>
 
-                  <p className="text-yellow-100 text-xs mt-6 px-4 text-center leading-relaxed">
-                    {greeting || "恭喜发财，大吉大利"}
-                  </p>
+                    <p className="text-yellow-100 text-xs mt-6 px-4 text-center leading-relaxed">
+                      {greeting || "恭喜发财，大吉大利"}
+                    </p>
                   </div>
                 </div>
               </div>
