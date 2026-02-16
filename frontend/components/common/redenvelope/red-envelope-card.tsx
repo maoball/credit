@@ -22,7 +22,6 @@ export interface RedEnvelopeCardProps {
 export function RedEnvelopeCard({
   status,
   coverImage,
-  heterotypicImage,
   greeting,
   sender,
   onOpen,
