@@ -56,7 +56,7 @@ func init() {
 	oauthConf = &oauth2.Config{
 		ClientID:     cfg.ClientID,
 		ClientSecret: cfg.ClientSecret,
-		RedirectURL:  cfg.RedirectURI,
+		RedirectURL:  cfg.RedirectURL,
 		Scopes:       scopes,
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   cfg.AuthorizationEndpoint,
