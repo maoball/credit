@@ -56,8 +56,8 @@ export interface Order {
   app_homepage_url?: string;
   /** 应用描述（可选） */
   app_description?: string;
-  /** 重定向 URI（可选） */
-  redirect_uri?: string;
+  /** 重定向 URL（可选） */
+  redirect_url?: string;
   /** 关联的争议 ID（可选） */
   dispute_id?: string;
   /** 支付类型 */
