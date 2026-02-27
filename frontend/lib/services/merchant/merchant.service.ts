@@ -42,7 +42,7 @@ export class MerchantService extends BaseService {
    *   app_name: '我的应用',
    *   app_homepage_url: 'https://example.com',
    *   app_description: '应用描述',
-   *   redirect_uri: 'https://example.com/callback'
+   *   redirect_url: 'https://example.com/callback'
    * });
    * console.log('Client ID:', apiKey.client_id);
    * console.log('Client Secret:', apiKey.client_secret); // 请保存，之后无法再次获取
