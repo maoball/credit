@@ -149,13 +149,13 @@ export function PayingMain() {
         })
       }
 
-      /** 5秒后跳转到redirect_uri或刷新页面 */
+      /** 5秒后跳转到redirect_url或刷新页面 */
       timeoutRef.current = setTimeout(() => {
         if (!isMountedRef.current) return
 
-        const redirectUri = orderInfo?.merchant?.redirect_uri
-        if (redirectUri && redirectUri.trim()) {
-          window.location.href = redirectUri
+        const redirectUrl = orderInfo?.merchant?.redirect_url
+        if (redirectUrl && redirectUrl.trim()) {
+          window.location.href = redirectUrl
           return
         }
 
