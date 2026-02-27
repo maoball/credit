@@ -16,8 +16,8 @@ export interface MerchantAPIKey {
   app_homepage_url: string;
   /** 应用描述 */
   app_description: string;
-  /** 重定向 URI */
-  redirect_uri?: string;
+  /** 重定向 URL */
+  redirect_url?: string;
   /** 通知 URL */
   notify_url: string;
   /** 测试模式 */
@@ -40,8 +40,8 @@ export interface CreateAPIKeyRequest {
   app_homepage_url: string;
   /** 应用描述（最大100字符，可选） */
   app_description?: string;
-  /** 重定向 URI（最大100字符，必须是有效的 URL，可选） */
-  redirect_uri?: string;
+  /** 重定向 URL（最大100字符，必须是有效的 URL，可选） */
+  redirect_url?: string;
   /** 通知 URL（最大100字符，必须是有效的 URL） */
   notify_url: string;
   /** 测试模式（可选，默认为 false） */
@@ -58,8 +58,8 @@ export interface UpdateAPIKeyRequest {
   app_homepage_url?: string;
   /** 应用描述（最大100字符，可选） */
   app_description?: string;
-  /** 重定向 URI（最大100字符，必须是有效的 URL，可选） */
-  redirect_uri?: string;
+  /** 重定向 URL（最大100字符，必须是有效的 URL，可选） */
+  redirect_url?: string;
   /** 通知 URL（最大100字符，必须是有效的 URL，可选） */
   notify_url?: string;
   /** 测试模式（可选） */
@@ -146,8 +146,8 @@ export interface GetMerchantOrderResponse {
   merchant: {
     /** 应用名称 */
     app_name: string;
-    /** 跳转URI */
-    redirect_uri: string;
+    /** 跳转 URL */
+    redirect_url: string;
   };
 }
 
@@ -177,8 +177,8 @@ export interface PaymentLink {
   updated_at: string;
   /** 应用名称 */
   app_name: string;
-  /** 重定向 URI */
-  redirect_uri: string;
+  /** 重定向 URL */
+  redirect_url: string;
 }
 
 /**
@@ -237,8 +237,8 @@ export interface GetPaymentLinkInfoResponse {
   merchant: {
     /** 应用名称 */
     app_name: string;
-    /** 跳转URI */
-    redirect_uri: string;
+    /** 跳转 URL */
+    redirect_url: string;
   };
   /** 用户积分配置信息 */
   user_pay_config: {
