@@ -45,7 +45,7 @@ export function TestModeToggle({ apiKey, onUpdate, updateAPIKey }: TestModeToggl
         app_name: apiKey.app_name,
         app_homepage_url: apiKey.app_homepage_url,
         app_description: apiKey.app_description,
-        redirect_uri: apiKey.redirect_uri,
+        redirect_url: apiKey.redirect_url,
         notify_url: apiKey.notify_url,
         test_mode: pendingValue
       }
