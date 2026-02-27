@@ -51,7 +51,7 @@ export function MerchantDialog({
     app_name: '',
     app_homepage_url: '',
     app_description: '',
-    redirect_uri: '',
+    redirect_url: '',
     notify_url: '',
     test_mode: false,
   })
@@ -69,7 +69,7 @@ export function MerchantDialog({
         app_name: apiKey.app_name,
         app_homepage_url: apiKey.app_homepage_url,
         app_description: apiKey.app_description,
-        redirect_uri: apiKey.redirect_uri,
+        redirect_url: apiKey.redirect_url,
         notify_url: apiKey.notify_url,
         test_mode: apiKey.test_mode,
       }
@@ -78,7 +78,7 @@ export function MerchantDialog({
       app_name: '',
       app_homepage_url: '',
       app_description: '',
-      redirect_uri: '',
+      redirect_url: '',
       notify_url: '',
       test_mode: false,
     }
@@ -121,9 +121,9 @@ export function MerchantDialog({
       return { valid: false, error: '应用主页 URL 格式不正确' }
     }
 
-    /* 验证回调 URI */
-    if (formData.redirect_uri && !isValidUrl(formData.redirect_uri)) {
-      return { valid: false, error: '回调 URI 格式不正确' }
+    /* 验证回调 URL */
+    if (formData.redirect_url && !isValidUrl(formData.redirect_url)) {
+      return { valid: false, error: '回调 URL 格式不正确' }
     }
 
     /* 验证通知 URL */
@@ -318,14 +318,14 @@ export function MerchantDialog({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="redirect_uri">回调 URI</Label>
+            <Label htmlFor="redirect_url">回调 URL</Label>
             <Input
-              id="redirect_uri"
+              id="redirect_url"
               type="url"
               placeholder="URL 必须包含 http:// 或 https:// ，用于接收积分服务完成后的回调，可选"
               maxLength={100}
-              value={formData.redirect_uri}
-              onChange={(e) => setFormData({ ...formData, redirect_uri: e.target.value })}
+              value={formData.redirect_url}
+              onChange={(e) => setFormData({ ...formData, redirect_url: e.target.value })}
               disabled={processing}
             />
           </div>
