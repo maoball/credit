@@ -56,7 +56,7 @@ func (a *appConfig) IsProduction() bool {
 type OAuth2Config struct {
 	ClientID              string `mapstructure:"client_id"`
 	ClientSecret          string `mapstructure:"client_secret"`
-	RedirectURI           string `mapstructure:"redirect_uri"`
+	RedirectURL           string `mapstructure:"redirect_url"`
 	Issuer                string `mapstructure:"issuer"`
 	AuthorizationEndpoint string `mapstructure:"authorization_endpoint"`
 	TokenEndpoint         string `mapstructure:"token_endpoint"`
